@@ -6,6 +6,7 @@ const express = require('express')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const mongoose = require('mongoose')
+const path = require('path')
 
 require('dotenv').config()
 
@@ -27,3 +28,17 @@ app.use("/users", require("./routes/user_routes"))
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`)
 })
+
+const _dirname = path.dirname("");
+const buildPath = path.join(_dirname ,"../client/build");
+app.use(express.static (buildPath))
+app.get("/*", function (req, res) {
+    res.sendFile(
+        path.join(_dirname, "../client/build/index.html"), 
+        function (err) {
+            if (err) {
+                res.status(500).send(err);
+            }
+        }
+    )
+});
