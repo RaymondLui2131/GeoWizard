@@ -332,7 +332,8 @@
   "scripts": {
     "start": "npm-run-all --parallel start-client start-server",
     "start-client": "cd client && npm start",
-    "start-server": "node server.js"
+    "start-server": "node server.js",
+    "heroku-postbuild": "npm install --only=dev && npm run build"
   },
   "keywords": [],
   "author": "",
