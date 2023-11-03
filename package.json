@@ -74,7 +74,6 @@
     "escalade": "^3.1.1",
     "escape-html": "^1.0.3",
     "escape-string-regexp": "^1.0.5",
-    "eslint": "^6.6.0",
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.4",
