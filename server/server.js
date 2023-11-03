@@ -35,10 +35,10 @@ app.use(express.urlencoded({ extended: true }))
 app.use(cors())
 app.use(cookieParser())
 
-const uri = process.env.URI
-mongoose.connect(uri)
-const connection = mongoose.connection
-connection.once("open", () => { console.log("MongoDB database connection established successfully") })
+// const uri = process.env.URI
+// mongoose.connect(uri)
+// const connection = mongoose.connection
+// connection.once("open", () => { console.log("MongoDB database connection established successfully") })
 
 app.use("/users", require("./routes/user_routes"))
 
