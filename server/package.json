@@ -4,12 +4,7 @@
   "version": "0.0.0",
   "main": "server.js",
   "scripts": {
-    "server": "nodemon server/server.js",
-    "client": "vite",
-    "dev": "concurrently \"npm:client\" \"npm:server\"",
-    "start": "npm run client && npm run server",
-    "heroku-postbuild": "npm install && npm run build",
-    "build": "vite build"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
