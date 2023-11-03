@@ -6,7 +6,6 @@
  * For testing getUser, paste the user token in the authorization header for type "Bearer Token" 
  * @author Kahui Wong
  */
-const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
 const asyncHandler = require('express-async-handler')
 const User = require("../models/user_model")
@@ -21,8 +20,9 @@ const loginUser = asyncHandler(async (req, res) => {
 
     // checks if the request contains all required fields
     if (!email || !password) {
-        res.status(400)
-        throw new Error("Missing required fields for login")
+        res.status(400).json({
+            message: "Missing required fields for login"
+        })
     }
 
     // finds the user with the correct password 
@@ -35,8 +35,9 @@ const loginUser = asyncHandler(async (req, res) => {
             token: signToken(user._id),
         })
     } else {
-        res.status(400)
-        throw new Error("Invalid credentials")
+        res.status(400).json({
+            message: "Invalid credentials"
+        })
     }
 })
 
@@ -50,16 +51,18 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // checks if the request contains all required fields
     if (!email || !username || !password) {
-        res.status(400)
-        throw new Error("Missing required fields for register")
+        res.status(400).json({
+            message: "Missing required fields for register"
+        })
     }
 
     // checks if users exists in the database
     const userExists = await User.findOne({ email })
 
     if (userExists) {
-        res.status(400)
-        throw new Error("User already exists")
+        res.status(400).json({
+            message: "User already exists"
+        })
     }
 
     // hash password with generated salt
@@ -81,10 +84,7 @@ const registerUser = asyncHandler(async (req, res) => {
             email: user.email,
             token: signToken(user._id),
         })
-    } else {
-        res.status(400)
-        throw new Error("Invalid user")
-    }
+    } 
 })
 
 /**
