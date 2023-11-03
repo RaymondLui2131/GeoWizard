@@ -328,7 +328,9 @@
   },
   "devDependencies": {},
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npm-run-all --parallel start-client start-server",
+    "start-client": "cd client && npm start",
+    "start-server": "node server.js"
   },
   "keywords": [],
   "author": "",
