@@ -6,7 +6,8 @@
   "scripts": {
     "server": "nodemon server/server.js",
     "client": "vite",
-    "dev": "concurrently \"npm:client\" \"npm:server\""
+    "dev": "concurrently \"npm:client\" \"npm:server\"",
+    "start": "concurrently \"npm:client\" \"npm:server\""
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
