@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "jest",
-    "start": "node server.js"
+    "test": "jest --runInBand --detectOpenHandles --forceExit",
+    "start": "nodemon server.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -15,6 +15,7 @@
     "express": "^4.18.2",
     "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.2",
+    "mongodb-memory-server": "^9.0.1",
     "mongoose": "^8.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
