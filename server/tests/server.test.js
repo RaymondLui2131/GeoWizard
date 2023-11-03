@@ -170,7 +170,7 @@ describe("test POST users/login", () => {
     it("should fail if missing required fields", async () => {
         const response = await supertest(app)
             .post("/users/login")
-            .send({ email: "test@example.com"})
+            .send({ email: "test@example.com" })
             .set("Content-type", "application/json")
         expect(response.status).toBe(400)
         expect(response.body).toEqual({
@@ -181,7 +181,7 @@ describe("test POST users/login", () => {
     it("should fail if invalid credentials", async () => {
         const response = await supertest(app)
             .post("/users/login")
-            .send({ email: "test@example.com", password: "wrongpass"})
+            .send({ email: "test@example.com", password: "wrongpass" })
             .set("Content-type", "application/json")
         expect(response.status).toBe(400)
         expect(response.body).toEqual({
@@ -191,9 +191,19 @@ describe("test POST users/login", () => {
 })
 
 describe('testing static file serving', () => {
+    beforeAll(async () => {
+        const testServer = await MongoMemoryServer.create()
+        await mongoose.connect(testServer.getUri())
+    })
+
+    afterAll(async () => {
+        await mongoose.disconnect()
+        await mongoose.connection.close()
+    })
     it('should serve the static files and handle catch-all route', async () => {
         const response = await supertest(app)
             .get('/any') // This route will match the catch-all route
-            .expect('Content-Type', "application/json; charset=utf-8")
-    });
-});
+            .expect(200)
+            .expect('Content-Type', "text/html; charset=UTF-8")
+    })
+})
