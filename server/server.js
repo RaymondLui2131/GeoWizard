@@ -7,6 +7,7 @@ const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const mongoose = require('mongoose')
 const path = require('path')
+const app = express()
 
 
 const _dirname = path.dirname("")
@@ -27,7 +28,6 @@ app.get("/*", function (req, res) {
 
 require('dotenv').config()
 
-const app = express()
 const port = process.env.PORT || 4000
 
 app.use(express.json())
