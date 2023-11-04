@@ -1,17 +1,16 @@
 import React from 'react'
-import reactLogo from './assets/react.svg'
 import './App.css'
-
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import LoginScreen from './components/LoginScreen'
+import RegisterScreen from './components/RegisterScreen'
 function App() {
   return (
-    <>
-      <div>
-        <a href="https://react.dev">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>GeoWizard Build1</h1>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LoginScreen />} />
+        <Route path="/register" element={<RegisterScreen />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
