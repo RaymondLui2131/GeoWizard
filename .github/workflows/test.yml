@@ -33,11 +33,6 @@ jobs:
         working-directory: client
         run: npm start
 
-      - name: Wait for the application to start
-        working-directory: client
-        run: npx wait-on --timeout 60000 http://localhost:3000
-
-
       - name: Run tests (client)
         working-directory: client
         run: npm run cypress:run
@@ -45,10 +40,6 @@ jobs:
       - name: Start the server
         working-directory: server
         run: npm start
-
-      - name: Wait for the server to start
-        working-directory: sesrver
-        run: npx wait-on --timeout 60000 http://localhost:4000
 
       - name: Run tests (server)
         working-directory: server
