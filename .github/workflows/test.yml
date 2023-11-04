@@ -21,9 +21,21 @@ jobs:
       - name: Install dependencies (root)
         run: npm install
 
+      - name: Install dependencies (client)
+        working-directory: client
+        run: npm install
+
       - name: Install dependencies (server)
         working-directory: server
         run: npm install
+
+
+      - name: Wait for the application to start
+        run: npx wait-on http://localhost:3000
+
+      - name: Run tests (client)
+        working-directory: client
+        run: npm run cypress:run
 
       - name: Run tests (server)
         working-directory: server
