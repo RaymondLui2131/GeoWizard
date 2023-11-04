@@ -20,7 +20,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
     // checks if the request contains all required fields
     if (!email || !password) {
-        res.status(400).json({
+        return res.status(400).json({
             message: "Missing required fields for login"
         })
     }
@@ -28,14 +28,14 @@ const loginUser = asyncHandler(async (req, res) => {
     // finds the user with the correct password 
     const user = await User.findOne({ email })
     if (user && (await bcrypt.compare(password, user.password))) {
-        res.status(200).json({
+        return res.status(200).json({
             _id: user.id,
             username: user.username,
             email: user.email,
             token: signToken(user._id),
         })
     } else {
-        res.status(400).json({
+        return res.status(400).json({
             message: "Invalid credentials"
         })
     }
@@ -51,7 +51,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // checks if the request contains all required fields
     if (!email || !username || !password) {
-        res.status(400).json({
+        return res.status(400).json({
             message: "Missing required fields for register"
         })
     }
@@ -60,7 +60,7 @@ const registerUser = asyncHandler(async (req, res) => {
     const userExists = await User.findOne({ email })
 
     if (userExists) {
-        res.status(400).json({
+        return res.status(400).json({
             message: "User already exists"
         })
     }
@@ -78,7 +78,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // genreate token for the user
     if (user) {
-        res.status(200).json({
+        return res.status(200).json({
             _id: user.id,
             username: user.username,
             email: user.email,
@@ -93,7 +93,7 @@ const registerUser = asyncHandler(async (req, res) => {
  * @route GET /users/me
  */
 const getUser = asyncHandler(async (req, res) => {
-    res.status(200).json(req.user)
+    return res.status(200).json(req.user)
 })
 
 
