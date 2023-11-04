@@ -1,10 +1,10 @@
-name: Test with Node.js 18
+name: Test with Node.js 16
 
 on:
   push:
     branches:
       - main
-
+      - kahui
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -16,7 +16,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '18'
+          node-version: '16'
 
       - name: Install dependencies (root)
         run: npm install
@@ -37,9 +37,18 @@ jobs:
         working-directory: client
         run: npx wait-on --timeout 60000 http://localhost:3000
 
+
       - name: Run tests (client)
         working-directory: client
         run: npm run cypress:run
+
+      - name: Start the server
+        working-directory: server
+        run: npm start
+
+      - name: Wait for the server to start
+        working-directory: sesrver
+        run: npx wait-on --timeout 60000 http://localhost:4000
 
       - name: Run tests (server)
         working-directory: server
