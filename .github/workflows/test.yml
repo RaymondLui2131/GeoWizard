@@ -29,9 +29,13 @@ jobs:
         working-directory: server
         run: npm install
 
+      - name: Start the client
+        working-directory: client
+        run: npm start
 
       - name: Wait for the application to start
-        run: npx wait-on http://localhost:3000
+        working-directory: client
+        run: npx wait-on --timeout 60000 http://localhost:3000
 
       - name: Run tests (client)
         working-directory: client
