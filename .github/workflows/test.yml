@@ -1,9 +1,10 @@
-name: Test with Node.js 18
+name: Test with Node.js 16
 
 on:
   push:
     branches:
       - main
+      - kahui
 
 jobs:
   test:
@@ -16,25 +17,31 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: '18'
+          node-version: '16'
 
       - name: Install dependencies (root)
-        run: npm install
-
-      - name: Install dependencies (client)
-        working-directory: client
         run: npm install
 
       - name: Install dependencies (server)
         working-directory: server
         run: npm install
 
+      - name: Install dependencies (client)
+        working-directory: client
+        run: npm install
+
+      - name: Start the server
+        working-directory: server
+        run: npm start &
+
+      - name: Wait for the server to start
+        run: npx wait-on --timeout 60000 http://localhost:4000
+
       - name: Start the client
         working-directory: client
-        run: npm start
+        run: npm start &
 
-      - name: Wait for the application to start
-        working-directory: client
+      - name: Wait for the client application to start
         run: npx wait-on --timeout 60000 http://localhost:3000
 
       - name: Run tests (client)
