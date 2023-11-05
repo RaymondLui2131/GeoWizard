@@ -1,7 +1,7 @@
 import axios from "axios"
 
-const host = window.location.hostname;
-const port = window.location.port;
+const host = process.env.HOST || 'localhost';
+const port = process.env.PORT || 4000;
 const endpoint = '/users/';
 const API_URL = `http://${host}:${port}${endpoint}`;
 console.log(API_URL)
