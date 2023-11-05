@@ -2,9 +2,10 @@ name: Continuous Deployment
 
 on:
   push:
-    branches: ['staging']
-  pull_request:
-    branches: ['staging']
+    branches:
+      - main
+      - kahui
+      - raymondlui
 
 jobs:
   build:
