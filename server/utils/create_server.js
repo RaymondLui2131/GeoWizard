@@ -18,19 +18,25 @@ const createServer = () => {
     app.use(cookieParser())
     app.use("/users", userRoutes)
 
-    const buildPath = path.join(__dirname, "../../client/public");
-    app.use(express.static(buildPath))
+    app.use(express.static(path.resolve(__dirname, "./client/build")));
 
-    app.get("/*", function (req, res) {
-        res.sendFile(
-            path.join(__dirname, "../../client/public/index.html"),
-            function (err) {
-                if (err) {
-                    res.status(500).send(err);
-                }
-            }
-        );
+    app.get("*", function (request, response) {
+        response.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
     });
+
+    // const buildPath = path.join(__dirname, "../../client/public");
+    // app.use(express.static(buildPath))
+
+    // app.get("/*", function (req, res) {
+    //     res.sendFile(
+    //         path.join(__dirname, "../../client/public/index.html"),
+    //         function (err) {
+    //             if (err) {
+    //                 res.status(500).send(err);
+    //             }
+    //         }
+    //     );
+    // });
 
     return app
 }
