@@ -1,6 +1,11 @@
 import axios from "axios"
 
-const API_URL = "http://localhost:4000/users/" // change this later
+const host = window.location.hostname;
+const port = window.location.port;
+const endpoint = '/users/register';
+const API_URL = `http://${host}:${port}${endpoint}`;
+
+// const API_URL = "http://localhost:4000/users/" // this is for local host
 
 export const authRegisterUser = async (email, username, password) => {
     try {
