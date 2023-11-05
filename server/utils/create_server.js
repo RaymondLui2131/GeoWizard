@@ -18,12 +18,12 @@ const createServer = () => {
     app.use(cookieParser())
     app.use("/users", userRoutes)
 
-    const buildPath = path.join(__dirname, "../../client/src");
+    const buildPath = path.join(__dirname, "../../client/build");
     app.use(express.static(buildPath))
 
     app.get("/*", function (req, res) {
         res.sendFile(
-            path.join(__dirname, "../../client/src/index.js"),
+            path.join(__dirname, "../../client/build/index.html"),
             function (err) {
                 if (err) {
                     res.status(500).send(err);
