@@ -1,10 +1,13 @@
 import axios from "axios"
 
-const host = process.env.HOST || 'localhost';
-const port = process.env.PORT || 4000;
-const endpoint = '/users/';
-const API_URL = `http://${host}:${port}${endpoint}`;
-console.log(API_URL)
+const isLocal = process.env.NODE_ENV === "development"; 
+const host = isLocal ? "localhost" : window.location.hostname;
+const port = isLocal ? 4000 : window.location.port;
+const endpoint = "/users/";
+const baseURL = isLocal
+  ? `http://${host}:${port}`
+  : `${window.location.protocol}//${host}:${port}`;
+const API_URL = `${baseURL}${endpoint}`;
 
 // const API_URL = "http://localhost:4000/users/" // this is for local host
 
