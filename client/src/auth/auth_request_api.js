@@ -4,6 +4,7 @@ const host = window.location.hostname;
 const port = window.location.port;
 const endpoint = '/users/';
 const API_URL = `http://${host}:${port}${endpoint}`;
+console.log(API_URL)
 
 // const API_URL = "http://localhost:4000/users/" // this is for local host
 
