@@ -9,8 +9,6 @@ const baseURL = isLocal
   : `${window.location.protocol}//${host}:${port}`;
 const API_URL = `${baseURL}${endpoint}`;
 
-// const API_URL = "http://localhost:4000/users/" // this is for local host
-
 export const authRegisterUser = async (email, username, password) => {
     try {
         return await axios.post(`${API_URL}register`, {
