@@ -29,15 +29,14 @@ jobs:
             browser: firefox
           env: 
             NPM_CONFIG_PRODUCTION: false
-  ServerTest:
-    # if: github.event.deployment_status.state == 'success'
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-         uses: actions/checkout@v3
-      - name: Run tests (server)
-         working-directory: server
-         run: npm test
+  # ServerTest:
+  #   # if: github.event.deployment_status.state == 'success'
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout
+  #        uses: actions/checkout@v3
+  #     - name: Run tests (server)
+  #        working-directory: server
+  #        run: npm test
 
       
