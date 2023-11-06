@@ -14,13 +14,11 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Deploying Test Case Container
-        uses: gonuit/heroku-docker-deploy@v1.3.3
+        uses: akhileshns/heroku-deploy@v3.12.14
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: 'test-cypress-geowizard'
-          email: ${{secrets.HEROKU_EMAIL}}
-          dockerfile_directory: ./
-          dockerfile_name: Dockerfile
+          heroku_email: ${{secrets.HEROKU_EMAIL}}
 
       - name: Docker Login to E2E Testing App
         run:
