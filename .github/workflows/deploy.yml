@@ -1,6 +1,4 @@
-
-
-name: Cypress Tests
+name: TestCase
 on: 
   push:
     branches:
@@ -8,9 +6,7 @@ on:
       - kahui
       - raymondlui
       - jason_dep 
-    deployment_status:
-      types:
-        - success
+
 jobs:
   ClientTest:
     # if: github.event.deployment_status.state == 'success'
