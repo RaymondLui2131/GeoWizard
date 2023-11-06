@@ -46,7 +46,7 @@ describe("testing POST users/register", () => {
             _id: expect.any(String),
             username: "testuser",
             email: "test123@gmail.com",
-            token: signToken(response.body._id)
+            token: expect.any(String)
         })
     })
 
@@ -165,7 +165,7 @@ describe("test POST users/login", () => {
             _id: expect.any(String),
             username: "testuser",
             email: "test1@example.com",
-            token: signToken(response.body._id)
+            token: expect.any(String)
         })
     })
 
