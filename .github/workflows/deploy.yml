@@ -12,7 +12,7 @@ on:
       types:
         - success
 jobs:
-  Firefox:
+  ClientTest:
     # if: github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
     container:
@@ -24,14 +24,24 @@ jobs:
         with:
           time: 45s
 
-      - uses: actions/checkout@v3
+      - name: Checkout
+          uses: actions/checkout@v3
       - name: Run against ${{ github.event.deployment_status.environment_url }}
-        uses: cypress-io/github-action@v4
-        with:
-          working-directory: client
-          browser: firefox
-        env: 
-          NPM_CONFIG_PRODUCTION: false
-          # CYPRESS_TEST_USER_EMAIL: "cypress@example.com"
-          # CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
-          # CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
+          uses: cypress-io/github-action@v4
+          with:
+            working-directory: client
+            browser: firefox
+          env: 
+            NPM_CONFIG_PRODUCTION: false
+  ServerTest:
+    # if: github.event.deployment_status.state == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+         uses: actions/checkout@v3
+      - name: Run tests (server)
+         working-directory: server
+         run: npm test
+
+      
