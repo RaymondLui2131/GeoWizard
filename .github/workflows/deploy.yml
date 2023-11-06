@@ -23,6 +23,6 @@ jobs:
           docker login --username=_ --password=${{secrets.HEROKU_API_KEY}}
           registry.heroku.com
       - name: Run E2E testing on Staging
-        run: docker run registry.heroku.com/geowizard-app/web
+        run: docker run registry.heroku.com/test-cypress-geowizard/web
     # - name: Deploy to production
     # etc
