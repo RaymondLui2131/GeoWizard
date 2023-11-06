@@ -13,12 +13,17 @@ on:
         - success
 jobs:
   Firefox:
-    if: github.event.deployment_status.state == 'success'
+    # if: github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
     container:
       image: cypress/browsers:node16.14.2-slim-chrome103-ff102
       options: --user 1001
     steps:
+      - name: Waiting Heroku Deployment
+        uses: juliangruber/sleep-action@v2.0.0
+        with:
+          time: 180s
+
       - uses: actions/checkout@v3
       - name: Run against ${{ github.event.deployment_status.environment_url }}
         uses: cypress-io/github-action@v4
