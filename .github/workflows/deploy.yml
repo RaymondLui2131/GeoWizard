@@ -1,4 +1,4 @@
-name: Test Case
+name: ClientTest
 on: 
   push:
     branches:
@@ -23,7 +23,7 @@ jobs:
           time: 45s
 
       - uses: actions/checkout@v3
-      - name: Run against ${{ github.event.deployment_status.environment_url }}
+      - name: Run against 
         uses: cypress-io/github-action@v4
         with:
           working-directory: client
