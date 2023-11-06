@@ -38,6 +38,9 @@ describe("testing POST users/register", () => {
             .post("/users/register")
             .send(user_data1)
             .set("Content-type", "application/json")
+        console.log("Creating user")
+        console.log(response.status)
+        console.log(response.body)
         expect(response.status).toBe(200)
         expect(response.body).toEqual({
             _id: expect.any(String),
