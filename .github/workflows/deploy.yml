@@ -24,5 +24,6 @@ jobs:
           registry.heroku.com
       - name: Run E2E testing on Staging
         run: docker run registry.heroku.com/test-cypress-geowizard/web
+        
     # - name: Deploy to production
     # etc
