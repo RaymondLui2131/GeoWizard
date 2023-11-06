@@ -16,7 +16,7 @@ jobs:
       - name: Waiting Heroku Deployment
         uses: juliangruber/sleep-action@v2.0.0
         with:
-          time: 45s
+          time: 60s
 
       - name: Checkout code
         uses: actions/checkout@v2
