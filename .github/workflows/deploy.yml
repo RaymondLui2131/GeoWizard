@@ -6,12 +6,9 @@ on:
       - kahui
       - raymondlui
       - jason_dep 
-    deployment_status:
-      types:
-        - success
+
 jobs:
   Firefox:
-    # if: github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
     container:
       image: cypress/browsers:node16.14.2-slim-chrome103-ff102

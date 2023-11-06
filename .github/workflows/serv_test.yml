@@ -6,13 +6,9 @@ on:
       - kahui
       - raymondlui
       - jason_dep 
-    deployment_status:
-      types:
-        - success
 
 jobs:
   Server:
-    # if: github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
     steps:
       - name: Waiting Heroku Deployment
