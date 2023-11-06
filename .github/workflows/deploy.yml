@@ -1,30 +1,22 @@
-name: Continuous Deployment
-
-on:
-  push:
-    branches:
-      - main
-      - kahui
-      - raymondlui
-      - jason_dep 
+name: Cypress Tests
+on: [deployment_status]
 
 jobs:
-  build:
+  Firefox:
+    if: github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node16.14.2-slim-chrome103-ff102
+      options: --user 1001
     steps:
-      - uses: actions/checkout@master
-      - name: Deploying Test Case Container
-        uses: akhileshns/heroku-deploy@v3.12.14
+      - uses: actions/checkout@v3
+      - name: Run against ${{ github.event.deployment_status.environment_url }}
+        uses: cypress-io/github-action@v4
         with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: 'test-cypress-geowizard'
-          heroku_email: ${{secrets.HEROKU_EMAIL}}
-
-      - name: Docker Login to E2E Testing App
-        run:
-          docker login --username=_ --password=${{secrets.HEROKU_API_KEY}}
-          registry.heroku.com
-      - name: Run E2E testing on Staging
-        run: docker run registry.heroku.com/test-cypress-geowizard/web
-    # - name: Deploy to production
-    # etc
+          working-directory: client
+          browser: firefox
+        env: 
+          NPM_CONFIG_PRODUCTION: false
+          # CYPRESS_TEST_USER_EMAIL: "cypress@example.com"
+          # CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
+          # CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
