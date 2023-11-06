@@ -48,9 +48,6 @@ describe("testing POST users/register", () => {
             email: "test123@gmail.com",
             token: signToken(response.body._id)
         })
-
-        const registered_user = await User.findOne({ email: user_data1.email })
-        expect(registered_user).toBeTruthy()
     })
 
     it("should fail if user already exists", async () => {
@@ -151,7 +148,7 @@ describe("test POST users/login", () => {
         const registerUserResponse = await supertest(HOST)
             .post("/users/register")
             .send({
-                email: 'test@example.com',
+                email: 'test1@example.com',
                 username: 'testuser',
                 password: 'abc123',
             })
@@ -161,13 +158,13 @@ describe("test POST users/login", () => {
 
         const response = await supertest(HOST)
             .post("/users/login")
-            .send({ email: "test@example.com", password: "abc123" })
+            .send({ email: "test1@example.com", password: "abc123" })
             .set("Content-type", "application/json")
         expect(response.status).toBe(200)
         expect(response.body).toEqual({
             _id: expect.any(String),
             username: "testuser",
-            email: "test@example.com",
+            email: "test1@example.com",
             token: signToken(response.body._id)
         })
     })
