@@ -1,28 +1,32 @@
-name: Continuous Deployment
-
-on:
+name: ClientTest
+on: 
   push:
     branches:
       - main
       - kahui
       - raymondlui
+      - jason_dep 
 
 jobs:
-  build:
+  Firefox:
     runs-on: ubuntu-latest
+    container:
+      image: cypress/browsers:node16.14.2-slim-chrome103-ff102
+      options: --user 1001
     steps:
-      - uses: actions/checkout@master
-      - name: Deploy to Staging on Heroku
-        uses: akhileshns/heroku-deploy@v3.12.12
+      - name: Waiting Heroku Deployment
+        uses: juliangruber/sleep-action@v2.0.0
         with:
-          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: 'geowizard-app'
-          heroku_email: ${{secrets.HEROKU_EMAIL}}
-      - name: Docker Login to E2E Testing App
-        run:
-          docker login --username=_ --password=${{secrets.HEROKU_API_KEY}}
-          registry.heroku.com
-      - name: Run E2E testing on Staging
-        run: docker run registry.heroku.com/test-cypress-geowizard/web
-    # - name: Deploy to production
-    # etc
+          time: 45s
+
+      - uses: actions/checkout@v3
+      - name: Run against 
+        uses: cypress-io/github-action@v4
+        with:
+          working-directory: client
+          browser: firefox
+        env: 
+          NPM_CONFIG_PRODUCTION: false
+#           # CYPRESS_TEST_USER_EMAIL: "cypress@example.com"
+#           # CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
+#           # CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
