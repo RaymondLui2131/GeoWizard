@@ -1,12 +1,14 @@
+const HOST = "https://geowizard-app-b802ae01ce7f.herokuapp.com/"
+// const HOST = "http://localhost:3000"
 describe('template spec', () => {
   it('passes', () => {
-    cy.visit('http://localhost:3000') // change this later
+    cy.visit(HOST) // change this later
   })
 })
 
 describe('testing RegisterScreen', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:3000/register')
+    cy.visit(HOST + 'register')
   })
 
   it('should display the registration form', () => {
@@ -25,7 +27,7 @@ describe('testing RegisterScreen', () => {
 
 describe('testing LoginScreen', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:3000/')
+    cy.visit(HOST)
   })
 
   it('should display the login form', () => {

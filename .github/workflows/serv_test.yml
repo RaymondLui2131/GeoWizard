@@ -1,0 +1,30 @@
+name: ServerTest
+
+on:
+  push:
+    branches:
+      - main
+      - kahui
+      - raymondlui
+      - jason_dep
+
+jobs:
+  Server:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Waiting Heroku Deployment
+        uses: juliangruber/sleep-action@v2.0.0
+        with:
+          time: 60s
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install dependencies (server)
+        working-directory: server
+        run: npm install
+
+      - name: Run tests (server)
+        working-directory: server
+        run: npm test
