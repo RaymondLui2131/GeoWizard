@@ -18,11 +18,13 @@ jobs:
         with:
           time: 45s
 
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Run Test
-        with:
-          working-directory: server
+      - name: Install dependencies (server)
+        working-directory: server
         run: npm install
+
+      - name: Run tests (server)
+        working-directory: server
         run: npm test
