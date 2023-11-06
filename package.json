@@ -324,6 +324,8 @@
     "npm-run-all": "^4.1.5",
     "postcss": "^8.4.31",
     "postcss-cli": "^10.1.0",
+    "prettier": "^3.0.3",
+    "prettier-plugin-tailwindcss": "^0.5.6",
     "tailwindcss": "^3.3.5"
   },
   "scripts": {

@@ -5,8 +5,9 @@ import Banner from './Banner.js'
 const HomeScreen = () => {
     //print(authgetUser);
     return(
-        <div>
-            <Banner/>   
+        <div className="min-h-screen max-h-screen bg-primary-GeoPurple">
+            <Banner/> 
+            
         </div>
     );
 }
