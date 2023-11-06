@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1699128260879" clover="3.2.0">
-  <project timestamp="1699128260879" name="All files">
+<coverage generated="1699230493990" clover="3.2.0">
+  <project timestamp="1699230493990" name="All files">
     <metrics statements="243" coveredstatements="241" conditionals="19" coveredconditionals="18" methods="2" coveredmethods="2" elements="264" coveredelements="261" complexity="0" loc="243" ncloc="243" packages="5" files="5" classes="5"/>
     <package name="server">
       <metrics statements="43" coveredstatements="43" conditionals="4" coveredconditionals="4" methods="1" coveredmethods="1"/>
-      <file name="jwt_middleware.js" path="C:\Users\kahui\GeoWizard\server\jwt_middleware.js">
+      <file name="jwt_middleware.js" path="C:\Users\raylu\CSE 416\GeoWizard\server\jwt_middleware.js">
         <metrics statements="43" coveredstatements="43" conditionals="4" coveredconditionals="4" methods="1" coveredmethods="1"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -53,7 +53,7 @@
     </package>
     <package name="server.controllers">
       <metrics statements="104" coveredstatements="104" conditionals="11" coveredconditionals="11" methods="0" coveredmethods="0"/>
-      <file name="user_controllers.js" path="C:\Users\kahui\GeoWizard\server\controllers\user_controllers.js">
+      <file name="user_controllers.js" path="C:\Users\raylu\CSE 416\GeoWizard\server\controllers\user_controllers.js">
         <metrics statements="104" coveredstatements="104" conditionals="11" coveredconditionals="11" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -163,7 +163,7 @@
     </package>
     <package name="server.models">
       <metrics statements="46" coveredstatements="46" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-      <file name="user_model.js" path="C:\Users\kahui\GeoWizard\server\models\user_model.js">
+      <file name="user_model.js" path="C:\Users\raylu\CSE 416\GeoWizard\server\models\user_model.js">
         <metrics statements="46" coveredstatements="46" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -215,7 +215,7 @@
     </package>
     <package name="server.routes">
       <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-      <file name="user_routes.js" path="C:\Users\kahui\GeoWizard\server\routes\user_routes.js">
+      <file name="user_routes.js" path="C:\Users\raylu\CSE 416\GeoWizard\server\routes\user_routes.js">
         <metrics statements="12" coveredstatements="12" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -233,7 +233,7 @@
     </package>
     <package name="server.utils">
       <metrics statements="38" coveredstatements="36" conditionals="4" coveredconditionals="3" methods="1" coveredmethods="1"/>
-      <file name="create_server.js" path="C:\Users\kahui\GeoWizard\server\utils\create_server.js">
+      <file name="create_server.js" path="C:\Users\raylu\CSE 416\GeoWizard\server\utils\create_server.js">
         <metrics statements="38" coveredstatements="36" conditionals="4" coveredconditionals="3" methods="1" coveredmethods="1"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>

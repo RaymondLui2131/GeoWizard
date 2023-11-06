@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - kahui
+      - raymondlui
 
 jobs:
   test:
