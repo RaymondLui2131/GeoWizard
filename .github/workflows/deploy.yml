@@ -1,6 +1,16 @@
-name: Cypress Tests
-on: [deployment_status]
 
+
+name: Cypress Tests
+on: 
+  push:
+    branches:
+      - main
+      - kahui
+      - raymondlui
+      - jason_dep 
+    deployment_status:
+      types:
+        - success
 jobs:
   Firefox:
     if: github.event.deployment_status.state == 'success'
