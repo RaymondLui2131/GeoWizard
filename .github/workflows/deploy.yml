@@ -13,13 +13,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
-      - name: Deploy to Staging on Heroku
-        uses: akhileshns/heroku-deploy@v3.12.14
+      - name: Deploying Test Case Container
+        uses: gonuit/heroku-docker-deploy@v1.3.3
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: 'test-cypress-geowizard'
           heroku_email: ${{secrets.HEROKU_EMAIL}}
-          justlogin: true
+          
       - name: Docker Login to E2E Testing App
         run:
           docker login --username=_ --password=${{secrets.HEROKU_API_KEY}}
