@@ -41,7 +41,7 @@ describe("testing POST users/register", () => {
         console.log("Creating user")
         console.log(response.status)
         console.log(response.body)
-        expect(response.status).toBe(200)
+        expect(response.status).toBe(201)
         expect(response.body).toEqual({
             _id: expect.any(String),
             username: "testuser",
