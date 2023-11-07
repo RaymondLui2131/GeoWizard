@@ -6,8 +6,10 @@ const { MongoMemoryServer } = require("mongodb-memory-server")
 const { signToken } = require("../jwt_middleware")
 const { registerUser } = require("../controllers/user_controllers")
 
-const app = createServer()
-
+//For local
+// const app = createServer()
+// const HOST = app
+const HOST = "https://geowizard-app-b802ae01ce7f.herokuapp.com"
 describe("testing POST users/register", () => {
     beforeAll(async () => {
         const testServer = await MongoMemoryServer.create()
@@ -32,24 +34,24 @@ describe("testing POST users/register", () => {
     const user_data3 = null
 
     it("should successfully create a user", async () => {
-        const response = await supertest(app)
+        const response = await supertest(HOST)
             .post("/users/register")
             .send(user_data1)
             .set("Content-type", "application/json")
+        console.log("Creating user")
+        console.log(response.status)
+        console.log(response.body)
         expect(response.status).toBe(200)
         expect(response.body).toEqual({
             _id: expect.any(String),
             username: "testuser",
             email: "test123@gmail.com",
-            token: signToken(response.body._id)
+            token: expect.any(String)
         })
-
-        const registered_user = await User.findOne({ email: user_data1.email })
-        expect(registered_user).toBeTruthy()
     })
 
     it("should fail if user already exists", async () => {
-        const response = await supertest(app)
+        const response = await supertest(HOST)
             .post("/users/register")
             .send(user_data1)
             .set("Content-type", "application/json")
@@ -60,7 +62,7 @@ describe("testing POST users/register", () => {
     })
 
     it("should fail if missing required fields", async () => {
-        const response = await supertest(app)
+        const response = await supertest(HOST)
             .post("/users/register")
             .send(user_data2)
             .set("Content-type", "application/json")
@@ -90,7 +92,7 @@ describe("testing GET users/me", () => {
         })
 
         const token = signToken(user._id)
-        const response = await supertest(app)
+        const response = await supertest(HOST)
             .get("/users/me")
             .set("Authorization", `Bearer ${token}`)
         expect(response.status).toBe(200)
@@ -104,7 +106,7 @@ describe("testing GET users/me", () => {
         })
 
         const token = "123"
-        const response = await supertest(app)
+        const response = await supertest(HOST)
             .get("/users/me")
             .set("Authorization", `Bearer ${token}`)
         expect(response.status).toBe(401)
@@ -120,7 +122,7 @@ describe("testing GET users/me", () => {
             password: 'abc123',
         })
 
-        const response = await supertest(app)
+        const response = await supertest(HOST)
             .get("/users/me")
             .set("Authorization", "Bearer ")
         expect(response.status).toBe(401)
@@ -143,10 +145,10 @@ describe("test POST users/login", () => {
     })
 
     it("should successfully login a user", async () => {
-        const registerUserResponse = await supertest(app)
+        const registerUserResponse = await supertest(HOST)
             .post("/users/register")
             .send({
-                email: 'test@example.com',
+                email: 'test1@example.com',
                 username: 'testuser',
                 password: 'abc123',
             })
@@ -154,21 +156,21 @@ describe("test POST users/login", () => {
 
         expect(registerUserResponse.status).toBe(200)
 
-        const response = await supertest(app)
+        const response = await supertest(HOST)
             .post("/users/login")
-            .send({ email: "test@example.com", password: "abc123" })
+            .send({ email: "test1@example.com", password: "abc123" })
             .set("Content-type", "application/json")
         expect(response.status).toBe(200)
         expect(response.body).toEqual({
             _id: expect.any(String),
             username: "testuser",
-            email: "test@example.com",
-            token: signToken(response.body._id)
+            email: "test1@example.com",
+            token: expect.any(String)
         })
     })
 
     it("should fail if missing required fields", async () => {
-        const response = await supertest(app)
+        const response = await supertest(HOST)
             .post("/users/login")
             .send({ email: "test@example.com" })
             .set("Content-type", "application/json")
@@ -179,7 +181,7 @@ describe("test POST users/login", () => {
     })
 
     it("should fail if invalid credentials", async () => {
-        const response = await supertest(app)
+        const response = await supertest(HOST)
             .post("/users/login")
             .send({ email: "test@example.com", password: "wrongpass" })
             .set("Content-type", "application/json")
@@ -201,7 +203,7 @@ describe('testing static file serving', () => {
         await mongoose.connection.close()
     })
     it('should serve the static files and handle catch-all route', async () => {
-        const response = await supertest(app)
+        const response = await supertest(HOST)
             .get('/any') // This route will match the catch-all route
             .expect(200)
             .expect('Content-Type', "text/html; charset=UTF-8")

@@ -3,6 +3,10 @@
  * in the 'authorization' header of the request
  * @author Kahui Wong
  */
+
+require('dotenv').config()
+const jwtSecret = process.env.JWT_SECRET
+
 const jwt = require("jsonwebtoken")
 const asyncHandler = require("express-async-handler")
 const User = require("./models/user_model")
@@ -16,7 +20,7 @@ const verifyToken = asyncHandler(async (req, res, next) => {
             // extract the token from the header
             token = req.headers.authorization.split(" ")[1]
             // verify the token
-            const decoded = jwt.verify(token, process.env.JWT_SECRET)
+            const decoded = jwt.verify(token, jwtSecret)
             // find the user with the token
             req.user = await User.findById(decoded.id).select("-password")
             next()
@@ -34,7 +38,7 @@ const verifyToken = asyncHandler(async (req, res, next) => {
  * @returns a newly signed JWT string with a default expiration day of 30
  */
 const signToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, {
+    return jwt.sign({ id }, jwtSecret, {
         expiresIn: "30d"
     })
 }
