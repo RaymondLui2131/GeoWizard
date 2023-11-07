@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useNavigate} from 'react-router-dom'
 import { authRegisterUser } from "../auth/auth_request_api"
 const RegisterScreen = () => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,9 @@ const RegisterScreen = () => {
 
   const [message, setMessage] = useState("")
   const [res, setRes] = useState(null)
+
+  let navigate = useNavigate(); //used to redirect to another page
+
   const handleInputChange = (e) => {
 
     const { name, value } = e.target
@@ -28,6 +32,7 @@ const RegisterScreen = () => {
     const response = await authRegisterUser(formData.email, formData.username, formData.password1)
     if (response) {
       setRes(response.data)
+      navigate("/login")
     } else {
       setMessage("Registration failed")
     }

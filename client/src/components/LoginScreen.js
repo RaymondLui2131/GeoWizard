@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useState} from 'react'
+import { Link, useNavigate} from 'react-router-dom'
 import { authloginUser, authgetUser } from "../auth/auth_request_api"
+import {useUserLogIn} from "./UserContext" //updating user via Context
+
 const LoginScreen = () => {
   const [formData, setFormData] = useState({
     email: "",
@@ -9,6 +11,15 @@ const LoginScreen = () => {
   const [token, setToken] = useState("")
   const [res, setRes] = useState(null)
 
+  const logInUser = useUserLogIn()
+  let navigate = useNavigate(); //used to redirect to another page
+
+  //console.log(logInUser)
+  
+  const handleGuestLogIn = () => {
+      navigate("/")
+  }
+
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
@@ -16,10 +27,15 @@ const LoginScreen = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    console.log(res)
     setRes(null)
     const response = await authloginUser(formData.email, formData.password)
     if (response) {
       setRes(response.data)
+      
+      //logs in user in UserContext
+      logInUser(response.data)
+      navigate("/")
     }
   }
 
@@ -34,17 +50,21 @@ const LoginScreen = () => {
     const response = await authgetUser(token)
     if (response) {
       setRes(response.data)
+      navigate("/login")
     }
   }
 
+  
+
   return (
     <div>
+      <button  onClick={handleGuestLogIn} >Continue As Guest</button>
       <form onSubmit={handleSubmit}>
         <input type="text" name="email" placeholder='Email' value={formData.email} onChange={handleInputChange} />
         <input type="text" name="password" placeholder='Password' value={formData.password} onChange={handleInputChange} />
         <button type='submit' data-test-id="login-button">Confirm</button>
       </form>
-      <form onSubmit={handleUser}>
+      <form onSubmit={handleUser}> 
         <input type="text" name="token" placeholder='Enter Token' value={token} onChange={handleTokenChange} />
         <button type='submit' data-test-id="user-button">Confirm</button>
       </form>
@@ -54,6 +74,8 @@ const LoginScreen = () => {
           {JSON.stringify(res, null, 2)}
         </pre>
       )}
+      
+      
     </div>
   )
 }

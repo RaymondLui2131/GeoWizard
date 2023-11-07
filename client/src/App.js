@@ -1,18 +1,22 @@
-import React from 'react'
 import './App.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import LoginScreen from './components/LoginScreen'
 import RegisterScreen from './components/RegisterScreen'
 import HomeScreen from './components/HomeScreen'
+import { UserProvider } from './components/UserContext'
+
 function App() {
+  // const[user, setUser] = useState('guest') //default state is 'guest', which means the user is viewing as a guess
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/test" element={<LoginScreen />} />
-        <Route path="/register" element={<RegisterScreen />} />
-        <Route path="/" element={<HomeScreen />} />
-      </Routes>
-    </BrowserRouter>
+    <UserProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<LoginScreen />} />
+          <Route path="/register" element={<RegisterScreen />} />
+          <Route path="/" element={<HomeScreen />} />
+        </Routes>
+      </BrowserRouter>
+    </UserProvider>
   )
 }
 
