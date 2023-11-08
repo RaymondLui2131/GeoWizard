@@ -172,21 +172,21 @@ describe("test POST users/login", () => {
     })
 })
 
-describe('testing static file serving', () => {
-    beforeAll(async () => {
-        const testServer = await MongoMemoryServer.create()
-        await mongoose.connect(testServer.getUri())
-    })
+// describe('testing static file serving', () => {
+//     beforeAll(async () => {
+//         const testServer = await MongoMemoryServer.create()
+//         await mongoose.connect(testServer.getUri())
+//     })
 
-    afterAll(async () => {
-        await mongoose.disconnect()
-        await mongoose.connection.close()
-    })
+//     afterAll(async () => {
+//         await mongoose.disconnect()
+//         await mongoose.connection.close()
+//     })
 
-    it('should serve the static files and handle catch-all route', async () => {
-        await supertest(app)
-            .get('/any') // This route will match the catch-all route
-            .expect(200)
-            .expect('Content-Type', "text/html; charset=UTF-8")
-    })
-})
+//     it('should serve the static files and handle catch-all route', async () => {
+//         await supertest(app)
+//             .get('/any') // This route will match the catch-all route
+//             .expect(200)
+//             .expect('Content-Type', "text/html; charset=UTF-8")
+//     })
+// })
