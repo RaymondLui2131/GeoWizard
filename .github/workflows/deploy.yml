@@ -10,14 +10,14 @@ on:
 jobs:
   Firefox:
     runs-on: ubuntu-latest
-    container:
-      image: cypress/browsers:node16.14.2-slim-chrome103-ff102
-      options: --user 1001
+    # container:
+    #   image: cypress/browsers:node16.14.2-slim-chrome103-ff102
+    #   options: --user 1001
     steps:
-      - name: Waiting Heroku Deployment
-        uses: juliangruber/sleep-action@v2.0.0
-        with:
-          time: 45s
+      # - name: Waiting Heroku Deployment
+      #   uses: juliangruber/sleep-action@v2.0.0
+      #   with:
+      #     time: 45s
 
       - uses: actions/checkout@v3
       - name: Run against 
