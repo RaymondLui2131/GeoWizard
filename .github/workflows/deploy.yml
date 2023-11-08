@@ -27,13 +27,11 @@ jobs:
         working-directory: server
         run: nohup npm start &
 
-      - name: Wait for server to be responsive
-        run: npx wait-on http://localhost:3000
-
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
           working-directory: client
+          # Since the server is already started, we don't need to start it again
           start: ''
           wait-on: 'http://localhost:3000'
           wait-on-timeout: 60
