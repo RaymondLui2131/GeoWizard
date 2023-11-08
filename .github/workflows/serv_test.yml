@@ -13,15 +13,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # - name: Waiting Heroku Deployment
-      #   uses: juliangruber/sleep-action@v2.0.0
-      #   with:
-      #     time: 60s
-
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set NODE_ENV to test
+      - name: Set ENV vars to test
         run: | 
           echo "NODE_ENV=test" >> $GITHUB_ENV
           echo "URI=${{ secrets.URI }}" >> $GITHUB_ENV 
