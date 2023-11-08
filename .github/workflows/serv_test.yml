@@ -24,7 +24,7 @@ jobs:
       - name: Set NODE_ENV to test
         run: | 
           echo "NODE_ENV=test" >> $GITHUB_ENV
-          echo "URI=${{ secrets.URI }}" >> $GITHUB_ENV
+          echo "URI=${{ secrets.URI }}" >> $GITHUB_ENV 
 
       - name: Install dependencies (server)
         working-directory: server 
