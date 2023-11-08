@@ -42,7 +42,7 @@ const RegisterScreen = () => {
         <input type="text" name="username" placeholder='Username' value={formData.username} onChange={handleInputChange} />
         <input type="text" name="password1" placeholder='Password' value={formData.password1} onChange={handleInputChange} />
         <input type="text" name="password2" placeholder='Confirm Password' value={formData.password2} onChange={handleInputChange} />
-        <button type='submit'>Confirm</button>
+        <button type='submit'>Login</button>
       </form>
       {message && <p>{message}</p>}
       {res && (

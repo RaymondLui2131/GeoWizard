@@ -13,16 +13,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Waiting Heroku Deployment
-        uses: juliangruber/sleep-action@v2.0.0
-        with:
-          time: 60s
+      # - name: Waiting Heroku Deployment
+      #   uses: juliangruber/sleep-action@v2.0.0
+      #   with:
+      #     time: 60s
 
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
+      - name: Set NODE_ENV to test
+        run: | 
+          echo "NODE_ENV=test" >> $GITHUB_ENV
+          echo "URI=${{ secrets.URI }}" >> $GITHUB_ENV 
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> $GITHUB_ENV
+      
       - name: Install dependencies (server)
-        working-directory: server
+        working-directory: server 
         run: npm install
 
       - name: Run tests (server)
