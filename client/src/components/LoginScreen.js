@@ -46,7 +46,7 @@ const LoginScreen = () => {
       </form>
       <form onSubmit={handleUser}>
         <input type="text" name="token" placeholder='Enter Token' value={token} onChange={handleTokenChange} />
-        <button type='submit' data-test-id="user-button">Confirm</button>
+        <button type='submit' data-test-id="user-button">Login</button>
       </form>
       <Link to="/register">Register</Link>
       {res && (
