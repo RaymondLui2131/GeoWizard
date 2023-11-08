@@ -18,8 +18,6 @@ jobs:
       - name: Install dependencies
         run: cd client && npm install
       
-      - name: Start server
-        run: cd server && node server.js
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
