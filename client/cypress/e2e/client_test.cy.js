@@ -42,7 +42,7 @@ describe('testing LoginScreen', () => {
   it('should display message for invalid login', () => {
     cy.get('input[name="email"]').type('dontexist@example.com');
     cy.get('input[name="password"]').type('password123');
-    cy.get('[data-test-id="login-button"]').click()
+    cy.get('[data-test-id="login-button"]').click() 
 
     // cy.get('pre').should('contain', JSON.stringify({ "message": "Invalid credentials" }, null, 2))
   })
