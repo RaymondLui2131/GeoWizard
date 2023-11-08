@@ -27,7 +27,7 @@ jobs:
           echo "URI=${{ secrets.URI }}" >> $GITHUB_ENV
 
       - name: Install dependencies (server)
-        working-directory: server
+        working-directory: server 
         run: npm install
 
       - name: Run tests (server)
