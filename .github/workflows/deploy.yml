@@ -15,30 +15,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4 
 
-      - name: Set ENV vars to test
-        run: | 
-          echo "NODE_ENV=test" >> $GITHUB_ENV
-          echo "URI=${{ secrets.URI }}" >> $GITHUB_ENV 
-          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> $GITHUB_ENV
-
-      - name: Install server dependencies
-        working-directory: server
-        run: npm install
-
-      - name: Install client dependencies
-        working-directory: client
-        run: npm install
-
-      - name: Start server and wait for it to be ready
-        working-directory: server
-        run: |
-          npm start &
-          while ! nc -z localhost 3000; do sleep 1; done
-
+      - name: Install dependencies
+        run: cd client && npm install
+    
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
           working-directory: client
           start: npm start
-          wait-on: 'http://localhost:3000'
+          wait-on: 'http://localhost:3000' 
           wait-on-timeout: 60 
