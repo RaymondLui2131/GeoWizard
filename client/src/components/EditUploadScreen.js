@@ -5,10 +5,10 @@ import {useState} from "react";
 import { useRef } from "react";
 import { useNavigate } from 'react-router-dom'
 
-import france from "../assets/france.png"
-import ireland from "../assets/ireland.png"
-import finland from "../assets/finland.png"
-import poland from "../assets/poland.png"
+import france from "../assets/EditMapAssets/france.png"
+import ireland from "../assets/EditMapAssets/ireland.png"
+import finland from "../assets/EditMapAssets/finland.png"
+import poland from "../assets/EditMapAssets/poland.png"
 
 const DisplayMap = (props) => {
     const navigate = useNavigate();
