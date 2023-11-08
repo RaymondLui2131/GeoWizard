@@ -25,12 +25,8 @@ jobs:
         run: | 
           echo "NODE_ENV=test" >> $GITHUB_ENV
           echo "URI=${{ secrets.URI }}" >> $GITHUB_ENV 
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> $GITHUB_ENV
       
-      - name: Echo environment variable keys for debugging
-        run: |
-          echo "NODE_ENV set to $NODE_ENV"
-          echo "URI is set"
-
       - name: Install dependencies (server)
         working-directory: server 
         run: npm install
