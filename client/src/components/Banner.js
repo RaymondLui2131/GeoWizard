@@ -19,7 +19,7 @@ const Banner = () => {
     const user = useGetUser()
     const logOutUser = useUserLogOut()
     const navigate = useNavigate()
-    console.log(user)
+    //console.log(user)
 
     function handleLogin(){
         logOutUser()
