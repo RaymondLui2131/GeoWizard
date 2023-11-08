@@ -15,6 +15,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4 
 
+      - name: Set NODE_ENV to test
+        run: | 
+          echo "NODE_ENV=test" >> $GITHUB_ENV
+          echo "URI=${{ secrets.URI }}" >> $GITHUB_ENV 
+          echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> $GITHUB_ENV
+
       - name: Install server dependencies
         working-directory: server
         run: npm install
