@@ -15,15 +15,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4 
 
-      - name: Install dependencies
-        run: cd client && npm install
-    
+      - name: Install server dependencies
+        working-directory: server
+        run: npm install
+
+      - name: Install client dependencies
+        working-directory: client
+        run: npm install
+
+      - name: Start server in the background
+        working-directory: server
+        run: nohup npm start &
+
+      - name: Wait for server to be responsive
+        run: npx wait-on http://localhost:3000
+
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
           working-directory: client
-          start: npm start
-          wait-on: 'http://localhost:3000' 
-          wait-on-timeout: 60 
-
-
+          start: ''
+          wait-on: 'http://localhost:3000'
+          wait-on-timeout: 60
