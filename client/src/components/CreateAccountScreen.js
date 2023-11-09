@@ -26,7 +26,7 @@ const LoginScreen = () => {
                     <span className="text-purple-800 font-bold self-center text-5xl font-PyeongChangPeace-Light whitespace-nowrap">GeoWizard</span>
                 </div>
 
-                <div className="font-bold pt-4 pr-72 flex flex-col justify-center items-center">
+                <div className="pl-3 font-bold pt-4 pr-72 flex flex-col justify-center items-center">
                     UserName
                 </div>
                 
