@@ -1,4 +1,28 @@
-:root {
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@font-face {
+  font-family: "PyeongChangPeace-Bold";
+  src: url("../assets/PyeongChangPeace-Bold.ttf");
+}
+
+@font-face {
+  font-family: "PyeongChangPeace-Light";
+  src: url("../assets/PyeongChangPeace-Light.ttf");
+}
+
+@font-face {
+  font-family: "NanumSquareNeoOTF-Bd";
+  src: url("../assets/NanumSquareNeoOTF-Bd.otf");
+}
+
+@font-face {
+  font-family: "NanumSquareNeoOTF-Lt";
+  src: url("../assets/NanumSquareNeoOTF-Lt.otf");
+}
+
+/* :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -66,4 +90,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
+} */
