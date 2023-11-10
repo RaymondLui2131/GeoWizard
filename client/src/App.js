@@ -16,9 +16,7 @@ function App() {
         <Route path="/editUpload" element={<EditUpload />} />
         <Route path="/editingMap" element={<EditingMap />} />
         <Route path="/" element={<HomeScreen />} />
-        
-        <Route path="/colors" element={<Color />} />
-
+      
       </Routes>
     </BrowserRouter>
   )
