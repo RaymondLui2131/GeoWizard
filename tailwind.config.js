@@ -17,7 +17,8 @@ module.exports = {
         'NanumSquareNeoOTF-Bd': ['NanumSquareNeoOTF-Bd', 'sans'],
         'NanumSquareNeoOTF-Lt': ['NanumSquareNeoOTF-Lt', 'sans'],
       }
-    },
+    }
+    ,
   },
   plugins: ['prettier-plugin-tailwindcss'],
 }
