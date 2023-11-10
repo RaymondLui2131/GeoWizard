@@ -25,7 +25,7 @@ const LoginScreen = () => {
     };
 
     return (
-        <div className="min-h-screen max-h-screen bg-primary-GeoPurple">
+        <div data-test-id="login-div" className="min-h-screen max-h-screen bg-primary-GeoPurple">
             <Banner/>
             <div className="flex flex-col justify-center items-center">
                 <div className="pt-12 flex items-center">
