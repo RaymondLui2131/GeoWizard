@@ -45,7 +45,7 @@ const Banner = () => {
                     <a href="#" className="text-l block py-2 pr-4 pl-3 text-gray-600 hover:text-primary-GeoPurple">Create/Edit Map</a>
                 </li>
                 <li>
-                    <a href="#" className="text-l block py-2 pr-4 pl-3 text-gray-600 hover:text-primary-GeoPurple">Profile</a>
+                    <a href="/profile" className="text-l block py-2 pr-4 pl-3 text-gray-600 hover:text-primary-GeoPurple">Profile</a>
                 </li>
                 <li>
                     <a href="#" className="text-l block py-2 pr-4 pl-3 text-gray-600 hover:text-primary-GeoPurple">About</a>
