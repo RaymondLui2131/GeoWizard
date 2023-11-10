@@ -7,7 +7,6 @@ import HomeScreen from './components/HomeScreen'
 import EditUpload from './components/EditUploadScreen'
 import EditingMap from './components/EditingMapScreen'
 
-import Color from './components/test'
 function App() {
   return (
     <BrowserRouter>
