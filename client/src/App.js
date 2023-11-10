@@ -6,6 +6,8 @@ import RegisterScreen from './components/RegisterScreen'
 import HomeScreen from './components/HomeScreen'
 import EditUpload from './components/EditUploadScreen'
 import EditingMap from './components/EditingMapScreen'
+
+import Color from './components/test'
 function App() {
   return (
     <BrowserRouter>
@@ -16,6 +18,8 @@ function App() {
         <Route path="/editingMap" element={<EditingMap />} />
         <Route path="/" element={<HomeScreen />} />
         
+        <Route path="/colors" element={<Color />} />
+
       </Routes>
     </BrowserRouter>
   )
