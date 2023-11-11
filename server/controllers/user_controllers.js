@@ -10,6 +10,7 @@ const bcrypt = require("bcryptjs")
 const asyncHandler = require('express-async-handler')
 const User = require("../models/user_model")
 const { signToken } = require("../jwt_middleware")
+
 /**
  * 
  * @desc authenticate and login new user
