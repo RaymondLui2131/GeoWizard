@@ -58,7 +58,7 @@ const Banner = () => {
 
                 </div>
 
-                <div className="flex flex-wrap justify-between items-center mt-4 px-20" >
+                <div className="flex flex-wrap justify-between items-center mt-2 px-20" >
                     <ul className="flex flex-col mt-4 font-PyeongChangPeace-Bold lg:flex-row lg:space-x-8 lg:mt-0">
                     {[
                         ['Home', "/"],
@@ -104,26 +104,3 @@ const Banner = () => {
 }
 
 export default Banner
-
-
-{/* <header>
-<div>
-    <img src= 'geowizlogo.png' alt="GeoWizard Logo"/>
-    <h1 className="text-3xl font-PyeongChangPeace-Light text-primary-GeoPurple" >
-    GeoWizard
-    </h1>
-</div>
-</header> */}
-
-{/* <li>
-<a href="register" className="text-l block py-2 pr-4 pl-3 text-gray-600 hover:text-primary-GeoPurple">Home</a>
-</li>
-<li>
-<a href="#" className="text-l block py-2 pr-4 pl-3 text-gray-600 hover:text-primary-GeoPurple">Create/Edit Map</a>
-</li>
-<li>
-<a href="#" className="text-l block py-2 pr-4 pl-3 text-gray-600 hover:text-primary-GeoPurple">Profile</a>
-</li>
-<li>
-<a href="#" className="text-l block py-2 pr-4 pl-3 text-gray-600 hover:text-primary-GeoPurple">About</a>
-</li> */}

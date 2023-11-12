@@ -65,3 +65,25 @@ describe('testing LoginScreen', () => {
     }, null, 2))
   })
 })
+
+
+describe('testing HomeScreen', () => {
+  beforeEach(() => {
+    cy.visit(HOST)
+  })
+
+  it('should display GeoWizard in Banner', () => {
+    cy.get('span').should('contain', 'GeoWizard')
+  })
+
+  it('Should show dropdown when clicking time button', () => {
+    cy.contains('Time').click()
+    cy.get('a').should('contain', "Today")
+  })
+
+  it('should display in search bar', () => {
+    cy.get('input').type('America').should('have.value', 'America')
+  })
+
+
+})

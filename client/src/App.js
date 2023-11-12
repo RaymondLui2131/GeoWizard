@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import LoginScreen from './components/LoginScreen'
 import RegisterScreen from './components/RegisterScreen'
 import HomeScreen from './components/HomeScreen'
+import AboutScreen from './components/AboutScreen'
 import { UserProvider } from './components/UserContext'
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
           <Route path="/login" element={<LoginScreen />} />
           <Route path="/register" element={<RegisterScreen />} />
           <Route path="/" element={<HomeScreen />} />
+          <Route path="/about" element={<AboutScreen />} />
         </Routes>
       </BrowserRouter>
     </UserProvider>
