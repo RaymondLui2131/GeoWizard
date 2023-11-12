@@ -28,7 +28,7 @@ const HomeScreen = () => {
     //     setPageNumber(1)
     // }
 
-    for(let i = 0; i < 3; i++){
+    for(let i = 0; i < 7; i++){
        testMaps.push(gz_2010_us_outline_500k)
     }
 
@@ -117,12 +117,12 @@ const HomeScreen = () => {
 
             </div>
 
-            <div className="flex flex-row justify-between mx-28 z-0">
-                <div className="flex flex-row justify-between items-center mx-auto py-5 z-0 ">
+
+                <div className="flex flex-wrap mx-24 py-5 z-0 ">
                     {testMaps.map((map, index) => (
                         <HomeScreenMapCard key={index} file={map} />
                     ))}
-                </div> 
+
 
                 {/* {maps.map(map =>{
                     return <div key={map}>{map} </div>

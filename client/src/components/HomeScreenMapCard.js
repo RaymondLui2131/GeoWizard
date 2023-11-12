@@ -35,7 +35,7 @@ const HomeScreenMapCard = ({file}) => {
     return(
             <div className=" max-w-xl rounded border-2 border-primary-GeoBlue overflow-hidden shadow-lg bg-white m-4">
                 {/* <img className="w-full" src="/path-to-your-image" alt="Map" /> */}
-                <div ref={mapRef} className="z-0 w-full h-80"></div>
+                <div ref={mapRef} className="z-0 w-full h-96"></div>
                 <div className="px-6 py-4">
                     <div className="font-NanumSquareNeoOTF-Bd text-3xl mb-2">US Outline</div>
                     <p className="font-NanumSquareNeoOTF-Lt min-h-[10rem] text-gray-700 text-base">

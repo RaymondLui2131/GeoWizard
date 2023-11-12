@@ -10,7 +10,7 @@ export default function useMapSearch(query, pageNumber) {
 
 
     useEffect(() => {
-        setBooks([])
+        setMaps([])
     }, [query]),
 
 

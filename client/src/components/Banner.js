@@ -6,27 +6,31 @@
 
 import logo from "../assets/geowizlogo.png";
 import { useState } from 'react'
-import { useGetUser, useUserLogOut} from "./UserContext" //updating user via Context jadenw2542@gmail.com
+//import {useUserLogOut} from "./UserContext" //updating user via Context jadenw2542@gmail.com
 import { useNavigate } from "react-router-dom";
 
+
 const Banner = () => {
+
+
     const [searchTerm, setSearchTerm] = useState(''); // state for searchbar
     const handleSearch = (event) => {
         if (event.key === 'Enter') {
             console.log("User hit enter")
         }
     };
-    const user = useGetUser()
-    const logOutUser = useUserLogOut()
+    const user = "guest" //useGetUser()
+    console.log(user)
+    //const logOutUser = useUserLogOut()
     const navigate = useNavigate()
     //console.log(user)
 
     function handleLogin(){
-        logOutUser()
+        //logOutUser()
         navigate("/login")
     }
     function handleLogOut(){
-        logOutUser()
+        //logOutUser()
         navigate("/")
     }
     function handleSignUp(){
@@ -81,7 +85,7 @@ const Banner = () => {
 
                         {user != "guest" && 
                         (<div className="text-l font-PyeongChangPeace-Bold ml-10 py-2 px-6 text-gray-600"> 
-                        Welcome {user.username}! </div>)
+                        Welcome {user.name}! </div>)
                         }
 
                         {user == "guest" && 

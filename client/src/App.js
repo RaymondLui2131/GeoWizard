@@ -9,6 +9,7 @@ import LoginScreen from './components/LoginScreen'
 import CreateAccountScreen from './components/CreateAccountScreen'
 import ProfileScreen from "./components/ProfileScreen"
 import MapView from './components/MapViewScreen'
+import AboutScreen from './components/AboutScreen'
 
 function App() {
   // const[user, setUser] = useState('guest') //default state is 'guest', which means the user is viewing as a guess
@@ -24,6 +25,7 @@ function App() {
         <Route path="/" element={<HomeScreen />} />
         <Route path="/profile" element={<ProfileScreen />} />
         <Route path="/mapView" element={<MapView />} />
+        <Route path="/about" element={<AboutScreen/>} />
 
       </Routes>
     </BrowserRouter>
