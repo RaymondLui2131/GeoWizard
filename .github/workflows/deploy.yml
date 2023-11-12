@@ -28,6 +28,7 @@ jobs:
         with:
           working-directory: client
           start: npm start
+          install: false
           wait-on: 'http://localhost:3000' 
           wait-on-timeout: 60 
 
