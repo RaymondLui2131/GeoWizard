@@ -23,7 +23,11 @@ module.exports = {
         'PyeongChangPeace-Bold': ['PyeongChangPeace-Bold', 'sans'],
         'NanumSquareNeoOTF-Bd': ['NanumSquareNeoOTF-Bd', 'sans'],
         'NanumSquareNeoOTF-Lt': ['NanumSquareNeoOTF-Lt', 'sans'],
+      },
+      scale: {
+        '-100': '-1',
       }
+      
     }
     ,
   },

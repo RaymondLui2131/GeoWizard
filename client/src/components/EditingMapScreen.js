@@ -57,7 +57,7 @@ const ColorSlider = (props) => {
 
 const BottomRow = () => {
     return(
-        <div className='w-4/5 flex  flex-row justify-between'>
+        <div className='w-4/5 flex  flex-row justify-between mt-4'>
         <div className='flex flex-row'>
             <div className='flex flex-row ' >
                 <div ><img src={undo} className='object-contain' alt='Undo action'/></div>
@@ -94,12 +94,22 @@ const BottomRow = () => {
 
 const MapEditOptions = (props) => {
     const type_of_map =  props.mapType 
+    const selectedColor = '#3b82f6' //used for heatmap
+
     const [selected,setSelected] = useState('') //used to control current item can for any
     const [heatColor, setHlsa] = useState( hexToHlsa('#000000')) //Used for heat map, in hlsa format
-    const selectedColor = '#3b82f6' //used for heatmap
+    const [lowerBound, setLower] = useState('')
+    const [upperBound, setUpper] = useState('')
+    console.log(lowerBound)
+    console.log(upperBound)
+
 
     const [choroColor, setColor] = useState("#aabbcc");  //Used for choro map, hex format
     const choroColorFormat = choroColor.toUpperCase()
+    const [key, setKey] = useState('')
+    const [label, setLabel] = useState('')
+    console.log(key)
+    console.log(label)
 
     const [symbColor, setSymbColor] = useState("#aabbcc");  //Used for symbmap color, hlsa
 
@@ -116,7 +126,7 @@ const MapEditOptions = (props) => {
                 <>
                     <div className='invisible'>gap space</div>
                     <div className='h-full w-3/5 bg-gray-50 rounded-3xl '>
-                        <div className='bg-primary-GeoOrange rounded-t-3xl '>Colors</div>
+                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt'>Colors</div>
                         <div className='grid grid-cols-3 gap-3 h-2/3 pt-12'>
                             <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={()=>{setHlsa(hexToHlsa('#ff0000'));setSelected('red')}} 
                             style={{ borderColor: selected === 'red' ? selectedColor : '#000000', backgroundColor:'#ff0000'}}></div>
@@ -148,7 +158,23 @@ const MapEditOptions = (props) => {
                         {
                             selected != ''
                             ?
+                                <>
                                 <div><ColorSlider {...{hlsaColor:heatColor, changeHlsa:setHlsa}}/></div>
+                                <div className='flex justify-between flex-col'>
+                                    <div className='flex flex-row justify-between text-1xl'>
+                                        <div>Lower Bound</div>
+                                        <div>Upper Bound</div>
+                                    </div>
+                                    <div className='flex flex-row justify-between w-full items-center'>
+                                        <div className='w-1/2 '>
+                                            <input className='w-4/12 border-2 border-black' onChange={(e)=>{setLower(e.target.value)} }/>
+                                        </div>
+                                        <div className='w-1/2'>
+                                            <input className='w-4/12 border-2 border-black' onChange={(e)=>{setUpper(e.target.value)} }/>
+                                        </div>
+                                    </div>
+                                </div>
+                                </>
                             :
                                 null
                         }
@@ -160,7 +186,7 @@ const MapEditOptions = (props) => {
             <>
                 <div className='invisible'>gap space</div>
                     <div className='h-full w-3/5 bg-gray-50 rounded-3xl'>
-                        <div className='bg-primary-GeoOrange rounded-t-3xl'><div>Point Locator Options</div></div>
+                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt'><div>Point Locator Options</div></div>
                         <div className='grid grid-cols-3 gap-3  h-4/5  mx-auto'>
                         <div className='flex justify-center items-center w-20 h-24 mx-auto my-auto origin-center border-4' 
                             style={{ borderColor: selected === 'p1' ? selectedColor : '#F9FAFB'}}>
@@ -206,13 +232,31 @@ const MapEditOptions = (props) => {
             return(
                 <>
                 <div className='invisible'>gap space</div>
-                    <div className='h-full w-3/5 bg-gray-50 rounded-3xl'>
+                    <div className='h-full w-3/5 bg-gray-50 rounded-3xl font-NanumSquareNeoOTF-Lt flex flex-col'>
                         <div className='bg-primary-GeoOrange rounded-t-3xl '><div>Color Selector</div>
                         </div>
-                        <div className='flex flex-col items-center pt-32 w-full mx-auto'>
-                            <HexColorPicker color={choroColor} onChange={setColor} style={{ width: '80%', height:'400px' }} />
+                        <div className='flex flex-col items-center pt-10 w-full mx-auto'>
+                            <HexColorPicker color={choroColor} onChange={setColor} style={{ width: '80%', height:'300px' }} />
                         </div>
                         <div>Hex Color: {choroColorFormat}</div>
+                        <div className='grid grid-cols-2 gap-2 pt-2 text-sm'> {/*TEMP FILLER WILL HAVE TO BUILD DYNAMICALLY LATER*/}
+                            <div>Key</div>
+                            <div>Label</div>
+                            <div>#C20000</div>
+                            <div>Warm</div>
+                            <div>#0004B7</div>
+                            <div>Cold</div>
+                        </div>
+                        
+                        <div className='flex items-end text-sm flex-row'>
+                            <div className='w-1/2 '>
+                                <input className='w-4/12 border-2 border-black' onChange={(e)=>{setKey(e.target.value)} }/>
+                            </div>
+                            <div className='w-1/2'>
+                                <input className='w-4/12 border-2 border-black' onChange={(e)=>{setLabel(e.target.value)} }/>
+                            </div>
+                        </div>
+                        <div className='justify justify-center'><button className='text-sm border-2 border-black w-2/12 bg-primary-GeoBlue'>Add New</button></div>
                     </div>
                 </>
             )
@@ -221,7 +265,7 @@ const MapEditOptions = (props) => {
                 <>
                     <div className='invisible'>gap space</div>
                         <div className='h-full w-3/5 bg-gray-50 rounded-3xl'>
-                            <div className='bg-primary-GeoOrange rounded-t-3xl'><div>Symbol Options</div></div>
+                            <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt'><div>Symbol Options</div></div>
                             <div className='grid grid-cols-2 gap-2  h-4/5  mx-auto'>
                             <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4' 
                                 style={{ borderColor: selected === 'circle' ? selectedColor : '#F9FAFB'}}>
@@ -259,7 +303,7 @@ const MapEditOptions = (props) => {
                 <>
                     <div className='invisible'>gap space</div>
                         <div className='h-full w-3/5 bg-gray-50 rounded-3xl'>
-                            <div className='bg-primary-GeoOrange rounded-t-3xl'><div>Symbol Options</div></div>
+                            <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt'><div>Symbol Options</div></div>
                             <div className='grid grid-cols-2 gap-2  h-4/5  mx-auto'>
                             <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4' 
                                 style={{ borderColor: selected === 'a1' ? selectedColor : '#F9FAFB'}}>
@@ -385,7 +429,7 @@ const EditingMap = () => {
     return(
        <>
         <Banner></Banner>
-        <div className="bg-primary-GeoPurple min-h-screen max-h-screen flex justify-between items-center flex-col ">
+        <div className="bg-primary-GeoPurple min-h-screen max-h-screen flex justify-between items-center flex-col overflow-auto">
         <MapView></MapView>
         <BottomRow></BottomRow>
         </div>
