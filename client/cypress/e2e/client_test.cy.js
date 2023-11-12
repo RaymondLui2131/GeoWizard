@@ -30,7 +30,6 @@ describe('LoginScreen Component', () => {
   it('should exist', () => {
     cy.get('[data-test-id="login-div"]').should("exist")
   })
-<<<<<<< HEAD
 
   it('should display a link to the registration page', () => {
     cy.get('a[href="/register"]').should('exist')
@@ -82,6 +81,4 @@ describe('testing HomeScreen', () => {
 
 
 })
-=======
-})
->>>>>>> 08f3426a4bfd770fa65bc05380d5a9a4f6bd27b5
+
