@@ -7,6 +7,7 @@ on:
       - kahui
       - raymondlui
       - jason_dep 
+      - dev
 
 jobs:
   Cypress:
@@ -15,9 +16,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4 
 
-      - name: Install dependencies
-        run: cd client && npm install
-    
+      - name: Install dependencies and CSS
+        run: cd client && npm install --legacy-peer-deps && npx tailwindcss -i ./src/index.css -o ./src/dist/output.css
+
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
