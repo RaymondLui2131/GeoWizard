@@ -1,14 +1,12 @@
-const HOST = "https://geowizard-app-b802ae01ce7f.herokuapp.com/"
-// const HOST = "http://localhost:3000"
 describe('template spec', () => {
   it('passes', () => {
-    cy.visit(HOST) // change this later
+    cy.visit('http://localhost:3000') // change this later
   })
 })
 
 describe('testing RegisterScreen', () => {
   beforeEach(() => {
-    cy.visit(HOST + 'register')
+    cy.visit('http://localhost:3000/register')
   })
 
   it('should display the registration form', () => {
@@ -24,18 +22,15 @@ describe('testing RegisterScreen', () => {
   })
 })
 
-
-describe('testing LoginScreen', () => {
+describe('LoginScreen Component', () => {
   beforeEach(() => {
-    cy.visit(HOST)
+    cy.visit('http://localhost:3000/login')
   })
 
-  it('should display the login form', () => {
-    cy.get('form').should('exist')
-    cy.get('input[name="email"]').should('exist')
-    cy.get('input[name="password"]').should('exist')
-    cy.get('button[type="submit"]').should('exist')
+  it('should exist', () => {
+    cy.get('[data-test-id="login-div"]').should("exist")
   })
+<<<<<<< HEAD
 
   it('should display a link to the registration page', () => {
     cy.get('a[href="/register"]').should('exist')
@@ -87,3 +82,6 @@ describe('testing HomeScreen', () => {
 
 
 })
+=======
+})
+>>>>>>> 08f3426a4bfd770fa65bc05380d5a9a4f6bd27b5

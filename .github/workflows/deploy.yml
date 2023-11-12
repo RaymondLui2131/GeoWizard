@@ -1,4 +1,5 @@
 name: ClientTest
+
 on: 
   push:
     branches:
@@ -6,27 +7,29 @@ on:
       - kahui
       - raymondlui
       - jason_dep 
+      - dev
+      - jason_front
 
 jobs:
-  Firefox:
+  Cypress:
     runs-on: ubuntu-latest
-    container:
-      image: cypress/browsers:node16.14.2-slim-chrome103-ff102
-      options: --user 1001
     steps:
-      - name: Waiting Heroku Deployment
-        uses: juliangruber/sleep-action@v2.0.0
-        with:
-          time: 45s
+      - name: Checkout code
+        uses: actions/checkout@v4 
 
-      - uses: actions/checkout@v3
-      - name: Run against 
-        uses: cypress-io/github-action@v4
+      - name: Install dependencies
+        run: cd client && npm install --legacy-peer-deps
+
+      - name: Install CSS
+        run: npx tailwindcss -i ./client/src/index.css -o ./client/src/dist/output.css
+
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
         with:
           working-directory: client
-          browser: firefox
-        env: 
-          NPM_CONFIG_PRODUCTION: false
-#           # CYPRESS_TEST_USER_EMAIL: "cypress@example.com"
-#           # CYPRESS_TEST_USER_PASS: ${{ secrets.CYPRESS_TEST_USER_PASS }}
-#           # CYPRESS_baseUrl: ${{ github.event.deployment_status.environment_url }}
+          start: npm start
+          install: false
+          wait-on: 'http://localhost:3000' 
+          wait-on-timeout: 60 
+
+
