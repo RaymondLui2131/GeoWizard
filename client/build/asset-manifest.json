@@ -1,0 +1,36 @@
+{
+  "files": {
+    "main.css": "/static/css/main.dfe219a7.css",
+    "main.js": "/static/js/main.92820eaf.js",
+    "static/media/poland.png": "/static/media/poland.ac8a0e4d5c008774c846.png",
+    "static/media/france.png": "/static/media/france.54c1d47e5f883cbb91cc.png",
+    "static/media/NanumSquareNeoOTF-Lt.otf": "/static/media/NanumSquareNeoOTF-Lt.7ffce9ca10070e7e82c7.otf",
+    "static/media/NanumSquareNeoOTF-Bd.otf": "/static/media/NanumSquareNeoOTF-Bd.e660325c185937474b82.otf",
+    "static/media/finland.png": "/static/media/finland.036a443eafb057419de5.png",
+    "static/media/PyeongChangPeace-Bold.ttf": "/static/media/PyeongChangPeace-Bold.ab3ecf05dc148a912de3.ttf",
+    "static/media/PyeongChangPeace-Light.ttf": "/static/media/PyeongChangPeace-Light.7904d3e69c9b476d2315.ttf",
+    "static/media/ireland.png": "/static/media/ireland.02f7c729617a61d2f02d.png",
+    "static/media/p8.png": "/static/media/p8.c1d6a0c58e6fe7b38752.png",
+    "static/media/geowizlogo.png": "/static/media/geowizlogo.d1fcf5b16aaefacf8f45.png",
+    "static/media/p4.png": "/static/media/p4.6fce91d59fb189c4d728.png",
+    "static/media/circle.png": "/static/media/circle.cb295a7423dfec5d75b3.png",
+    "static/media/pentagon.png": "/static/media/pentagon.873d0c3ef94af51aedb8.png",
+    "static/media/p2.png": "/static/media/p2.a60c6ce64677d9f66337.png",
+    "static/media/p1.png": "/static/media/p1.c4583c575121ca307f3f.png",
+    "static/media/star.png": "/static/media/star.259674be82942351262b.png",
+    "static/media/a3.png": "/static/media/a3.3b9aca91b30bba4c7fa2.png",
+    "static/media/p5.png": "/static/media/p5.bcd50e3429e212593981.png",
+    "static/media/p7.png": "/static/media/p7.029edd5396e655f5b6de.png",
+    "static/media/p6.png": "/static/media/p6.81a2dccac275199c9fa5.png",
+    "static/media/thumpsUpGreen.svg": "/static/media/thumpsUpGreen.641b137fbc415dd2cdd9931caca267f0.svg",
+    "static/media/thumpsUpRed.svg": "/static/media/thumpsUpRed.8c1e4a85abbfa1435395815230e80495.svg",
+    "static/media/thumpsUp.svg": "/static/media/thumpsUp.435e63abcbd6624b65609140813cf1fe.svg",
+    "index.html": "/index.html",
+    "main.dfe219a7.css.map": "/static/css/main.dfe219a7.css.map",
+    "main.92820eaf.js.map": "/static/js/main.92820eaf.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.dfe219a7.css",
+    "static/js/main.92820eaf.js"
+  ]
+}
