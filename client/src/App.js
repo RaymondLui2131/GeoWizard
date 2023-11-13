@@ -12,6 +12,11 @@ import ProfileScreen from "./components/ProfileScreen"
 import MapView from './components/MapViewScreen'
 import AboutScreen from './components/AboutScreen'
 import SearchScreen from './components/SearchScreen'
+import FindEmailScreen from './components/FindEmailScreen'
+import ResetEmailMessageScreen from './components/ResetEmailMessageScreen'
+import ChangePasswordScreen from './components/ChangePasswordScreen'
+import ChangePasswordSuccessScreen from './components/ChangePasswordSuccessScreen'
+
 function App() {
   // const[user, setUser] = useState('guest') //default state is 'guest', which means the user is viewing as a guess
   return (
@@ -29,6 +34,11 @@ function App() {
         <Route path="/mapView" element={<MapView />} />
         <Route path="/about" element={<AboutScreen/>} />
         <Route path="/search" element={<SearchScreen/>} />
+        <Route path="/findEmail" element={<FindEmailScreen/>} />
+        <Route path="/resetMessage" element={<ResetEmailMessageScreen/>} />
+        <Route path="/changePassword" element={<ChangePasswordScreen/>} />
+        <Route path="/changePasswordSuccess" element={<ChangePasswordSuccessScreen/>} />
+
       </Routes>
     </BrowserRouter>
   )
