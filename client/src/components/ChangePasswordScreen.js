@@ -1,13 +1,15 @@
 import Banner from './Banner.js'
 import logo from "../assets/geowizlogo.png";
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const ChangePasswordScreen = () => {
+    const navigate = useNavigate();
     const [password, setPassword] = useState(''); // state for password
     const [confirmPassword, setConfirmPassword] = useState(''); // state for confirm password
 
-    const handleChangePasswordClick= (event) => {
-        console.log(event) //handle click later
+    const handleChangePasswordClick= () => {
+        navigate('/changePasswordSuccess')   //For now brings you to change password success screen
     };
 
     return (

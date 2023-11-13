@@ -1,12 +1,14 @@
 import Banner from './Banner.js'
 import logo from "../assets/geowizlogo.png";
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const FindEmailScreen = () => {
+    const navigate = useNavigate();
     const [userEmail, setUserEmail] = useState(''); // state for email
 
-    const handleNextClick= (event) => {
-        console.log(event) //handle click later
+    const handleNextClick= () => {
+        navigate('/resetMessage')   //For now brings you to reset password message screen
     };
 
     return (

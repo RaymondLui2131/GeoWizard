@@ -1,20 +1,16 @@
 import Banner from './Banner.js'
 import logo from "../assets/geowizlogo.png";
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const LoginScreen = () => {
+    const navigate = useNavigate();
     const [userName, setUserName] = useState(''); // state for username
     const [password, setPassword] = useState(''); // state for password
     const [confirmPassword, setConfirmPassword] = useState(''); // state for confirm password
 
-    // const handleUserName= (event) => {
-    // };
-
-    // const handlePassword= (event) => {
-    // };
-
-    const handleCreateAccountClick= (event) => {
-        console.log(event) //handle click later
+    const handleCreateAccountClick= () => {
+        navigate('/createAccountSuccess')   //For now brings you to create account success screen
     };
 
     return (
