@@ -30,7 +30,7 @@ const ChangePasswordScreen = () => {
 
                     <div className="pl-4 pt-4 flex flex-col justify-center items-center">
                     <input
-                        className="text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
+                        className="cpPassword text-black font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
                         style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -45,7 +45,7 @@ const ChangePasswordScreen = () => {
                     
                     <div className="pl-4 pt-4 flex flex-col justify-center items-center">
                     <input
-                        className="text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
+                        className="cpComfirmPassword text-black font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
                         style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}

@@ -28,7 +28,7 @@ const LoginScreen = () => {
                 
                 <div className="pl-4 pt-4 flex flex-col justify-center items-center">
                 <input
-                    className="text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
+                    className="caUserName text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
                     style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
                     value={userName}
                     onChange={(e) => setUserName(e.target.value)}
@@ -42,7 +42,7 @@ const LoginScreen = () => {
 
                 <div className="pl-4 pt-4 flex flex-col justify-center items-center">
                 <input
-                    className="text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
+                    className="caPassword text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
                     style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -57,7 +57,7 @@ const LoginScreen = () => {
                 
                 <div className="pl-4 pt-4 flex flex-col justify-center items-center">
                 <input
-                    className="text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
+                    className="caComfirmPassword text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
                     style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
