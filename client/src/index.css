@@ -26,6 +26,7 @@
 
 .container{
   padding-top: 30px;
+
 }
 /* This is the CSS for the deep purple rectangle in the center */
 .rectangle {
@@ -37,8 +38,7 @@
   color: #fff; /* White text color */
   width: 600px; /* Width of the rectangle, adjust as needed */
   height: 600px; /* Height of the rectangle, adjust as needed */
-  margin-left: auto;
-  margin-right: 365px;
+
 }
 
 /* :root {
