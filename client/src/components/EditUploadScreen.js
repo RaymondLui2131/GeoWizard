@@ -15,15 +15,16 @@ const DisplayMap = (props) => {
     const index = props.index
     const mapArr = props.arr
     const countryNames = ["France","Ireland", "Finland", "Poland"]//To be changed
+    const editClassName = countryNames[index]
     const handleEditClick = () => {
         navigate('/editingmap')   //For now brings you back to / change later
     }
     return (
     <>
      <div className="h-full">
-        <div className="bg-primary-GeoOrange text-center rounded-lg">
+        <div className="bg-primary-GeoOrange text-center rounded-lg ">
         <img src={mapArr[index] } className="h-64 w-[28rem] rounded-lg" />  
-            <div onClick={() => handleEditClick()}>Edit {" " + countryNames[index]}</div>
+            <div className= {editClassName} onClick={() => handleEditClick()}>Edit {" " + countryNames[index]}</div>
         </div>
      </div>
     </>
