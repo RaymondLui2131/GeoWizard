@@ -1,6 +1,17 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+const isLocal = process.env.NODE_ENV === "development"; 
+const host = isLocal ? "localhost" : window.location.hostname;
+const port = isLocal ? 4000 : window.location.port;
+const endpoint = "/users/";
+const baseURL = isLocal
+  ? `http://${host}:${port}`
+  : `${window.location.protocol}//${host}:${port}`;
+const API_URL = `${baseURL}${endpoint}`;
+
+
+
 export default function useMapSearch(query, pageNumber) {
 
     const[loading, setLoading] = useState(true)
@@ -21,9 +32,9 @@ export default function useMapSearch(query, pageNumber) {
         let cancel
         axios({
             method: 'GET', 
-            url : '',
+            url : API_URL,
             params: {q: query, page: pageNumber},
-            cancelToken: new axios.cancelToken(c => cancel = c)
+            cancelToken: new axios.CancelToken(c => cancel = c)
         }).then(res => {
             setMaps(prevMaps => {
                 return [...prevMaps, ...res.data.docs.map(b => b.geoMap)] // concatenates more maps, change b.title to the map geojson file. 

@@ -20,7 +20,7 @@ const Banner = () => {
         }
     };
     const user = "guest" //useGetUser()
-    console.log(user)
+    //console.log(user)
     //const logOutUser = useUserLogOut()
     const navigate = useNavigate()
     //console.log(user)
@@ -48,7 +48,7 @@ const Banner = () => {
 
                     <div className="flex items-center">
                         <input
-                            className="text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
+                            className="text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none"
                             placeholder="Search for maps"
                             style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
                             value={searchTerm}

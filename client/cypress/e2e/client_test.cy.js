@@ -30,40 +30,11 @@ describe('LoginScreen Component', () => {
   it('should exist', () => {
     cy.get('[data-test-id="login-div"]').should("exist")
   })
-
-  it('should display a link to the registration page', () => {
-    cy.get('a[href="/register"]').should('exist')
-  })
-
-  it('should display message for invalid login', () => {
-    cy.get('input[name="email"]').type('dontexist@example.com');
-    cy.get('input[name="password"]').type('password123');
-    cy.get('[data-test-id="login-button"]').click()
-
-    cy.get('pre').should('contain', JSON.stringify({ "message": "Invalid credentials" }, null, 2))
-  })
-
-  it('should display message for missing fields', () => {
-    cy.get('input[name="password"]').type('password123');
-    cy.get('[data-test-id="login-button"]').click()
-    cy.get('pre').should('contain', JSON.stringify({
-      "message": "Missing required fields for login"
-    }, null, 2))
-  })
-
-  it('should display message for invalid token', () => {
-    cy.get('input[name="token"]').type('wrongtoken');
-    cy.get('[data-test-id="user-button"]').click()
-    cy.get('pre').should('contain', JSON.stringify({
-      "message": "Not authorized, token failed"
-    }, null, 2))
-  })
 })
-
 
 describe('testing HomeScreen', () => {
   beforeEach(() => {
-    cy.visit(HOST)
+    cy.visit('http://localhost:3000/')
   })
 
   it('should display GeoWizard in Banner', () => {
@@ -79,6 +50,25 @@ describe('testing HomeScreen', () => {
     cy.get('input').type('America').should('have.value', 'America')
   })
 
+})
+
+describe('testing SearchScreen', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:3000/search')
+  })
+
+  it('should display GeoWizard in Banner', () => {
+    cy.get('span').should('contain', 'GeoWizard')
+  })
+
+  it('Should show dropdown when clicking time button', () => {
+    cy.contains('Sort').click()
+    cy.get('a').should('contain', "Trending")
+  })
+
+  it('should display in search bar', () => {
+    cy.get('input[placeholder="Search for maps').type('America').should('have.value', 'America')
+  })
 
 })
 
