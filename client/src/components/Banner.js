@@ -34,7 +34,7 @@ const Banner = () => {
         navigate("/")
     }
     function handleSignUp(){
-        navigate("/register")
+        navigate("/createAccount")
     }
 
     return(
@@ -66,7 +66,7 @@ const Banner = () => {
                     <ul className="flex flex-col mt-4 font-PyeongChangPeace-Bold lg:flex-row lg:space-x-8 lg:mt-0">
                     {[
                         ['Home', "/"],
-                        ['Create/Edit Map', 'create_edit'],
+                        ['Create/Edit Map', 'editUpload'],
                         ['Profile', 'profile'],
                         ['About', 'about'],
                     ].map(([title, url]) => (
