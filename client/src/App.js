@@ -8,6 +8,7 @@ import EditUpload from './components/EditUploadScreen'
 import EditingMap from './components/EditingMapScreen'
 import LoginScreen from './components/LoginScreen'
 import CreateAccountScreen from './components/CreateAccountScreen'
+import AccountCreationSuccessScreen from './components/AccountCreationSuccessScreen'
 function App() {
   return (
     <BrowserRouter>
@@ -19,6 +20,7 @@ function App() {
         <Route path="/login" element={<LoginScreen />} />
         <Route path="/createAccount" element={<CreateAccountScreen />} />
         <Route path="/" element={<HomeScreen />} />
+        <Route path="/createAccountSuccess" element={<AccountCreationSuccessScreen />} />
       </Routes>
     </BrowserRouter>
   )
