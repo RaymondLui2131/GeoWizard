@@ -31,5 +31,3 @@ jobs:
           install: false
           wait-on: 'http://localhost:3000' 
           wait-on-timeout: 60 
-
-
