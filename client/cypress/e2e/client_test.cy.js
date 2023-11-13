@@ -22,44 +22,121 @@ describe('testing RegisterScreen', () => {
   })
 })
 
+describe('LoginScreen Component', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:3000/login')
+  })
 
-describe('testing LoginScreen', () => {
+  it('should exist', () => {
+    cy.get('[data-test-id="login-div"]').should("exist")
+  })
+})
+
+describe('testing HomeScreen', () => {
   beforeEach(() => {
     cy.visit('http://localhost:3000/')
   })
 
-  it('should display the login form', () => {
-    cy.get('form').should('exist')
-    cy.get('input[name="email"]').should('exist')
-    cy.get('input[name="password"]').should('exist')
-    cy.get('button[type="submit"]').should('exist')
+  it('should display GeoWizard in Banner', () => {
+    cy.get('span').should('contain', 'GeoWizard')
   })
 
-  it('should display a link to the registration page', () => {
-    cy.get('a[href="/register"]').should('exist')
+  it('Should show dropdown when clicking time button', () => {
+    cy.contains('Time').click()
+    cy.get('a').should('contain', "Today")
   })
 
-  it('should display message for invalid login', () => {
-    cy.get('input[name="email"]').type('dontexist@example.com');
-    cy.get('input[name="password"]').type('password123');
-    cy.get('[data-test-id="login-button"]').click()
-
-    cy.get('pre').should('contain', JSON.stringify({ "message": "Invalid credentials" }, null, 2))
+  it('should display in search bar', () => {
+    cy.get('input').type('America').should('have.value', 'America')
   })
 
-  it('should display message for missing fields', () => {
-    cy.get('input[name="password"]').type('password123');
-    cy.get('[data-test-id="login-button"]').click()
-    cy.get('pre').should('contain', JSON.stringify({
-      "message": "Missing required fields for login"
-    }, null, 2))
+})
+
+describe('testing SearchScreen', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:3000/search')
   })
 
-  it('should display message for invalid token', () => {
-    cy.get('input[name="token"]').type('wrongtoken');
-    cy.get('[data-test-id="user-button"]').click()
-    cy.get('pre').should('contain', JSON.stringify({
-      "message": "Not authorized, token failed"
-    }, null, 2))
+  it('should display GeoWizard in Banner', () => {
+    cy.get('span').should('contain', 'GeoWizard')
+  })
+
+  it('Should show dropdown when clicking time button', () => {
+    cy.contains('Sort').click()
+    cy.get('a').should('contain', "Trending")
+  })
+
+  it('should display in search bar', () => {
+    cy.get('input[placeholder="Search for maps').type('America').should('have.value', 'America')
+  })
+
+})
+
+describe('testing edit upload', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:3000/editUpload')
+  })
+
+  it('should move to editing page', () => {
+
+    cy.get('.France').click()
+    cy.url().should('eq', 'http://localhost:3000/editingmap') 
+
+  })
+
+  it('should move to next available maps', () => {
+    cy.contains('→').click()
+    cy.get('.Finland').should('have.text', 'Edit  Finland')
+  })
+
+})
+
+describe('testing editing map page', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:3000/editingmap')
+  })
+
+  it('should change title', () => {
+    cy.get('input[placeholder="Enter Title...').type('New Title').should('have.value', 'New Title')
+
+  })
+
+  it('should move to heatmap', () => {
+    cy.contains('Select Map Type ▼').click()
+    cy.contains('Heatmap').should('have.text', 'Heatmap ')
+  })
+
+  it('should move to pointmap', () => {
+    cy.contains('Select Map Type ▼').click()
+    cy.contains('Point/Locator').should('have.text', 'Point/Locator')
+  })
+
+  it('should move to symbol', () => {
+    cy.contains('Select Map Type ▼').click()
+    cy.contains('Symbol').should('have.text', ' Symbol ')
+  })
+
+  it('should move to choropleth', () => {
+    cy.contains('Select Map Type ▼').click()
+    cy.contains('Choropleth').should('have.text', 'Choropleth ')
+  })
+
+  it('should move to flow', () => {
+    cy.contains('Select Map Type ▼').click()
+    cy.contains('Flow').should('have.text', 'Flow ')
   })
 })
+
+describe('testing editing map page', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:3000/mapview')
+  })
+
+  it('should change title', () => {
+    cy.get('input[placeholder="Enter new comment...').type('New Comment').should('have.value', 'New Comment')
+  })
+
+})
+
+
+

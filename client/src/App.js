@@ -1,4 +1,3 @@
-import React from 'react'
 import './App.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Build1LoginScreen from './components/Build1LoginScreen'
@@ -9,7 +8,12 @@ import EditingMap from './components/EditingMapScreen'
 import LoginScreen from './components/LoginScreen'
 import CreateAccountScreen from './components/CreateAccountScreen'
 import AccountCreationSuccessScreen from './components/AccountCreationSuccessScreen'
+import ProfileScreen from "./components/ProfileScreen"
+import MapView from './components/MapViewScreen'
+import AboutScreen from './components/AboutScreen'
+import SearchScreen from './components/SearchScreen'
 function App() {
+  // const[user, setUser] = useState('guest') //default state is 'guest', which means the user is viewing as a guess
   return (
     <BrowserRouter>
       <Routes>
@@ -21,6 +25,10 @@ function App() {
         <Route path="/createAccount" element={<CreateAccountScreen />} />
         <Route path="/" element={<HomeScreen />} />
         <Route path="/createAccountSuccess" element={<AccountCreationSuccessScreen />} />
+        <Route path="/profile" element={<ProfileScreen />} />
+        <Route path="/mapView" element={<MapView />} />
+        <Route path="/about" element={<AboutScreen/>} />
+        <Route path="/search" element={<SearchScreen/>} />
       </Routes>
     </BrowserRouter>
   )

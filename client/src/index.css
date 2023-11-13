@@ -2,6 +2,8 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+
+
 @font-face {
   font-family: "PyeongChangPeace-Bold";
   src: url("../assets/PyeongChangPeace-Bold.ttf");
@@ -38,7 +40,6 @@
   margin-left: auto;
   margin-right: 365px;
 }
-
 /* :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
