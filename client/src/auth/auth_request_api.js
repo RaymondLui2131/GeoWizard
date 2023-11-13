@@ -44,3 +44,15 @@ export const authgetUser = async (token) => {
     }
 }
 
+
+export const authgetMaps = async (token) => {
+    try {
+        return await axios.get(`${API_URL}me`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+    } catch (err) {
+        return err.response
+    }
+}

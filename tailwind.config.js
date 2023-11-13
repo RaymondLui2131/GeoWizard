@@ -3,6 +3,13 @@ module.exports = {
   content: ["./client/src/**/*.{html,js}"],
   theme: {
     extend: {
+      boxShadow: {
+        'aesthetic': '0 3px 10px rgba(0, 0, 0, 0.2)',
+        'sleek': 'rgba(13, 38, 76, 0.19) 0px 9px 20px',
+        'warm': "rgba(50,50,105,0.15) 0px 2px 5px 0px, rgba(0,0,0,0.05) 0px 1px 1px 0px",
+        'nimble': "4.0px 8.0px 8.0px rgba(0,0,0,0.38)",
+        'intense': "rgba(0,0,0,0.4) 0px 30px 90px"
+      },
       colors: {
         primary: {
           GeoPurple : "#9370DB",
@@ -16,8 +23,13 @@ module.exports = {
         'PyeongChangPeace-Bold': ['PyeongChangPeace-Bold', 'sans'],
         'NanumSquareNeoOTF-Bd': ['NanumSquareNeoOTF-Bd', 'sans'],
         'NanumSquareNeoOTF-Lt': ['NanumSquareNeoOTF-Lt', 'sans'],
+      },
+      scale: {
+        '-100': '-1',
       }
-    },
+      
+    }
+    ,
   },
   plugins: ['prettier-plugin-tailwindcss'],
 }

@@ -2,6 +2,8 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
+
+
 @font-face {
   font-family: "PyeongChangPeace-Bold";
   src: url("../assets/PyeongChangPeace-Bold.ttf");

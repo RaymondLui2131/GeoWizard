@@ -15,15 +15,16 @@ const DisplayMap = (props) => {
     const index = props.index
     const mapArr = props.arr
     const countryNames = ["France","Ireland", "Finland", "Poland"]//To be changed
+    const editClassName = countryNames[index]
     const handleEditClick = () => {
-        navigate('/')   //For now brings you back to / change later
+        navigate('/editingmap')   //For now brings you back to / change later
     }
     return (
     <>
      <div className="h-full">
-        <div className="bg-primary-GeoOrange text-center rounded-lg">
+        <div className="bg-primary-GeoOrange text-center rounded-lg ">
         <img src={mapArr[index] } className="h-64 w-[28rem] rounded-lg" />  
-            <div onClick={() => handleEditClick()}>Edit {" " + countryNames[index]}</div>
+            <div className= {editClassName} onClick={() => handleEditClick()}>Edit {" " + countryNames[index]}</div>
         </div>
      </div>
     </>
@@ -69,7 +70,7 @@ const EditUpload = () => {
     return (
         <>
         <Banner></Banner>
-        <div className="bg-primary-GeoPurple min-h-screen max-h-screen ">
+        <div className="bg-primary-GeoPurple min-h-screen max-h-screen overflow-auto">
             <div className="flex justify-center pl-8 md:pl-10 lg:pl-20 xl:pl-40 pr-8 md:pr-10 lg:pr-20 xl:pr-40">
                 <div className="flex flex-col">
                     <div className="flex justify-between pt-10 ">
