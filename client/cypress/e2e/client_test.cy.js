@@ -72,3 +72,71 @@ describe('testing SearchScreen', () => {
 
 })
 
+describe('testing edit upload', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:3000/editUpload')
+  })
+
+  it('should move to editing page', () => {
+
+    cy.get('.France').click()
+    cy.url().should('eq', 'http://localhost:3000/editingmap') 
+
+  })
+
+  it('should move to next available maps', () => {
+    cy.contains('→').click()
+    cy.get('.Finland').should('have.text', 'Edit  Finland')
+  })
+
+})
+
+describe('testing editing map page', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:3000/editingmap')
+  })
+
+  it('should change title', () => {
+    cy.get('input[placeholder="Enter Title...').type('New Title').should('have.value', 'New Title')
+
+  })
+
+  it('should move to heatmap', () => {
+    cy.contains('Select Map Type ▼').click()
+    cy.contains('Heatmap').should('have.text', 'Heatmap ')
+  })
+
+  it('should move to pointmap', () => {
+    cy.contains('Select Map Type ▼').click()
+    cy.contains('Point/Locator').should('have.text', 'Point/Locator')
+  })
+
+  it('should move to symbol', () => {
+    cy.contains('Select Map Type ▼').click()
+    cy.contains('Symbol').should('have.text', ' Symbol ')
+  })
+
+  it('should move to choropleth', () => {
+    cy.contains('Select Map Type ▼').click()
+    cy.contains('Choropleth').should('have.text', 'Choropleth ')
+  })
+
+  it('should move to flow', () => {
+    cy.contains('Select Map Type ▼').click()
+    cy.contains('Flow').should('have.text', 'Flow ')
+  })
+})
+
+describe('testing editing map page', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:3000/mapview')
+  })
+
+  it('should change title', () => {
+    cy.get('input[placeholder="Enter new comment...').type('New Comment').should('have.value', 'New Comment')
+  })
+
+})
+
+
+

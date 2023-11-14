@@ -334,7 +334,7 @@
   },
   "scripts": {
     "start": "cd server && npm install && node server.js",
-    "heroku-postbuild": "cd client && npm install --legacy-peer-deps && npx tailwindcss -i ./src/index.css -o ./src/dist/output.css && npm run build"
+    "heroku-postbuild": "npm install && cd client && npm install --legacy-peer-deps && cd .. && npx tailwindcss -i ./client/src/index.css -o ./client/src/dist/output.css && cd client && npm run build"
   },
   "keywords": [],
   "author": "",
