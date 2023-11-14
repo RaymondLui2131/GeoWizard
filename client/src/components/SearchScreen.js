@@ -132,7 +132,7 @@ const SearchScreen = () => {
             </div>
 
 
-                <div className="flex flex-wrap mx-24 py-5 z-0 ">
+                <div className="grid grid-cols-3 mx-24 py-5 z-0">
                     {testMaps.map((map, index) => (
                         <HomeScreenMapCard key={index} file={map} />
                     ))}
