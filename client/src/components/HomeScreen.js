@@ -85,7 +85,7 @@ const HomeScreen = () => {
                     </div>
 
 
-                    {/* <div className="relative inline-block z-[80] ml-5">
+                    <div className="relative inline-block z-[80] ml-5">
                         <button
                         onClick={() => setDropdownTimeOpen(!dropdownTimeOpen)}
                         className={`px-4  py-2 w-52  font-NanumSquareNeoOTF-Lt ${dropdownTimeOpen ? 'rounded-b-none rounded-t-md' : 'rounded-md' } text-left bg-primary-GeoOrange text-white flex items-center justify-between`}
@@ -112,7 +112,7 @@ const HomeScreen = () => {
                             <a onClick={handlePopular} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">All The Time</a>
                         </div>)}
 
-                    </div> */}
+                    </div>
                 </div>
 
             </div>
