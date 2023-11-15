@@ -1,23 +1,33 @@
 import Banner from './Banner.js'
 import logo from "../assets/geowizlogo.png";
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useGoogleLogin } from '@react-oauth/google'
+import { authloginUser } from '../auth/auth_request_api.js';
+import { UserContext, UserActionType } from "../auth/UserContext.js"
 import axios from 'axios'
 const LoginScreen = () => {
+    const { errorMessage, dispatch } = useContext(UserContext)
     const navigate = useNavigate();
     const [userName, setUserName] = useState(''); // state for username
     const [password, setPassword] = useState(''); // state for password
 
-    const [user, setUser] = useState('')
+    const [googleUser, setGoogleUser] = useState('')
 
     const googleLogin = useGoogleLogin({
-        onSuccess: (codeResponse) => setUser(codeResponse),
+        onSuccess: (codeResponse) => setGoogleUser(codeResponse),
         onError: (error) => console.log('Login Failed:', error)
     });
 
-    const handleLoginClick = () => {
-        navigate('/')   //For now brings you to the home screen
+    const handleLoginClick = async (e) => {
+        e.preventDefault()
+        const response = await authloginUser(userName, password)
+        if (response.status == 200) {
+            dispatch({ type: UserActionType.LOGIN, payload: response.data })
+            navigate("/dashboard") // login successful
+        } else {
+            dispatch({ type: UserActionType.ERROR, payload: response.data.message }) // login failed
+        }
     };
 
     const handleCreateAccountClick = () => {
@@ -29,11 +39,11 @@ const LoginScreen = () => {
     };
 
     useEffect(() => {
-        if (user) {
+        if (googleUser) {
             axios
-                .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
+                .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleUser.access_token}`, {
                     headers: {
-                        Authorization: `Bearer ${user.access_token}`,
+                        Authorization: `Bearer ${googleUser.access_token}`,
                         Accept: 'application/json'
                     }
                 })
@@ -42,7 +52,7 @@ const LoginScreen = () => {
                 })
                 .catch((err) => console.log(err));
         }
-    }, [user])
+    }, [googleUser])
 
     return (
         <div data-test-id="login-div" className="min-h-screen max-h-screen bg-primary-GeoPurple">
@@ -54,7 +64,7 @@ const LoginScreen = () => {
                 </div>
 
                 <div className="pl-3 font-bold pt-4 pr-72 flex flex-col justify-center items-center">
-                    UserName
+                    Email
                 </div>
 
                 <div className="pl-4 pt-4 flex flex-col justify-center items-center">
@@ -95,6 +105,9 @@ const LoginScreen = () => {
                     </button>
                     <button onClick={() => googleLogin()} className="text-yellow-200 font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300">Sign In With Google</button>
                 </div>
+                {errorMessage && <p> 
+                    {errorMessage}
+                </p>}
             </div>
         </div>
     );

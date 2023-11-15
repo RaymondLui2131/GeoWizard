@@ -14,45 +14,67 @@
  * @author Jaden Wong
  */
 
-import React, { createContext, useContext, useState } from 'react'
+import React, { createContext, useReducer } from 'react'
 
-const UserContext = createContext()
-const UserLogInContext = createContext()
-const UserLogOutContext = createContext()
 
-export function useGetUser() {
-    return useContext(UserContext)
+/**
+ * to use:
+ * import { UserContext, UserActionType } from "../auth/UserContext.js"
+ * const { user, errorMessage, dispatch } = useContext(UserContext)
+ * call dispatch using one of the provided action type and the response returned by the axios request functions
+ * this way, state transitions are predictable and simplifies unit testing
+ */
+export const UserContext = createContext()
+
+/**
+ * represents the actions that can be processed by the use state
+ */
+export const UserActionType = {
+    LOGIN: "LOGIN",
+    LOGOUT: "LOGOUT",
+    ERROR: "ERROR"
 }
 
-export function useUserLogIn() {
-    return useContext(UserLogInContext)
-}
+/**
+ * 
+ * @param {*} state current state of the userContext
+ * @param {*} action action dispatched to update the userContext state, including type and payload
+ * @returns the new state of userContext after the update
+ */
+export const authReducer = (state, action) => {
+    const { type, payload } = action
+    switch (type) {
+        case "LOGIN": {
+            return { ...state, user: payload }
+        }
+        case "LOGOUT": {
+            return { ...state, user: null }
+        }
 
-export function useUserLogOut() {
-    return useContext(UserLogOutContext)
-}
-
-export function UserProvider({ children }) {
-    const [user, setUser] = useState('guest')
-
-    function LogInUser(newUser) {
-        console.log(newUser)
-        setUser(newUser)
+        case "ERROR": {
+            return { ...state, errorMessage: payload }
+        }
+        default:
+            return state
     }
+}
 
-    function LogOutUser() {
-        setUser('guest')
-    }
+/**
+ * 
+ * @param {*} param0 
+ * @returns userContext wrapper 
+ */
+export const UserContextProvider = ({ children }) => {
+    const [state, dispatch] = useReducer(authReducer, {
+        user: null, // null means the user is a guest
+        errorMessage: null
+    })
 
+    console.log("User State: " + state)
 
     return (
-        <UserContext.Provider value={user}>
-            <UserLogInContext.Provider value={LogInUser}>
-                <UserLogOutContext.Provider value={LogOutUser}>
-                    {children}
-                </UserLogOutContext.Provider>
-            </UserLogInContext.Provider>
+        <UserContext.Provider value={{ ...state, dispatch }}>
+            {children}
         </UserContext.Provider>
     )
-
 }
