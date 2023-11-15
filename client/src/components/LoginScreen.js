@@ -1,32 +1,62 @@
 import Banner from './Banner.js'
 import logo from "../assets/geowizlogo.png";
-import { useState } from 'react'
-
+import { useState, useEffect, useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useGoogleLogin } from '@react-oauth/google'
+import { authloginUser } from '../auth/auth_request_api.js';
+import { UserContext, UserActionType } from "../auth/UserContext.js"
+import axios from 'axios'
 const LoginScreen = () => {
+    const { errorMessage, dispatch } = useContext(UserContext)
+    const navigate = useNavigate();
     const [userName, setUserName] = useState(''); // state for username
     const [password, setPassword] = useState(''); // state for password
 
-    // const handleUserName= (event) => {
-    // };
+    const [googleUser, setGoogleUser] = useState('')
 
-    // const handlePassword= (event) => {
-    // };
+    const googleLogin = useGoogleLogin({
+        onSuccess: (codeResponse) => setGoogleUser(codeResponse),
+        onError: (error) => console.log('Login Failed:', error)
+    });
 
-    const handleLoginClick= (event) => {
-        console.log(event) //handle click later
+    const handleLoginClick = async (e) => {
+        e.preventDefault()
+        const response = await authloginUser(userName, password)
+        if (response.status == 200) {
+            dispatch({ type: UserActionType.LOGIN, payload: response.data })
+            navigate("/dashboard") // login successful
+        } else {
+            dispatch({ type: UserActionType.ERROR, payload: response.data.message }) // login failed
+        }
     };
 
-    const handleCreateAccountClick= (event) => {
-        console.log(event) //handle click later
+    const handleCreateAccountClick = () => {
+        navigate('/createAccount')   //For now brings you to create account screen
     };
 
-    const handleForgotPasswordClick= (event) => {
-        console.log(event) //handle click later
+    const handleForgotPasswordClick = () => {
+        navigate('/findEmail')   //For now brings you to find email screen
     };
+
+    useEffect(() => {
+        if (googleUser) {
+            axios
+                .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${googleUser.access_token}`, {
+                    headers: {
+                        Authorization: `Bearer ${googleUser.access_token}`,
+                        Accept: 'application/json'
+                    }
+                })
+                .then((res) => {
+                    console.log(res.data)
+                })
+                .catch((err) => console.log(err));
+        }
+    }, [googleUser])
 
     return (
         <div data-test-id="login-div" className="min-h-screen max-h-screen bg-primary-GeoPurple">
-            <Banner/>
+            <Banner />
             <div className="flex flex-col justify-center items-center">
                 <div className="pt-12 flex items-center">
                     <img src={logo} className="mr-6 h-9 sm:h-20" alt="Flowbite Logo" />
@@ -34,17 +64,17 @@ const LoginScreen = () => {
                 </div>
 
                 <div className="pl-3 font-bold pt-4 pr-72 flex flex-col justify-center items-center">
-                    UserName
+                    Email
                 </div>
-                
+
                 <div className="pl-4 pt-4 flex flex-col justify-center items-center">
-                <input
-                    className="text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
-                    style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
+                    <input
+                        className="text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
+                        style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
                     // onKeyUp={handleUserName}
-                ></input>
+                    ></input>
                 </div>
 
                 <div className="font-bold pt-4 pr-72 flex flex-col justify-center items-center">
@@ -52,13 +82,13 @@ const LoginScreen = () => {
                 </div>
 
                 <div className="pl-4 pt-4 flex flex-col justify-center items-center">
-                <input
-                    className="text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
-                    style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    <input
+                        className="text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
+                        style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
                     // onKeyUp={handlePassword}
-                ></input>
+                    ></input>
                 </div>
 
                 <div onClick={handleForgotPasswordClick} className="pl-12 pt-4 pr-72 text-align:center underline font-bold  flex flex-col justify-center items-center">
@@ -69,12 +99,15 @@ const LoginScreen = () => {
                     Create an Account
                 </div>
 
-                <div className = "pt-8 pr-4 flex-col justify-center items-center">
-                    <button onClick={handleLoginClick} className = "text-yellow-200 font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300">
+                <div className="pt-8 pr-4 flex-col justify-center items-center">
+                    <button onClick={handleLoginClick} className="text-yellow-200 font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300">
                         Login
                     </button>
+                    <button onClick={() => googleLogin()} className="text-yellow-200 font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300">Sign In With Google</button>
                 </div>
-
+                {errorMessage && <p> 
+                    {errorMessage}
+                </p>}
             </div>
         </div>
     );

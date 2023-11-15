@@ -66,7 +66,7 @@ const Banner = () => {
                     <ul className="flex flex-col mt-4 font-PyeongChangPeace-Bold lg:flex-row lg:space-x-8 lg:mt-0">
                     {[
                         ['Home', "/"],
-                        ['Create/Edit Map', 'editUpload'],
+                        ['Create Map', 'editUpload'],
                         ['Profile', 'profile'],
                         ['About', 'about'],
                     ].map(([title, url]) => (

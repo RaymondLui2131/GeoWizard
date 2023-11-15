@@ -16,9 +16,8 @@ import FindEmailScreen from './components/FindEmailScreen'
 import ResetEmailMessageScreen from './components/ResetEmailMessageScreen'
 import ChangePasswordScreen from './components/ChangePasswordScreen'
 import ChangePasswordSuccessScreen from './components/ChangePasswordSuccessScreen'
-
+import Dashboard from './components/Dashboard'
 function App() {
-  // const[user, setUser] = useState('guest') //default state is 'guest', which means the user is viewing as a guess
   return (
     <BrowserRouter>
       <Routes>
@@ -32,17 +31,17 @@ function App() {
         <Route path="/createAccountSuccess" element={<AccountCreationSuccessScreen />} />
         <Route path="/profile" element={<ProfileScreen />} />
         <Route path="/mapView" element={<MapView />} />
-        <Route path="/about" element={<AboutScreen/>} />
-        <Route path="/search" element={<SearchScreen/>} />
-        <Route path="/findEmail" element={<FindEmailScreen/>} />
-        <Route path="/resetMessage" element={<ResetEmailMessageScreen/>} />
-        <Route path="/changePassword" element={<ChangePasswordScreen/>} />
-        <Route path="/changePasswordSuccess" element={<ChangePasswordSuccessScreen/>} />
-
+        <Route path="/about" element={<AboutScreen />} />
+        <Route path="/search" element={<SearchScreen />} />
+        <Route path="/findEmail" element={<FindEmailScreen />} />
+        <Route path="/resetMessage" element={<ResetEmailMessageScreen />} />
+        <Route path="/changePassword" element={<ChangePasswordScreen />} />
+        <Route path="/changePasswordSuccess" element={<ChangePasswordSuccessScreen />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </BrowserRouter>
   )
-  
+
 }
 
 export default App

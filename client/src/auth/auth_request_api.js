@@ -56,3 +56,12 @@ export const authgetMaps = async (token) => {
         return err.response
     }
 }
+
+const api = {
+    authRegisterUser,
+    authgetUser,
+    authloginUser,
+    authgetMaps
+}
+
+export default api
