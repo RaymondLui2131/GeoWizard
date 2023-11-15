@@ -14,7 +14,7 @@
  * @author Jaden Wong
  */
 
-import React, { createContext, useContext, useState} from 'react'
+import React, { createContext, useContext, useState } from 'react'
 
 const UserContext = createContext()
 const UserLogInContext = createContext()
@@ -32,27 +32,27 @@ export function useUserLogOut() {
     return useContext(UserLogOutContext)
 }
 
-export function UserProvider({children}){
+export function UserProvider({ children }) {
     const [user, setUser] = useState('guest')
 
-    function LogInUser(newUser){
+    function LogInUser(newUser) {
         console.log(newUser)
         setUser(newUser)
     }
 
-    function LogOutUser(){
+    function LogOutUser() {
         setUser('guest')
     }
 
 
-return (
-    <UserContext.Provider value = {user}>
-        <UserLogInContext.Provider value = {LogInUser}>
-            <UserLogOutContext.Provider value = {LogOutUser}>
-                {children}
-            </UserLogOutContext.Provider>
-        </UserLogInContext.Provider>
-    </UserContext.Provider>
-)
+    return (
+        <UserContext.Provider value={user}>
+            <UserLogInContext.Provider value={LogInUser}>
+                <UserLogOutContext.Provider value={LogOutUser}>
+                    {children}
+                </UserLogOutContext.Provider>
+            </UserLogInContext.Provider>
+        </UserContext.Provider>
+    )
 
 }
