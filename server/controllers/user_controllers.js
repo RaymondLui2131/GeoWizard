@@ -12,6 +12,38 @@ const User = require("../models/user_model")
 const { signToken } = require("../jwt_middleware")
 
 /**
+ * if the user does not exist yet, register the user in the database,
+ * if the user exists, login the user
+ */
+const googleLoginUser = asyncHandler(async (req, res) => {
+    const { email, username, googleId } = req.body
+    let user = await User.findOne({ email })
+    if (!user) {
+        const salt = await bcrypt.genSalt(10)
+        const hashed_password = await bcrypt.hash(googleId, salt)
+        user = await User.create({
+            email: email,
+            username: username,
+            password: hashed_password
+        })
+    }
+
+    if (user && (await bcrypt.compare(googleId, user.password))) {
+        return res.status(200).json({
+            _id: user.id,
+            username: user.username,
+            email: user.email,
+            token: signToken(user._id),
+        })
+    } else {
+        return res.status(400).json({
+            message: "Invalid credentials"
+        })
+    }
+})
+
+
+/**
  * 
  * @desc authenticate and login new user
  * @route POST /users/login
@@ -85,7 +117,7 @@ const registerUser = asyncHandler(async (req, res) => {
             email: user.email,
             token: signToken(user._id),
         })
-    } 
+    }
 })
 
 /**
@@ -101,5 +133,6 @@ const getUser = asyncHandler(async (req, res) => {
 module.exports = {
     registerUser,
     loginUser,
-    getUser
+    getUser,
+    googleLoginUser
 }
