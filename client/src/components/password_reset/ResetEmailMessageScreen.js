@@ -1,4 +1,4 @@
-import logo from "../assets/geowizlogo.png";
+import logo from "../../assets/geowizlogo.png";
 import { useNavigate } from 'react-router-dom'
 
 const ResetEmailMessageScreen = () => {

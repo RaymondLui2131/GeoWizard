@@ -5,7 +5,7 @@
  * use test123@gmail.com and abc123 to test login
  */
 import React, { useContext } from 'react'
-import { UserContext } from '../auth/UserContext'
+import { UserContext } from '../api/UserContext'
 const Dashboard = () => {
   const { user } = useContext(UserContext)
   return (

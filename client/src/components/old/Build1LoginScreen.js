@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { authloginUser, authgetUser } from "../auth/auth_request_api"
+import { authloginUser, authgetUser } from "../../api/auth_request_api"
 const LoginScreen = () => {
     const [formData, setFormData] = useState({
         email: "",

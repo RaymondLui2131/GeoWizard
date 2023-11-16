@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLocationDot, faCakeCandles, faCircleArrowLeft, faCircleExclamation, faFire } from '@fortawesome/free-solid-svg-icons'
-import ProfileMapCard from './sub-components/ProfileMapCard'
-import ProfileCommentCard from './sub-components/ProfileCommentCard'
+import ProfileMapCard from './ProfileMapCard'
+import ProfileCommentCard from './ProfileCommentCard'
 import { useNavigate } from 'react-router-dom'
 const ProfileScreen = () => {
     const navigate = useNavigate()

@@ -1,26 +1,26 @@
 import './App.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
-import Build1LoginScreen from './components/Build1LoginScreen'
-import RegisterScreen from './components/RegisterScreen'
+import Build1LoginScreen from './components/old/Build1LoginScreen.js'
+import RegisterScreen from './components/old/RegisterScreen.js'
 import HomeScreen from './components/HomeScreen'
 import EditUpload from './components/EditUploadScreen'
 import EditingMap from './components/EditingMapScreen'
-import LoginScreen from './components/LoginScreen'
-import CreateAccountScreen from './components/CreateAccountScreen'
-import AccountCreationSuccessScreen from './components/AccountCreationSuccessScreen'
-import ProfileScreen from "./components/ProfileScreen"
+import LoginScreen from './components/account/LoginScreen.js'
+import CreateAccountScreen from './components/account/CreateAccountScreen.js'
+import AccountCreationSuccessScreen from './components/account/AccountCreationSuccessScreen.js'
+import ProfileScreen from "./components/profile/ProfileScreen.js"
 import MapView from './components/MapViewScreen'
 import AboutScreen from './components/AboutScreen'
 import SearchScreen from './components/SearchScreen'
-import FindEmailScreen from './components/FindEmailScreen'
-import ResetEmailMessageScreen from './components/ResetEmailMessageScreen'
-import ChangePasswordScreen from './components/ChangePasswordScreen'
-import ChangePasswordSuccessScreen from './components/ChangePasswordSuccessScreen'
+import FindEmailScreen from './components/password_reset/FindEmailScreen.js'
+import ResetEmailMessageScreen from './components/password_reset/ResetEmailMessageScreen.js'
+import ChangePasswordScreen from './components/password_reset/ChangePasswordScreen.js'
+import ChangePasswordSuccessScreen from './components/password_reset/ChangePasswordSuccessScreen.js'
 import Dashboard from './components/Dashboard'
 import Banner from './components/Banner'
 import { GoogleOAuthProvider } from '@react-oauth/google'
-import { UserContextProvider } from './auth/UserContext.js'
-import { MapContextProvider } from './map/MapContext.js'
+import { UserContextProvider } from './api/UserContext.js'
+import { MapContextProvider } from './api/MapContext.js'
 function App() {
   return (
     <BrowserRouter>
