@@ -40,16 +40,37 @@ describe('testing HomeScreen', () => {
   it('should display GeoWizard in Banner', () => {
     cy.get('span').should('contain', 'GeoWizard')
   })
-
-  it('Should show dropdown when clicking time button', () => {
+  it('Should show dropdown when clicking Time button', () => {
     cy.contains('Time').click()
     cy.get('a').should('contain', "Today")
+  })
+
+  it('Should show dropdown when clicking Sort button', () => {
+    cy.contains('Sort').click()
+    cy.get('a').should('contain', "Recents")
   })
 
   it('should display in search bar', () => {
     cy.get('input').type('America').should('have.value', 'America')
   })
 
+  it('Login Button should exist', () => {
+    cy.contains('button', 'Login').should('exist')
+  })
+
+  it('Sign Up Button should exists', () => {
+    cy.contains('button', 'Sign Up').should('exist')
+  })
+
+  it('Redirect to Login Page', () => {
+    cy.contains('button', 'Login').click()
+    cy.url().should('include', '/login')
+  })
+
+  it('Redirect to Register Page', () => {
+    cy.contains('button', 'Sign Up').click()
+    cy.url().should('include', '/createAccount')
+  })
 })
 
 describe('testing SearchScreen', () => {
