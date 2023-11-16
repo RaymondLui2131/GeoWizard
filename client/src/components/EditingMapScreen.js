@@ -18,7 +18,6 @@ import { a1, a2, a3, a4, a5, a6 } from '../assets/EditMapAssets/arrowImages/inde
 
 // import { UserActionType, UserContext } from "../api/UserContext.js"
 import { /**MapActionType，*/ MapContext } from "../api/MapContext.js"
-const { map, /** dispatch */} = useContext(MapContext)
 
 const hexToHlsa = (hexString) => {
 
@@ -349,7 +348,7 @@ MapEditOptions.propTypes = {
     mapType: PropTypes.number.isRequired
 };
 const MapView = () => {
-
+    const { map, /** dispatch */ } = useContext(MapContext)
     // const [map, setMap] = useState(null)
     const [title, setTitle] = useState('')
     console.log(title)
@@ -360,20 +359,25 @@ const MapView = () => {
     // console.log(map)
     // const zoomLevel = 2
     // const center = [46.2276, 2.2137]
-
-    const geoJsonLayer = L.geoJSON(map);
-    const bounds = geoJsonLayer.getBounds();
-    const center = bounds.getCenter();
-    //Padding for bounds
-    const padded_NE = bounds.getNorthEast()
-    const padded_SW = bounds.getSouthWest()
-    padded_NE.lat = padded_NE.lat + 5
-    padded_SW.lat = padded_SW.lat - 5
-    padded_NE.lng = padded_NE.lng + 5
-    padded_SW.lng = padded_SW.lng - 5
-
+    let geoJsonLayer
+    let bounds
+    let center
+    let padded_NE
+    let padded_SW
+    if (map) {
+        geoJsonLayer = L.geoJSON(map);
+        bounds = geoJsonLayer.getBounds();
+        center = bounds.getCenter();
+        //Padding for bounds
+        padded_NE = bounds.getNorthEast()
+        padded_SW = bounds.getSouthWest()
+        padded_NE.lat = padded_NE.lat + 5
+        padded_SW.lat = padded_SW.lat - 5
+        padded_NE.lng = padded_NE.lng + 5
+        padded_SW.lng = padded_SW.lng - 5
+    }
     return (
-        <>
+        map && (<>
             <div className='w-4/5 flex justify-center flex-row'>
                 <div className='w-1/2 flex justify-center flex-col pt-32 items-center'>
                     <div>
@@ -427,7 +431,7 @@ const MapView = () => {
 
                 </div>
             </div>
-        </>
+        </>)
     )
 }
 
@@ -437,7 +441,7 @@ const EditingMap = () => {
     return (
         <>
             <div className="bg-primary-GeoPurple min-h-screen max-h-screen flex justify-between items-center flex-col overflow-auto">
-                <MapView></MapView>
+                <MapView />
                 <BottomRow></BottomRow>
             </div>
 
