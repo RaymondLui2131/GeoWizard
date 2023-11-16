@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import Banner from "./Banner"
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLocationDot, faCakeCandles, faCircleArrowLeft, faCircleExclamation, faFire } from '@fortawesome/free-solid-svg-icons'
 import ProfileMapCard from './sub-components/ProfileMapCard'
@@ -25,7 +24,6 @@ const ProfileScreen = () => {
 
     return (
         <>
-            <Banner />
             <div className='min-h-screen  bg-primary-GeoPurple flex pb-6 m-5 rounded-2xl shadow-nimble'>
                 <div className='relative grow w-1/2 h-screen bg-white overflow-hidden flex flex-col justify-between rounded-tl-2xl'>
                     <div className='w-full h-1/4 absolute bg-primary-GeoPurple rounded-2xl'>

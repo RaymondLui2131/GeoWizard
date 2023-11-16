@@ -1,11 +1,8 @@
-import Banner from './Banner.js'
 import yellowCheck from "../assets/yellowCheck.png";
 
 const AccountCreationSuccessScreen = () => {
     return (
         <div className="min-h-screen max-h-screen bg-primary-GeoPurple">
-            <Banner/>
-
             <div className='flex justify-center w-full'>
 
                 <div className="flex justify-center container">

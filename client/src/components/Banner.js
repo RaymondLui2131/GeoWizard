@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 
 const Banner = () => {
 
-
+    
     const [searchTerm, setSearchTerm] = useState(''); // state for searchbar
     const handleSearch = (event) => {
         if (event.key === 'Enter') {

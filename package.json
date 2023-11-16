@@ -334,6 +334,7 @@
   },
   "scripts": {
     "start": "cd server && npm install && node server.js",
+    "dev": "concurrently \"cd server && npm start\" \"cd client && npm start\"",
     "heroku-postbuild": "npm install && cd client && npm install --legacy-peer-deps && cd .. && npx tailwindcss -i ./client/src/index.css -o ./client/src/dist/output.css && cd client && npm run build"
   },
   "keywords": [],

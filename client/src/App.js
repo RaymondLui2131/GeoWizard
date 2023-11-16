@@ -17,9 +17,11 @@ import ResetEmailMessageScreen from './components/ResetEmailMessageScreen'
 import ChangePasswordScreen from './components/ChangePasswordScreen'
 import ChangePasswordSuccessScreen from './components/ChangePasswordSuccessScreen'
 import Dashboard from './components/Dashboard'
+import Banner from './components/Banner'
 function App() {
   return (
     <BrowserRouter>
+      <Banner />
       <Routes>
         <Route path="/test" element={<Build1LoginScreen />} />
         <Route path="/register" element={<RegisterScreen />} />

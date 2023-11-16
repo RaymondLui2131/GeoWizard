@@ -1,5 +1,4 @@
 import React from "react";
-import Banner from "./Banner";
 import PropTypes from 'prop-types';
 import { useState, useContext, useRef } from "react";
 import { useNavigate } from 'react-router-dom'
@@ -78,7 +77,6 @@ const EditUpload = () => {
     }
     return (
         <>
-            <Banner></Banner>
             <div className="bg-primary-GeoPurple min-h-screen max-h-screen overflow-auto">
                 <div className="flex justify-center pl-8 md:pl-10 lg:pl-20 xl:pl-40 pr-8 md:pr-10 lg:pr-20 xl:pr-40">
                     <div className="flex flex-col">
