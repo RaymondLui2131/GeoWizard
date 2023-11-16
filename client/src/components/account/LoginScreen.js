@@ -1,9 +1,9 @@
-import logo from "../assets/geowizlogo.png";
+import logo from "../../assets/geowizlogo.png";
 import { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useGoogleLogin } from '@react-oauth/google'
-import { authloginUser, googleLoginUser } from '../auth/auth_request_api.js';
-import { UserContext, UserActionType } from "../auth/UserContext.js"
+import { authloginUser, googleLoginUser } from '../../api/auth_request_api.js';
+import { UserContext, UserActionType } from "../../api/UserContext.js"
 const LoginScreen = () => {
     const { errorMessage, dispatch } = useContext(UserContext)
     const navigate = useNavigate();

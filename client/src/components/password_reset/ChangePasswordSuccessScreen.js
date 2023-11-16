@@ -1,4 +1,4 @@
-import yellowCheck from "../assets/yellowCheck.png";
+import yellowCheck from "../../assets/yellowCheck.png";
 
 const ChangePasswordSuccessScreen = () => {
     return (

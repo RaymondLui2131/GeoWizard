@@ -8,7 +8,7 @@ import logo from "../assets/geowizlogo.png";
 import { useState, useContext } from 'react'
 //import {useUserLogOut} from "./UserContext" //updating user via Context jadenw2542@gmail.com
 import { useNavigate } from "react-router-dom";
-import { UserContext, UserActionType } from "../auth/UserContext"
+import { UserContext, UserActionType } from "../api/UserContext"
 
 const Banner = () => {
     const { user, dispatch } = useContext(UserContext)

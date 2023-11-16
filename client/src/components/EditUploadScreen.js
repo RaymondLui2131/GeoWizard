@@ -2,7 +2,7 @@ import React from "react";
 import PropTypes from 'prop-types';
 import { useState, useContext, useRef } from "react";
 import { useNavigate } from 'react-router-dom'
-import { MapContext, MapActionType } from "../map/MapContext"
+import { MapContext, MapActionType } from "../api/MapContext"
 import france from "../assets/EditMapAssets/france.png"
 import ireland from "../assets/EditMapAssets/ireland.png"
 import finland from "../assets/EditMapAssets/finland.png"

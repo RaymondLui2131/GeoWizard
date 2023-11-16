@@ -1,5 +1,5 @@
 
-import logo from "../assets/geowizlogo.png";
+import logo from "../../assets/geowizlogo.png";
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 

@@ -15,7 +15,7 @@ import { MAP_TYPES, STRING_MAPPING } from '../constants/MapTypes.js'
 import { p1, p2, p3, p4, p5, p6, p7, p8, p9 } from '../assets/EditMapAssets/pointerImages/index.js'
 import { circle, triangle, square, star, hexagon, pentagon } from '../assets/EditMapAssets/symbolImages/index.js'
 import { a1, a2, a3, a4, a5, a6 } from '../assets/EditMapAssets/arrowImages/index.js'
-import { MapContext } from "../map/MapContext"
+import { MapContext } from "../api/MapContext.js"
 
 const hexToHlsa = (hexString) => {
 
