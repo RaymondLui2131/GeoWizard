@@ -2,8 +2,6 @@ import { useState } from 'react'
 import { MapContainer, TileLayer,GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
 import PropTypes from 'prop-types';
-
-import Banner from './Banner'
 import {ReactComponent as ThumbsIcon} from '../assets/MapViewAssets/thumpsUp.svg'
 import {ReactComponent as ThumbsGreen} from '../assets/MapViewAssets/thumpsUpGreen.svg'
 import {ReactComponent as ThumbsRed} from '../assets/MapViewAssets/thumpsUpRed.svg'
@@ -275,7 +273,6 @@ const MapView = () => {
 
     return(
         <>
-        <Banner></Banner>
         <div className='bg-primary-GeoPurple min-h-screen max-h-screen flex justify-between items-center flex-col overflow-auto'>
             <div className='w-4/5 pt-5'>
                 <TitleDisplay {...{likes:likeCount, setLikes:setLikes}}></TitleDisplay>

@@ -14,7 +14,7 @@
  * @author Jaden Wong
  */
 
-import React, { createContext, useReducer } from 'react'
+import React, { createContext, useReducer, useMemo } from 'react'
 
 
 /**
@@ -44,14 +44,14 @@ export const UserActionType = {
 export const authReducer = (state, action) => {
     const { type, payload } = action
     switch (type) {
-        case "LOGIN": {
+        case UserActionType.LOGIN: {
             return { ...state, user: payload }
         }
-        case "LOGOUT": {
+        case UserActionType.LOGOUT: {
             return { ...state, user: null }
         }
 
-        case "ERROR": {
+        case UserActionType.ERROR: {
             return { ...state, errorMessage: payload }
         }
         default:
@@ -71,9 +71,9 @@ export const UserContextProvider = ({ children }) => {
     })
 
     console.log("User State: " + state)
-
+    const contextValue = useMemo(() => ({ ...state, dispatch }), [state, dispatch])
     return (
-        <UserContext.Provider value={{ ...state, dispatch }}>
+        <UserContext.Provider value={contextValue}>
             {children}
         </UserContext.Provider>
     )

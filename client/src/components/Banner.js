@@ -5,13 +5,13 @@
  */
 
 import logo from "../assets/geowizlogo.png";
-import { useState } from 'react'
+import { useState, useContext } from 'react'
 //import {useUserLogOut} from "./UserContext" //updating user via Context jadenw2542@gmail.com
 import { useNavigate } from "react-router-dom";
-
+import { UserContext, UserActionType } from "../auth/UserContext"
 
 const Banner = () => {
-
+    const { user, dispatch } = useContext(UserContext)
 
     const [searchTerm, setSearchTerm] = useState(''); // state for searchbar
     const handleSearch = (event) => {
@@ -19,27 +19,35 @@ const Banner = () => {
             console.log("User hit enter")
         }
     };
-    const user = "guest" //useGetUser()
+
+    const menuItems = [
+        ['Home', '/'],
+        ['Create Map', '/editUpload'],
+        user ? ['Profile', '/profile'] : null,
+        user ? ['Dashboard', '/dashboard'] : null,
+        ['About', '/about']
+    ]
+
     //console.log(user)
     //const logOutUser = useUserLogOut()
     const navigate = useNavigate()
     //console.log(user)
 
-    function handleLogin(){
+    function handleLogin() {
         //logOutUser()
         navigate("/login")
     }
-    function handleLogOut(){
-        //logOutUser()
+    function handleLogOut() {
+        dispatch({ type: UserActionType.LOGOUT })
         navigate("/")
     }
-    function handleSignUp(){
+    function handleSignUp() {
         navigate("/createAccount")
     }
 
-    return(
+    return (
         <header>
-            <nav className="bg-white border-gray-200 px-4 lg:px-6 py-6 dark:bg-gray-800"> 
+            <nav className="bg-white border-gray-200 px-4 lg:px-6 py-6 dark:bg-gray-800">
                 <div className="flex flex-wrap justify-between items-center mx-auto  px-20" >
                     <a className="flex items-center">
                         <img src={logo} className="mr-6 h-9 sm:h-20" alt="Flowbite Logo" />
@@ -56,7 +64,7 @@ const Banner = () => {
                             onKeyUp={handleSearch}
                         ></input>
                         <button
-                            className = "text-l font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300 text-gray-600"
+                            className="text-l font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300 text-gray-600"
                         > Search</button>
                     </div>
 
@@ -64,40 +72,41 @@ const Banner = () => {
 
                 <div className="flex flex-wrap justify-between items-center mt-2 px-20" >
                     <ul className="flex flex-col mt-4 font-PyeongChangPeace-Bold lg:flex-row lg:space-x-8 lg:mt-0">
-                    {[
-                        ['Home', "/"],
-                        ['Create Map', 'editUpload'],
-                        ['Profile', 'profile'],
-                        ['About', 'about'],
-                    ].map(([title, url]) => (
-                        <li key={title}>
-                            <a href={url} className=" cursor-pointer text-l block py-2 pr-4 pl-3 text-gray-600 hover:text-primary-GeoPurple"> {title} </a>
-                        </li>
-                    ))}
-
+                        {menuItems
+                        .filter(Boolean) // remove null values
+                        .map(([title, url]) => (
+                            <li key={title}>
+                                <a
+                                    className="cursor-pointer text-l block py-2 pr-4 pl-3 text-gray-600 hover:text-primary-GeoPurple"
+                                    onClick={() => navigate(url)}
+                                >
+                                    {title}
+                                </a>
+                            </li>
+                        ))}
                     </ul>
 
                     <div className="flex items-center">
-                        {user == "guest" && 
-                        (<button onClick={handleLogin} className = "text-l font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300 text-gray-600"
-                        >Login</button>)
+                        {!user &&
+                            (<button onClick={handleLogin} className="text-l font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300 text-gray-600"
+                            >Login</button>)
                         }
 
-                        {user != "guest" && 
-                        (<div className="text-l font-PyeongChangPeace-Bold ml-10 py-2 px-6 text-gray-600"> 
-                        Welcome {user.name}! </div>)
+                        {user &&
+                            (<div className="text-l font-PyeongChangPeace-Bold ml-10 py-2 px-6 text-gray-600">
+                                Welcome {user.name}! </div>)
                         }
 
-                        {user == "guest" && 
-                        (<button onClick={handleSignUp}
-                            className = "text-l font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 bg-primary-GeoPurple border-solid border-2 border-gray-300 hover:bg-gray-300 text-white"
-                        >Sign Up</button>)
+                        {!user &&
+                            (<button onClick={handleSignUp}
+                                className="text-l font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 bg-primary-GeoPurple border-solid border-2 border-gray-300 hover:bg-gray-300 text-white"
+                            >Sign Up</button>)
                         }
 
-                        {user != "guest" && 
-                        (<button onClick={handleLogOut}
-                            className = "text-l font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 bg-primary-GeoPurple border-solid border-2 border-gray-300 hover:bg-gray-300 text-white"
-                        >Log Out</button>)
+                        {user &&
+                            (<button onClick={handleLogOut}
+                                className="text-l font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 bg-primary-GeoPurple border-solid border-2 border-gray-300 hover:bg-gray-300 text-white"
+                            >Log Out</button>)
                         }
                     </div>
                 </div>

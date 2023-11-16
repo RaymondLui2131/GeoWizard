@@ -1,4 +1,3 @@
-import Banner from './Banner.js'
 import logo from "../assets/geowizlogo.png";
 import { useNavigate } from 'react-router-dom'
 
@@ -10,8 +9,6 @@ const ResetEmailMessageScreen = () => {
 
     return (
         <div className="min-h-screen max-h-screen bg-primary-GeoPurple">
-            <Banner/>
-
             <div className='flex justify-center w-full'>
 
                 <div className="flex justify-center container">

@@ -1,4 +1,4 @@
-import Banner from './Banner.js'
+
 import logo from "../assets/geowizlogo.png";
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -15,7 +15,6 @@ const LoginScreen = () => {
 
     return (
         <div className="min-h-screen max-h-screen bg-primary-GeoPurple">
-            <Banner/>
             <div className="flex flex-col justify-center items-center">
                 <div className="pt-12 flex items-center">
                     <img src={logo} className="mr-6 h-9 sm:h-20" alt="Flowbite Logo" />
