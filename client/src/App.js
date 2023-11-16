@@ -18,29 +18,38 @@ import ChangePasswordScreen from './components/ChangePasswordScreen'
 import ChangePasswordSuccessScreen from './components/ChangePasswordSuccessScreen'
 import Dashboard from './components/Dashboard'
 import Banner from './components/Banner'
+import { GoogleOAuthProvider } from '@react-oauth/google'
+import { UserContextProvider } from './auth/UserContext.js'
+import { MapContextProvider } from './map/MapContext.js'
 function App() {
   return (
     <BrowserRouter>
-      <Banner />
-      <Routes>
-        <Route path="/test" element={<Build1LoginScreen />} />
-        <Route path="/register" element={<RegisterScreen />} />
-        <Route path="/editUpload" element={<EditUpload />} />
-        <Route path="/editingMap" element={<EditingMap />} />
-        <Route path="/login" element={<LoginScreen />} />
-        <Route path="/createAccount" element={<CreateAccountScreen />} />
-        <Route path="/" element={<HomeScreen />} />
-        <Route path="/createAccountSuccess" element={<AccountCreationSuccessScreen />} />
-        <Route path="/profile" element={<ProfileScreen />} />
-        <Route path="/mapView" element={<MapView />} />
-        <Route path="/about" element={<AboutScreen />} />
-        <Route path="/search" element={<SearchScreen />} />
-        <Route path="/findEmail" element={<FindEmailScreen />} />
-        <Route path="/resetMessage" element={<ResetEmailMessageScreen />} />
-        <Route path="/changePassword" element={<ChangePasswordScreen />} />
-        <Route path="/changePasswordSuccess" element={<ChangePasswordSuccessScreen />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-      </Routes>
+      <UserContextProvider>
+        <GoogleOAuthProvider clientId='1093090289019-21ekfvlhv6s9vrmuf58eh72kp8ki173t.apps.googleusercontent.com'>
+          <MapContextProvider>
+            <Banner />
+            <Routes>
+              <Route path="/test" element={<Build1LoginScreen />} />
+              <Route path="/register" element={<RegisterScreen />} />
+              <Route path="/editUpload" element={<EditUpload />} />
+              <Route path="/editingMap" element={<EditingMap />} />
+              <Route path="/login" element={<LoginScreen />} />
+              <Route path="/createAccount" element={<CreateAccountScreen />} />
+              <Route path="/" element={<HomeScreen />} />
+              <Route path="/createAccountSuccess" element={<AccountCreationSuccessScreen />} />
+              <Route path="/profile" element={<ProfileScreen />} />
+              <Route path="/mapView" element={<MapView />} />
+              <Route path="/about" element={<AboutScreen />} />
+              <Route path="/search" element={<SearchScreen />} />
+              <Route path="/findEmail" element={<FindEmailScreen />} />
+              <Route path="/resetMessage" element={<ResetEmailMessageScreen />} />
+              <Route path="/changePassword" element={<ChangePasswordScreen />} />
+              <Route path="/changePasswordSuccess" element={<ChangePasswordSuccessScreen />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+            </Routes>
+          </MapContextProvider>
+        </GoogleOAuthProvider>
+      </UserContextProvider>
     </BrowserRouter>
   )
 
