@@ -82,12 +82,30 @@ export const authgetMaps = async (token) => {
     }
 }
 
+export const postUser = async (userData) => {
+    let link;
+    if (process.env.NODE_ENV == 'development'){
+        link = 'http://localhost:4000/users/register'
+    }
+    else if (process.env.NODE_ENV == 'production'){
+        link = 'https://geowizard-app-b802ae01ce7f.herokuapp.com/users/register'
+    }
+    try {
+        const response = await axios.post(link, userData);
+        return response
+    } catch (err) {
+        console.log('link: %s', link);
+        return err.response
+    }
+}
+
 const api = {
     authRegisterUser,
     authgetUser,
     authloginUser,
     authgetMaps,
-    googleLoginUser
+    googleLoginUser,
+    postUser
 }
 
 export default api

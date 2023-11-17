@@ -147,9 +147,11 @@ describe('testing create account screen', () => {
   })
 
   it('should type text into the input field', () => {
-    cy.get('.caUserName')
-      .type('exampleText')
-      .should('have.value', 'exampleText');
+
+    cy.get('.caUserEmail')
+      .type('exampleText') 
+      .should('have.value', 'exampleText'); 
+
   })
 
   it('should type text into the input field', () => {

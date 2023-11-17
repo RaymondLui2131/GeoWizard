@@ -7,8 +7,12 @@ import { UserContext, UserActionType } from "../../api/UserContext.js"
 const LoginScreen = () => {
     const { errorMessage, dispatch } = useContext(UserContext)
     const navigate = useNavigate();
-    const [userName, setUserName] = useState(''); // state for username
+    const [userEmail, setuserEmail] = useState(''); // state for userEmail
     const [password, setPassword] = useState(''); // state for password
+    const [blankErrors, setBlankErrors] = useState({ // check if input slots are empty
+        userEmail: false,
+        password: false,
+    });
 
     const googleLogin = useGoogleLogin({
         onSuccess: async (codeResponse) => {
@@ -25,9 +29,23 @@ const LoginScreen = () => {
         }
     });
 
+    const validateInputs = () => {
+        let newErrors = {};
+        if (!userEmail) newErrors.userEmail = true;
+        if (!password) newErrors.password = true;
+
+        setBlankErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleLoginClick = async (e) => {
         e.preventDefault()
-        const response = await authloginUser(userName, password)
+        setBlankErrors({
+            userEmail: false,
+            password: false,
+        })
+        validateInputs()
+        const response = await authloginUser(userEmail, password)
         if (response.status == 200) {
             dispatch({ type: UserActionType.LOGIN, payload: response.data })
             navigate("/dashboard") // login successful
@@ -52,7 +70,7 @@ const LoginScreen = () => {
                     <span className="text-purple-800 font-bold self-center text-5xl font-PyeongChangPeace-Light whitespace-nowrap">GeoWizard</span>
                 </div>
 
-                <div className="pl-3 font-bold pt-4 pr-72 flex flex-col justify-center items-center">
+                <div className="pl-2 pr-80 font-bold pt-4 flex flex-col justify-center items-center">
                     Email
                 </div>
 
@@ -60,11 +78,16 @@ const LoginScreen = () => {
                     <input
                         className="text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
                         style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
-                        value={userName}
-                        onChange={(e) => setUserName(e.target.value)}
-                    // onKeyUp={handleUserName}
+                        value={userEmail}
+                        onChange={(e) => setuserEmail(e.target.value)}
                     ></input>
                 </div>
+
+                {blankErrors.userEmail ? (
+                    <div style={{ color: '#8B0000', textAlign: 'center' }}>
+                        Please input an userEmail!
+                    </div>
+                ) : null}
 
                 <div className="font-bold pt-4 pr-72 flex flex-col justify-center items-center">
                     Password
@@ -76,9 +99,14 @@ const LoginScreen = () => {
                         style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                    // onKeyUp={handlePassword}
                     ></input>
                 </div>
+
+                {blankErrors.password ? (
+                    <div style={{ color: '#8B0000', textAlign: 'center' }}>
+                        Please input an userEmail!
+                    </div>
+                ) : null}
 
                 <div onClick={handleForgotPasswordClick} className="pl-12 pt-4 pr-72 text-align:center underline font-bold  flex flex-col justify-center items-center">
                     Forgot Password
