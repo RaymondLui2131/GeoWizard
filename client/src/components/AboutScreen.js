@@ -1,10 +1,7 @@
-import Banner from "./Banner";
 
 const AboutScreen = () => {
     return(
         <div className="min-h-screen max-h-[100%] bg-primary-GeoPurple">
-            <Banner/> 
-
             <div className="px-32 py-6 font-NanumSquareNeoOTF-Lt text-white">
                 <h1 className="font-PyeongChangPeace-Light text-5xl text-center mb-6 text-primary-GeoBlue">About Us</h1>
                 <div className="font-NanumSquareNeoOTF-Bd text-4xl 1 mb-4 text-primary-GeoOrange">Welcome to GeoWizard - Your Gateway to the World of Maps!</div>

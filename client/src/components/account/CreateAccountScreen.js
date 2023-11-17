@@ -1,32 +1,20 @@
-import Banner from './Banner.js'
-import logo from "../assets/geowizlogo.png";
+
+import logo from "../../assets/geowizlogo.png";
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const LoginScreen = () => {
+    const navigate = useNavigate();
     const [userName, setUserName] = useState(''); // state for username
     const [password, setPassword] = useState(''); // state for password
+    const [confirmPassword, setConfirmPassword] = useState(''); // state for confirm password
 
-    // const handleUserName= (event) => {
-    // };
-
-    // const handlePassword= (event) => {
-    // };
-
-    const handleLoginClick= (event) => {
-        console.log(event) //handle click later
-    };
-
-    const handleCreateAccountClick= (event) => {
-        console.log(event) //handle click later
-    };
-
-    const handleForgotPasswordClick= (event) => {
-        console.log(event) //handle click later
+    const handleCreateAccountClick= () => {
+        navigate('/createAccountSuccess')   //For now brings you to create account success screen
     };
 
     return (
-        <div data-test-id="login-div" className="min-h-screen max-h-screen bg-primary-GeoPurple">
-            <Banner/>
+        <div className="min-h-screen max-h-screen bg-primary-GeoPurple">
             <div className="flex flex-col justify-center items-center">
                 <div className="pt-12 flex items-center">
                     <img src={logo} className="mr-6 h-9 sm:h-20" alt="Flowbite Logo" />
@@ -39,7 +27,7 @@ const LoginScreen = () => {
                 
                 <div className="pl-4 pt-4 flex flex-col justify-center items-center">
                 <input
-                    className="text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
+                    className="caUserName text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
                     style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
                     value={userName}
                     onChange={(e) => setUserName(e.target.value)}
@@ -53,7 +41,7 @@ const LoginScreen = () => {
 
                 <div className="pl-4 pt-4 flex flex-col justify-center items-center">
                 <input
-                    className="text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
+                    className="caPassword text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
                     style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -61,17 +49,24 @@ const LoginScreen = () => {
                 ></input>
                 </div>
 
-                <div onClick={handleForgotPasswordClick} className="pl-12 pt-4 pr-72 text-align:center underline font-bold  flex flex-col justify-center items-center">
-                    Forgot Password
+                <div className="pl-16 font-bold pt-4 pr-72 flex flex-col justify-center items-center">
+                    Confirm Password
                 </div>
 
-                <div onClick={handleCreateAccountClick} className="pl-14 pt-4 pr-72 underline font-bold flex flex-col justify-center items-center">
-                    Create an Account
+                
+                <div className="pl-4 pt-4 flex flex-col justify-center items-center">
+                <input
+                    className="caComfirmPassword text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
+                    style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    // onKeyUp={handlePassword}
+                ></input>
                 </div>
 
                 <div className = "pt-8 pr-4 flex-col justify-center items-center">
-                    <button onClick={handleLoginClick} className = "text-yellow-200 font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300">
-                        Login
+                    <button onClick={handleCreateAccountClick} className = "text-yellow-200 font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300">
+                        Create Account
                     </button>
                 </div>
 

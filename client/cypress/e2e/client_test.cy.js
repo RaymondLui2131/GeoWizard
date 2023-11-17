@@ -159,5 +159,101 @@ describe('testing editing map page', () => {
 
 })
 
+describe('testing create account screen', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:3000/createAccount')
+  })
 
+  it('should type text into the input field', () => {
+    cy.get('.caUserName')
+      .type('exampleText') 
+      .should('have.value', 'exampleText'); 
+  })
 
+  it('should type text into the input field', () => {
+    cy.get('.caPassword')
+      .type('exampleText') 
+      .should('have.value', 'exampleText'); 
+  })
+
+  it('should type text into the input field', () => {
+    cy.get('.caComfirmPassword')
+      .type('exampleText') 
+      .should('have.value', 'exampleText'); 
+  })
+
+})
+
+describe('testing create account success page', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:3000/createAccountSuccess')
+  })
+
+  it('should display "Account Created!" text', () => {
+    cy.contains('Account Created!').should('exist')
+  })
+
+  it('should display the success message', () => {
+    cy.contains('You have successfully created an account. You may now close this window.').should('exist')
+  })
+})
+
+describe('testing find email screen', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:3000/findEmail')
+  })
+
+  it('should type text into the input field', () => {
+    cy.get('.theEmail')
+      .type('exampleText') 
+      .should('have.value', 'exampleText'); 
+  })
+
+  it('should display find your email message', () => {
+    cy.contains('Find Your Email').should('exist')
+  })
+})
+
+describe('testing reset email message screen', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:3000/resetMessage')
+  })
+
+  it('should display find your email message', () => {
+    cy.contains('Reset Your Password').should('exist')
+  })
+
+})
+
+describe('testing change password screen', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:3000/changePassword')
+  })
+
+  it('should type text into the input field', () => {
+    cy.get('.cpPassword')
+      .type('exampleText') 
+      .should('have.value', 'exampleText'); 
+  })
+
+  it('should type text into the input field', () => {
+    cy.get('.cpComfirmPassword')
+      .type('exampleText') 
+      .should('have.value', 'exampleText'); 
+  })
+
+})
+
+describe('testing change password success page', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:3000/changePasswordSuccess')
+  })
+
+  it('should display "Account Created!" text', () => {
+    cy.contains('Password Changed!').should('exist')
+  })
+
+  it('should display the success message', () => {
+    cy.contains('Your password has been changed successfully. You many now close this window.').should('exist')
+  })
+})
