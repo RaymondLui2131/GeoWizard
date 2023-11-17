@@ -14,7 +14,7 @@ import { p1, p2, p3, p4, p5, p6, p7, p8, p9 } from '../assets/EditMapAssets/poin
 import { circle, triangle, square, star, hexagon, pentagon } from '../assets/EditMapAssets/symbolImages/index.js'
 import { a1, a2, a3, a4, a5, a6 } from '../assets/EditMapAssets/arrowImages/index.js'
 import { authgetUser } from '../api/auth_request_api.js';
-import { saveUserMap } from "../api/map_request_api.js"
+// import { saveUserMap } from "../api/map_request_api.js"
 import { /**UserActionType, */ UserContext } from "../api/UserContext.js"
 import { /**MapActionType，*/ MapContext } from "../api/MapContext.js"
 
@@ -63,7 +63,7 @@ const BottomRow = () => {
         e.preventDefault()
         const userObj = authgetUser(user.token)
         if (userObj) {
-            
+            console.log(userObj)            
         }
     }
 

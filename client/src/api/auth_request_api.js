@@ -63,7 +63,6 @@ export const authgetUser = async (token) => {
                 Authorization: `Bearer ${token}`
             }
         })
-        console.log(response.data)
         return response.data
     } catch (err) {
         return err.response
