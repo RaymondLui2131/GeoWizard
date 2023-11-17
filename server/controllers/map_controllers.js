@@ -8,12 +8,22 @@ const Map = require("../models/map_model")
  * 
  */
 const saveUserMap = asyncHandler(async (req, res) => {
-    const { user, map } = req.body
-    // incomplete
+    const response = createMap(req.body)
+    const { user_id } = req.body
+    if (response.status == 400) {
+        return res.status(400).json({
+            message: "Save user map failed"
+        })
+    }
+
+    // find user by id and add the map_id to user.maps
+    return res.status(200).json({
+        message: "Save user map successful"
+    })
 })
 
 const createMap = asyncHandler(async (req, res) => { // used within saveUserMap
-    const { title, user_id, mapData, isPublic, mapType, description } = req.body
+    const { user_id, title, isPublic, mapType, description, mapData } = req.body
     if (!(title && user_id && mapData)) {
         return res.status(200).json({
             message: "Missing required fields for map creation"
