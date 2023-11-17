@@ -58,11 +58,13 @@ export const authloginUser = async (email, password) => {
 
 export const authgetUser = async (token) => {
     try {
-        return await axios.get(`${API_URL}me`, {
+        const response = await axios.get(`${API_URL}me`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         })
+        console.log(response.data)
+        return response.data
     } catch (err) {
         return err.response
     }

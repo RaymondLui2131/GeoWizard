@@ -92,7 +92,7 @@ const EditUpload = () => {
                             </div>
                             <div className=" pt-20 ">
                                 <input className="hidden" type="file" accept=".zip, .json, .kml, .shp" ref={inputRef} onChange={handleFileChange} />
-                                <button className="bg-primary-GeoOrange px-16 rounded-full py-2 " onClick={() => uploadHandle()}>
+                                <button data-test-id="upload-button" className="bg-primary-GeoOrange px-16 rounded-full py-2 " onClick={() => uploadHandle()}>
                                     Upload
                                 </button>
                             </div>
