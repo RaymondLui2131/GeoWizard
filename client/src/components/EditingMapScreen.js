@@ -6,8 +6,6 @@ import PropTypes from 'prop-types';
 import { AlphaSlider, HueSlider } from 'react-slider-color-picker'
 import tinycolor from "tinycolor2";
 import { HexColorPicker } from 'react-colorful';
-
-
 import undo from '../assets/EditMapAssets/undoSmall.png'
 import redo from '../assets/EditMapAssets/redoSmall.png'
 // import franceMap from '../assets/EditMapAssets/france-r.geo.json'  //To be removed
@@ -15,8 +13,8 @@ import { MAP_TYPES, STRING_MAPPING } from '../constants/MapTypes.js'
 import { p1, p2, p3, p4, p5, p6, p7, p8, p9 } from '../assets/EditMapAssets/pointerImages/index.js'
 import { circle, triangle, square, star, hexagon, pentagon } from '../assets/EditMapAssets/symbolImages/index.js'
 import { a1, a2, a3, a4, a5, a6 } from '../assets/EditMapAssets/arrowImages/index.js'
-
-// import { UserActionType, UserContext } from "../api/UserContext.js"
+import { authgetUser } from '../api/auth_request_api.js';
+import { /**UserActionType, */ UserContext } from "../api/UserContext.js"
 import { /**MapActionType，*/ MapContext } from "../api/MapContext.js"
 
 const hexToHlsa = (hexString) => {
@@ -58,9 +56,14 @@ ColorSlider.propTypes = {
 };
 
 const BottomRow = () => {
+    const { user } = useContext(UserContext)
+    const { map } = useContext(MapContext)
     const handleSaveMap = async (e) => {
         e.preventDefault()
-        //
+        const userObj = authgetUser(user.token)
+        if (userObj) {
+            console.log("")
+        }
     }
 
     return (
@@ -79,7 +82,7 @@ const BottomRow = () => {
                         Export</button>
                     </div>
                     <div className='pl-12 inline-block pr-16'><button className='bg-primary-GeoOrange text-3xl
-                                                font-NanumSquareNeoOTF-Lt px-14 rounded-full py-2' onClick={handleSaveMap}>
+                                                font-NanumSquareNeoOTF-Lt px-14 rounded-full py-2 disabled:opacity-30' onClick={handleSaveMap} disabled={!(map && user)}>
                         Save</button>
                     </div>
                 </div>
