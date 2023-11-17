@@ -1,4 +1,4 @@
-import React, { createContext, useReducer } from 'react'
+import React, { createContext, useReducer, useMemo } from 'react'
 
 export const MapContext = createContext()
 
@@ -25,9 +25,9 @@ export const MapContextProvider = ({ children }) => {
     })
 
     console.log("Map State: " + state)
-
+    const contextValue = useMemo(() => ({ ...state, dispatch }), [state, dispatch])
     return (
-        <MapContext.Provider value={{ ...state, dispatch }}>
+        <MapContext.Provider value={contextValue}>
             {children}
         </MapContext.Provider>
     )

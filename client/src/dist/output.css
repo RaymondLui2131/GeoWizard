@@ -1124,10 +1124,6 @@ video {
   gap: 1.5rem;
 }
 
-.gap-4 {
-  gap: 1rem;
-}
-
 .self-center {
   align-self: center;
 }
@@ -1442,6 +1438,10 @@ video {
   padding-left: 2rem;
 }
 
+.pr-11 {
+  padding-right: 2.75rem;
+}
+
 .pr-14 {
   padding-right: 3.5rem;
 }
@@ -1464,6 +1464,10 @@ video {
 
 .pt-0 {
   padding-top: 0px;
+}
+
+.pt-1 {
+  padding-top: 0.25rem;
 }
 
 .pt-10 {
@@ -1591,6 +1595,10 @@ video {
   font-weight: 600;
 }
 
+.uppercase {
+  text-transform: uppercase;
+}
+
 .text-black {
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity));
@@ -1685,6 +1693,11 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.filter {
+  -webkit-filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+          filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
 @font-face {
   font-family: "PyeongChangPeace-Bold";
 
@@ -1707,6 +1720,31 @@ video {
   font-family: "NanumSquareNeoOTF-Lt";
 
   src: url("../assets/NanumSquareNeoOTF-Lt.otf");
+}
+
+.container{
+  padding-top: 30px;
+}
+
+/* This is the CSS for the deep purple rectangle in the center */
+
+.rectangle {
+  background-color: #6a0dad;
+  /* This is the deep purple color */
+  border-radius: 20px;
+  /* Rounded corners, adjust as needed */
+  padding: 30px;
+  /* Space inside the rectangle, adjust as needed */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* Optional: adds shadow for depth */
+  text-align: center;
+  /* Aligns the text in the center */
+  color: #fff;
+  /* White text color */
+  width: 600px;
+  /* Width of the rectangle, adjust as needed */
+  height: 600px;
+  /* Height of the rectangle, adjust as needed */
 }
 
 /* :root {
@@ -1831,6 +1869,22 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
+.disabled\:opacity-50:disabled {
+  opacity: 0.5;
+}
+
+.disabled\:opacity-10:disabled {
+  opacity: 0.1;
+}
+
+.disabled\:opacity-20:disabled {
+  opacity: 0.2;
+}
+
+.disabled\:opacity-30:disabled {
+  opacity: 0.3;
+}
+
 @media (prefers-color-scheme: dark) {
   .dark\:bg-gray-800 {
     --tw-bg-opacity: 1;
@@ -1846,6 +1900,10 @@ button:focus-visible {
 @media (min-width: 640px) {
   .sm\:h-20 {
     height: 5rem;
+  }
+
+  .sm\:h-28 {
+    height: 7rem;
   }
 }
 
