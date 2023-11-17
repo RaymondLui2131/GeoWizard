@@ -7,7 +7,7 @@ const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const path = require('path')
 const userRoutes = require("../routes/user_routes")
-
+const mapRoutes = require("../routes/map_routes")
 
 const createServer = () => {
     require('dotenv').config();
@@ -18,8 +18,9 @@ const createServer = () => {
     app.use(express.urlencoded({ extended: true }));
     app.use(cors());
     app.use(cookieParser());
-    app.use("/users", userRoutes);
 
+    app.use("/users", userRoutes);
+    app.use("/maps", mapRoutes)
     if (process.env.NODE_ENV === 'production') {
         const buildPath = path.join(__dirname, "../../client/build");
         app.use(express.static(buildPath));
