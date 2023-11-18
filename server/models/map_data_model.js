@@ -10,7 +10,7 @@ const Schema = mongoose.Schema
 
 const mapDataSchema = new Schema({
     original_map: {
-        type: Buffer,
+        type: Object,
         required: true
     },
 
