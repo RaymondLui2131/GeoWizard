@@ -99,13 +99,31 @@ export const postUser = async (userData) => {
     }
 }
 
+export const checkUserEmail = async (userData) => {
+    let link;
+    if (process.env.NODE_ENV == 'development'){
+        link = 'http://localhost:4000/users/emailCheck'
+    }
+    else if (process.env.NODE_ENV == 'production'){
+        link = 'https://geowizard-app-b802ae01ce7f.herokuapp.com/users/emailCheck'
+    }
+    try {
+        const response = await axios.post(link, userData);
+        return response
+    } catch (err) {
+        console.log('link: %s', link);
+        return err.response
+    }
+}
+
 const api = {
     authRegisterUser,
     authgetUser,
     authloginUser,
     authgetMaps,
     googleLoginUser,
-    postUser
+    postUser,
+    checkUserEmail
 }
 
 export default api
