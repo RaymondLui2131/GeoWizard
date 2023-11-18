@@ -12,7 +12,7 @@ const API_URL = `${baseURL}${endpoint}`;
 
 export const saveUserMap = async (user_id, title, isPublic, mapType, description, mapData) => {
     try {
-        return await axios.put(`${API_URL}save`, {
+        const response = await axios.put(`${API_URL}save`, {
             user_id: user_id,
             title: title,
             isPublic: isPublic,
@@ -20,6 +20,8 @@ export const saveUserMap = async (user_id, title, isPublic, mapType, description
             description: description,
             mapData: mapData
         })
+
+        return response
     } catch (err) {
         return err.response
     }

@@ -1,10 +1,10 @@
 // GeoBuf Compression API
 import geobuf from 'geobuf'
 import Pbf from 'pbf'
-//const { Buffer } = require('buffer');
+const { Buffer } = require('buffer');
 
 export const geojson_compress = (data) =>{
-    const encoded = geobuf.encode(data, new Pbf());
+    const encoded = Buffer.from(geobuf.encode(data, new Pbf()));
     //let sizeInBytes = Buffer.from(encoded).length;
     //console.log(`Size of encoded data: ${sizeInBytes} bytes`);
     return encoded

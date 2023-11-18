@@ -75,9 +75,9 @@ const mapSchema = new Schema({
         default: 'NONE'
     },
 
-    mapData: { // stores the geojson map data in either binary encoded form (geobuf) or the geojson object type specified by MongoDb docs
+    MapData: { // stores the geojson map data in either binary encoded form (geobuf) or the geojson object type specified by MongoDb docs
         type: Schema.Types.ObjectId,
-        ref: 'mapData',
+        ref: 'MapData',
         required: true
     },
 },
