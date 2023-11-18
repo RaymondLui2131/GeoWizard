@@ -9,6 +9,7 @@ on:
       - jason_dep 
       - dev
       - jason_front
+      - jaden
 
 jobs:
   Cypress:
