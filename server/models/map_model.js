@@ -16,7 +16,8 @@
 //       "name": "Dinagat Islands"
 //     }
 //   }
-
+const mongoose = require('mongoose')
+const Schema = mongoose.Schema
 
 const mapSchema = new Schema({
     title: {
@@ -31,7 +32,8 @@ const mapSchema = new Schema({
 
     user_id: {
         type: Schema.Types.ObjectId,
-        ref: 'User'
+        ref: 'User',
+        required: true
     },
 
     likes: {
@@ -73,9 +75,9 @@ const mapSchema = new Schema({
         default: 'NONE'
     },
 
-    mapData: { // stores the geojson map data in either binary encoded form (geobuf) or the geojson object type specified by MongoDb docs
+    MapData: { // stores the geojson map data in either binary encoded form (geobuf) or the geojson object type specified by MongoDb docs
         type: Schema.Types.ObjectId,
-        ref: 'mapData',
+        ref: 'MapData',
         required: true
     },
 },

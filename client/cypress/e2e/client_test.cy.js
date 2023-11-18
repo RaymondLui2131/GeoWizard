@@ -1,3 +1,5 @@
+import 'cypress-file-upload'
+
 describe('template spec', () => {
   it('passes', () => {
     cy.visit('http://localhost:3000') // change this later
@@ -101,7 +103,7 @@ describe('testing edit upload', () => {
   it('should move to editing page', () => {
 
     cy.get('.France').click()
-    cy.url().should('eq', 'http://localhost:3000/editingmap') 
+    cy.url().should('eq', 'http://localhost:3000/editingmap')
 
   })
 
@@ -111,10 +113,11 @@ describe('testing edit upload', () => {
   })
 
 })
-
 describe('testing editing map page', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:3000/editingmap')
+    cy.visit("http://localhost:3000/editUpload")
+    cy.get('[data-test-id="upload-button"]').click()
+    cy.get('input[type="file"]').attachFile("france-r.geo.json")
   })
 
   it('should change title', () => {
@@ -165,21 +168,23 @@ describe('testing create account screen', () => {
   })
 
   it('should type text into the input field', () => {
-    cy.get('.caUserName')
+
+    cy.get('.caUserEmail')
       .type('exampleText') 
       .should('have.value', 'exampleText'); 
+
   })
 
   it('should type text into the input field', () => {
     cy.get('.caPassword')
-      .type('exampleText') 
-      .should('have.value', 'exampleText'); 
+      .type('exampleText')
+      .should('have.value', 'exampleText');
   })
 
   it('should type text into the input field', () => {
     cy.get('.caComfirmPassword')
-      .type('exampleText') 
-      .should('have.value', 'exampleText'); 
+      .type('exampleText')
+      .should('have.value', 'exampleText');
   })
 
 })
@@ -205,8 +210,8 @@ describe('testing find email screen', () => {
 
   it('should type text into the input field', () => {
     cy.get('.theEmail')
-      .type('exampleText') 
-      .should('have.value', 'exampleText'); 
+      .type('exampleText')
+      .should('have.value', 'exampleText');
   })
 
   it('should display find your email message', () => {
@@ -232,14 +237,14 @@ describe('testing change password screen', () => {
 
   it('should type text into the input field', () => {
     cy.get('.cpPassword')
-      .type('exampleText') 
-      .should('have.value', 'exampleText'); 
+      .type('exampleText')
+      .should('have.value', 'exampleText');
   })
 
   it('should type text into the input field', () => {
     cy.get('.cpComfirmPassword')
-      .type('exampleText') 
-      .should('have.value', 'exampleText'); 
+      .type('exampleText')
+      .should('have.value', 'exampleText');
   })
 
 })

@@ -58,11 +58,12 @@ export const authloginUser = async (email, password) => {
 
 export const authgetUser = async (token) => {
     try {
-        return await axios.get(`${API_URL}me`, {
+        const response = await axios.get(`${API_URL}me`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         })
+        return response.data
     } catch (err) {
         return err.response
     }
@@ -81,12 +82,48 @@ export const authgetMaps = async (token) => {
     }
 }
 
+export const postUser = async (userData) => {
+    let link;
+    if (process.env.NODE_ENV == 'development'){
+        link = 'http://localhost:4000/users/register'
+    }
+    else if (process.env.NODE_ENV == 'production'){
+        link = 'https://geowizard-app-b802ae01ce7f.herokuapp.com/users/register'
+    }
+    try {
+        const response = await axios.post(link, userData);
+        return response
+    } catch (err) {
+        console.log('link: %s', link);
+        return err.response
+    }
+}
+
+export const checkUserEmail = async (userData) => {
+    let link;
+    if (process.env.NODE_ENV == 'development'){
+        link = 'http://localhost:4000/users/emailCheck'
+    }
+    else if (process.env.NODE_ENV == 'production'){
+        link = 'https://geowizard-app-b802ae01ce7f.herokuapp.com/users/emailCheck'
+    }
+    try {
+        const response = await axios.post(link, userData);
+        return response
+    } catch (err) {
+        console.log('link: %s', link);
+        return err.response
+    }
+}
+
 const api = {
     authRegisterUser,
     authgetUser,
     authloginUser,
     authgetMaps,
-    googleLoginUser
+    googleLoginUser,
+    postUser,
+    checkUserEmail
 }
 
 export default api
