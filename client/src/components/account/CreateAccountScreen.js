@@ -1,7 +1,7 @@
 
 import logo from "../../assets/geowizlogo.png";
 import { useState } from 'react'
-import { postUser } from '../../api/auth_request_api.js';
+import { postUser, checkUserEmail } from '../../api/auth_request_api.js';
 import { useNavigate } from 'react-router-dom'
 
 const LoginScreen = () => {
@@ -72,7 +72,10 @@ const LoginScreen = () => {
                     navigate('/createAccountSuccess'); 
                 }
                 else if (response.status === 400){
-                    setEmailInDb(true)
+                    const emailCheckResponse = await checkUserEmail(userData);
+                    if (emailCheckResponse.status === 400){
+                        setEmailInDb(true)
+                    }
                 }
             } catch (error) {
                 console.error('Error registering user:', error);
