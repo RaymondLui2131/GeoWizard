@@ -62,8 +62,8 @@ const BottomRow = ({ title, typeSelected }) => {
     const handleSaveMap = async (e) => {
         e.preventDefault()
         if (user) {
-            const mapData = geobuf_api.geojson_compress(map)
-            const response = await saveUserMap(user._id, "test title", false, 'NONE', "", mapData) // testing
+            // const mapData = geobuf_api.geojson_compress(map)
+            const response = await saveUserMap(user._id, "test title", false, 'NONE', "", map) // testing
             console.log(response)
         }
     }
