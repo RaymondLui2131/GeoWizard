@@ -129,10 +129,32 @@ const getUser = asyncHandler(async (req, res) => {
     return res.status(200).json(req.user)
 })
 
+/**
+ * 
+ * @desc Checks if email is already in the db
+ * @route GET /users/emailCheck
+ */
+const checkEmail = asyncHandler(async (req, res) => {
+    const { email } = req.body
+
+    // checks if users exists in the database
+    const userExists = await User.findOne({ email })
+
+    if (userExists) {
+        return res.status(400).json({
+            message: "User already exists"
+        })
+    }
+    return res.status(200).json({
+        message: "User is unique"
+    })
+})
+
 
 module.exports = {
     registerUser,
     loginUser,
     getUser,
-    googleLoginUser
+    googleLoginUser,
+    checkEmail
 }
