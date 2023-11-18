@@ -76,7 +76,39 @@ const createMap = asyncHandler(async (req, res) => { // used within saveUserMap
     return map._id // return only the id so it can be stored by the user
 })
 
+//Expects a mapID and returns the Map data 
+//GET
+const getMap = asyncHandler(async (req, res) => {
+    const mapID = req.query.mapID;
+    console.log(mapID)
+    const map = await Map.findById(mapID)
+    if (!map) {
+        return res.status(400).json({
+            message: "Could not find map"
+        })
+    }
+    const mapWithUser = await map.populate('user_id')
+    if (!mapWithUser) {
+        return res.status(400).json({
+            message: "Could not find user"
+        })
+    }
+    const mapWithData = await mapWithUser.populate('MapData')
+    console.log(mapWithData)
+    if (!mapWithData) {
+        return res.status(400).json({
+            message: "Could not find map data"
+        })
+    }
+
+    return res.json(mapWithData)
+
+})
+
+
+
 module.exports = {
     saveUserMap,
-    createMap
+    createMap,
+    getMap
 }

@@ -11,8 +11,9 @@ export const geojson_compress = (data) =>{
 }
 
 export const geojson_decompress = (data) =>{
-    const decoded = geobuf.decode(new Pbf(data));
-    //console.log(decoded)
+    const buffer = Buffer.from(data.data);
+    const decoded = geobuf.decode(new Pbf(buffer));
+    // console.log(decoded)
     return decoded
 }
 
