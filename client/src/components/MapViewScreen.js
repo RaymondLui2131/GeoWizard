@@ -363,15 +363,17 @@ const MapView = () => {
         <>
         <div className='bg-primary-GeoPurple min-h-screen max-h-screen flex justify-between items-center flex-col overflow-auto'>
             <div className='w-4/5 pt-5'>
-                <TitleDisplay {...{likes:likeCount, setLikes:setLikes, map_id: map_id, title:title, author:author, userLikes:userLikes, userDislikes:userDislikes}}></TitleDisplay>
+                {Object.keys(map).length
+                    ?<TitleDisplay {...{likes:likeCount, setLikes:setLikes, map_id: map_id, title:title, author:author, userLikes:userLikes, userDislikes:userDislikes}}></TitleDisplay>
+                    :null
+                }
                 <div className='flex flex-row justify-between h-[650px]'>
                     {Object.keys(map).length
-                            ?<MapDisplay {...{MapData: map.MapData}}/>
+                            ?<><MapDisplay {...{MapData: map.MapData}}/>
+                                <Key {...{type: mapType}}/>  
+                             </>
                         :null
-                    }
-                    
-                    <Key {...{type: mapType}}/>  
-  
+                    }  
                 </div>
                 
                 <div className='flex flex-row justify-between'>
