@@ -106,6 +106,7 @@ const BottomRow = ({ title, typeSelected }) => {
 
 const MapEditOptions = (props) => {
     const type_of_map = props.mapType
+    const setType = props.setType
     const selectedColor = '#3b82f6' //used for heatmap
 
     const [selected, setSelected] = useState('') //used to control current item can for any
@@ -128,17 +129,18 @@ const MapEditOptions = (props) => {
     const handleChangeColor = (newColor) => {
         setSymbColor(newColor)
     }
+    console.log("map selection",type_of_map)
     switch (type_of_map) {
-        case MAP_TYPES.NONE:
+        case MAP_TYPES['NONE']:
             return (null)
 
-        case MAP_TYPES.HEAT_MAP:
-            console.log(selected)
+        case MAP_TYPES['HEATMAP']:
+            console.log('This is selected',selected)
             return (
                 <>
                     <div className='invisible'>gap space</div>
                     <div className='h-full w-3/5 bg-gray-50 rounded-3xl '>
-                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt'>Colors</div>
+                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}>Colors</div>
                         <div className='grid grid-cols-3 gap-3 h-2/3 pt-12'>
                             <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { setHlsa(hexToHlsa('#ff0000')); setSelected('red') }}
                                 style={{ borderColor: selected === 'red' ? selectedColor : '#000000', backgroundColor: '#ff0000' }}></div>
@@ -193,12 +195,12 @@ const MapEditOptions = (props) => {
                     </div>
                 </>
             )
-        case MAP_TYPES.POINT_MAP:
+        case MAP_TYPES['POINT']:
             return (
                 <>
                     <div className='invisible'>gap space</div>
                     <div className='h-full w-3/5 bg-gray-50 rounded-3xl'>
-                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt'><div>Point Locator Options</div></div>
+                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}><div>Point Locator Options</div></div>
                         <div className='grid grid-cols-3 gap-3  h-4/5  mx-auto'>
                             <div className='flex justify-center items-center w-20 h-24 mx-auto my-auto origin-center border-4'
                                 style={{ borderColor: selected === 'p1' ? selectedColor : '#F9FAFB' }}>
@@ -240,12 +242,12 @@ const MapEditOptions = (props) => {
                     </div>
                 </>
             )
-        case MAP_TYPES.CHOROPLETH_MAP:
+        case MAP_TYPES['CHOROPLETH']:
             return (
                 <>
                     <div className='invisible'>gap space</div>
                     <div className='h-full w-3/5 bg-gray-50 rounded-3xl font-NanumSquareNeoOTF-Lt flex flex-col'>
-                        <div className='bg-primary-GeoOrange rounded-t-3xl '><div>Color Selector</div>
+                        <div className='bg-primary-GeoOrange rounded-t-3xl ' onClick={() => setType(MAP_TYPES['NONE'])}><div>Color Selector</div>
                         </div>
                         <div className='flex flex-col items-center pt-10 w-full mx-auto'>
                             <HexColorPicker color={choroColor} onChange={setColor} style={{ width: '80%', height: '300px' }} />
@@ -272,12 +274,12 @@ const MapEditOptions = (props) => {
                     </div>
                 </>
             )
-        case MAP_TYPES.SYMBOL_MAP:
+        case MAP_TYPES['SYMBOL']:
             return (
                 <>
                     <div className='invisible'>gap space</div>
                     <div className='h-full w-3/5 bg-gray-50 rounded-3xl'>
-                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt'><div>Symbol Options</div></div>
+                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt'onClick={setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
                         <div className='grid grid-cols-2 gap-2  h-4/5  mx-auto'>
                             <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
                                 style={{ borderColor: selected === 'circle' ? selectedColor : '#F9FAFB' }}>
@@ -310,12 +312,12 @@ const MapEditOptions = (props) => {
                     </div>
                 </>
             )
-        case MAP_TYPES.FLOW_MAP:
+        case MAP_TYPES['FLOW']:
             return (
                 <>
                     <div className='invisible'>gap space</div>
                     <div className='h-full w-3/5 bg-gray-50 rounded-3xl'>
-                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt'><div>Symbol Options</div></div>
+                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt'onClick={setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
                         <div className='grid grid-cols-2 gap-2  h-4/5  mx-auto'>
                             <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
                                 style={{ borderColor: selected === 'a1' ? selectedColor : '#F9FAFB' }}>
@@ -349,16 +351,14 @@ const MapEditOptions = (props) => {
             break
     }
 }
-MapEditOptions.propTypes = {
-    mapType: PropTypes.number.isRequired
-};
+
 const MapView = () => {
     const { map, /** dispatch */ } = useContext(MapContext)
     // const [map, setMap] = useState(null)
     const [title, setTitle] = useState('')
     console.log(title)
     // const [map,] = useState(franceMap) //For testing
-    const [typeSelected, setType] = useState(MAP_TYPES.NONE)
+    const [typeSelected, setType] = useState(MAP_TYPES['NONE'])
     const [mapTypeClicked, isClicked] = useState(false)
 
     // console.log(map)
@@ -381,6 +381,7 @@ const MapView = () => {
         padded_NE.lng = padded_NE.lng + 5
         padded_SW.lng = padded_SW.lng - 5
     }
+    const mapString = STRING_MAPPING[typeSelected]
     return (
         map && (<>
             <div className='w-4/5 flex justify-center flex-row'>
@@ -412,23 +413,23 @@ const MapView = () => {
                         {!mapTypeClicked
                             ?
                             <>
-                                {typeSelected == ""
+                                {typeSelected == MAP_TYPES['NONE']
                                     ? <button className='w-3/5 bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked)}>Select Map Type ▼ </button>
                                     :
                                     <>
-                                        <button className='w-3/5 bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked)}>{STRING_MAPPING[typeSelected]}</button>
-                                        <MapEditOptions {...{ mapType: typeSelected }} />
+                                        <button className='w-3/5 bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked )}>{mapString}</button>
+                                        <MapEditOptions {...{ mapType: typeSelected, setType:setType}} />
                                     </>
                                 }
                             </>
                             :
                             <>
                                 <button onClick={() => isClicked(!mapTypeClicked)} className='w-3/5 bg-primary-GeoOrange'>Select Map Type ▼ </button>
-                                <button className='w-3/5 bg-primary-GeoOrange ' onClick={() => { isClicked(false); setType(MAP_TYPES.HEAT_MAP) }}>Heatmap </button>
-                                <button className='w-3/5 bg-primary-GeoOrange' onClick={() => { isClicked(false); setType(MAP_TYPES.POINT_MAP) }}>Point/Locator</button>
-                                <button className='w-3/5 bg-primary-GeoOrange' onClick={() => { isClicked(false); setType(MAP_TYPES.SYMBOL_MAP) }}> Symbol </button>
-                                <button className='w-3/5 bg-primary-GeoOrange' onClick={() => { isClicked(false); setType(MAP_TYPES.CHOROPLETH_MAP) }}>Choropleth </button>
-                                <button className='w-3/5 bg-primary-GeoOrange' onClick={() => { isClicked(false); setType(MAP_TYPES.FLOW_MAP) }}>Flow </button>
+                                <button className='w-3/5 bg-primary-GeoOrange ' onClick={() => { isClicked(false); setType(MAP_TYPES['HEATMAP']) }}>Heatmap </button>
+                                <button className='w-3/5 bg-primary-GeoOrange' onClick={() => { isClicked(false); setType(MAP_TYPES['POINT']) }}>Point/Locator</button>
+                                <button className='w-3/5 bg-primary-GeoOrange' onClick={() => { isClicked(false); setType(MAP_TYPES['SYMBOL']) }}> Symbol </button>
+                                <button className='w-3/5 bg-primary-GeoOrange' onClick={() => { isClicked(false); setType(MAP_TYPES['CHOROPLETH']) }}>Choropleth </button>
+                                <button className='w-3/5 bg-primary-GeoOrange' onClick={() => { isClicked(false); setType(MAP_TYPES['FLOW']) }}>Flow </button>
                             </>
                         }
 
