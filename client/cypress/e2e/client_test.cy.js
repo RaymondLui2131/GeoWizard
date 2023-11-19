@@ -130,12 +130,12 @@ describe('testing editing map page', () => {
   })
 })
 
-describe('testing editing map page', () => {
+describe('testing view page', () => {
   beforeEach(() => {
     cy.visit('http://localhost:3000/mapview')
   })
 
-  it('should change title', () => {
+  it('should change comment', () => {
     cy.get('input[placeholder="Enter new comment...').type('New Comment').should('have.value', 'New Comment')
   })
 
