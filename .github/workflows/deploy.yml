@@ -37,6 +37,5 @@ jobs:
         uses: actions/upload-artifact@v3
         if: failure()
         with:
-            working-directory: client
-            name: cypress-screenshots
-            path: cypress/screenshots
+            name: client/cypress-screenshots
+            path: client/cypress/screenshots
