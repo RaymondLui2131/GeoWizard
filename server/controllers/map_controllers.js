@@ -100,15 +100,36 @@ const getMap = asyncHandler(async (req, res) => {
             message: "Could not find map data"
         })
     }
-
-    return res.json(mapWithData)
-
+    const mapWithComments = await map.populate('comments')
+    if (!mapWithComments) {
+        return res.status(400).json({
+            message: "Could not find comments"
+        })
+    }
+    return res.json(mapWithComments)
 })
 
+//Expects a mapID and userId, increments 
+//Put
+const changeLikesMap = asyncHandler(async (req, res) => {
+    const { user_id, map_id, amount } = req.body
+    console.log('Changing likes',amount)
+    const map = await Map.findByIdAndUpdate(map_id, {$inc:{ likes: amount } }, { new: true } )
+
+    if (!map) {
+        return res.status(400).json({
+            message: "Failed to find map"
+        })
+    }
+    return res.status(200).json({map})
+
+
+})
 
 
 module.exports = {
     saveUserMap,
     createMap,
-    getMap
+    getMap,
+    changeLikesMap
 }

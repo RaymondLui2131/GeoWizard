@@ -1,10 +1,10 @@
 const MAP_TYPES = {
-    NONE : 0,
-	HEAT_MAP: 1,
-	POINT_MAP: 2,
-	SYMBOL_MAP: 3,
-	CHOROPLETH_MAP: 4,
-    FLOW_MAP: 5
+    'NONE' : 0,
+	'HEATMAP': 1,
+	'POINT': 2,
+	'SYMBOL': 3,
+	'CHOROPLETH': 4,
+    'FLOW': 5
 }
 
 //Index cooresponds with MAP_TYPES
