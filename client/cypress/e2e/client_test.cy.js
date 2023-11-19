@@ -136,7 +136,7 @@ describe('testing view page', () => {
   })
 
   it('should change comment', () => {
-    cy.get('input[placeholder="Enter new comment...').type('New Comment').should('have.value', 'New Comment')
+    cy.get('input[placeholder="Enter new comment..."]').type('New Comment').should('have.value', 'New Comment')
   })
 
 })
