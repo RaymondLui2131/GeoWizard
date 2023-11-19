@@ -32,3 +32,10 @@ jobs:
           install: false
           wait-on: 'http://localhost:3000' 
           wait-on-timeout: 60 
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@latest
+        if: failure()
+        with:
+            name: cypress-screenshots
+            path: cypress/screenshots
