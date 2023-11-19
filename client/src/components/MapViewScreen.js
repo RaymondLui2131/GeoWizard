@@ -322,17 +322,17 @@ const AllComments = (props) =>{
 
 
 const MapView = () => {
-    const [map,setMap] = useState({}); //REPLACE WITH MAP CONTEXT
-    const [likeCount, setLikes] = useState(map.likes)
-    const [map_id,setMapID] = useState(map._id)
-    const [title,setTitle] = useState(map.title)
-    const [author,setAuthor] = useState(map.author)
-    const [userLikes,setUserLikes] = useState(map.userLikes)
-    const [userDislikes,setUserDislikes] = useState(map.userDislikes)
-    const [mapType, setMapType] = useState(map.mapType)
-    const [newComment,setNewComment] = useState('')
-    const [sortSelected, setSort] = useState('time')
+    const [map,setMap] = useState(null); //REPLACE WITH MAP CONTEXT
+    const [likeCount, setLikes] = useState(map?.likes || 0)
+    const [map_id, setMapID] = useState(map?._id || '')
+    const [title, setTitle] = useState(map?.title || '')
+    const [author, setAuthor] = useState(map?.user_id?.username || '')
+    const [userLikes, setUserLikes] = useState(map?.userLikes || [])
+    const [userDislikes, setUserDislikes] = useState(map?.userDislikes || [])
+    const [mapType, setMapType] = useState(map?.mapType || '')
 
+    const [sortSelected, setSort] = useState('time')
+    const [newComment,setNewComment] = useState('')
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -363,12 +363,12 @@ const MapView = () => {
         <>
         <div className='bg-primary-GeoPurple min-h-screen max-h-screen flex justify-between items-center flex-col overflow-auto'>
             <div className='w-4/5 pt-5'>
-                {Object.keys(map).length
+                {map
                     ?<TitleDisplay {...{likes:likeCount, setLikes:setLikes, map_id: map_id, title:title, author:author, userLikes:userLikes, userDislikes:userDislikes}}></TitleDisplay>
                     :null
                 }
                 <div className='flex flex-row justify-between h-[650px]'>
-                    {Object.keys(map).length
+                    {map
                             ?<><MapDisplay {...{MapData: map.MapData}}/>
                                 <Key {...{type: mapType}}/>  
                              </>
@@ -401,7 +401,11 @@ const MapView = () => {
                         >Post</button>
                     </div>
                 </div>
-                <AllComments {...{comments:map.comments}} />
+                {map
+                    ?<AllComments {...{comments:map.comments}} />
+                    :null   
+                }
+                
             </div>
         </div>
         </>
