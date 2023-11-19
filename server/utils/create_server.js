@@ -8,6 +8,7 @@ const cookieParser = require('cookie-parser')
 const path = require('path')
 const userRoutes = require("../routes/user_routes")
 const mapRoutes = require("../routes/map_routes")
+const commentRoutes = require("../routes/comments_routes")
 const bodyParser = require("body-parser")
 const createServer = () => {
     require('dotenv').config();
@@ -26,6 +27,7 @@ const createServer = () => {
     app.use(cookieParser());
     app.use("/users", userRoutes);
     app.use("/maps", mapRoutes)
+    app.use("/comments", commentRoutes);
     if (process.env.NODE_ENV === 'production') {
         const buildPath = path.join(__dirname, "../../client/build");
         app.use(express.static(buildPath));
