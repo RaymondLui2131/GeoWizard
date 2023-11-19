@@ -337,7 +337,7 @@ const MapView = () => {
         const fetchData = async () => {
             try {
                 console.log("In view")
-                const responseMap = await getMap('655805f27a6bfb3741afc2a9')
+                const responseMap = await getMap('655a88b538ae7a688d3d18ce')
                 setMap(responseMap)
                 setMapID(responseMap._id)
                 setTitle(responseMap.title)
