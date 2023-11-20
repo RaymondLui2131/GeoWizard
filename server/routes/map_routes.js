@@ -4,4 +4,5 @@ const { saveUserMap, createMap, getMap, getAllMaps } = require("../controllers/m
 router.put("/save", saveUserMap)
 router.get("/getMap", getMap)
 router.get("/getAllMaps", getAllMaps)
+router.put("/changeLikesMap", changeLikesMap)
 module.exports = router

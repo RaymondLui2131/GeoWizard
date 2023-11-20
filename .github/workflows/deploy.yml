@@ -9,6 +9,7 @@ on:
       - jason_dep 
       - dev
       - jason_front
+      - jaden
 
 jobs:
   Cypress:
@@ -31,3 +32,10 @@ jobs:
           install: false
           wait-on: 'http://localhost:3000' 
           wait-on-timeout: 60 
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+            name: clientcypress-screenshots
+            path: client/cypress/screenshots

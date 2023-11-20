@@ -75,11 +75,28 @@ const mapSchema = new Schema({
         default: 'NONE'
     },
 
+    userLikes: {
+        type: [{
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        }],
+        default: []
+    },
+
+    userDislikes: {
+        type: [{
+            type: Schema.Types.ObjectId,
+            ref: 'User'
+        }],
+        default: []
+    },
+
     MapData: { // stores the geojson map data in either binary encoded form (geobuf) or the geojson object type specified by MongoDb docs
         type: Schema.Types.ObjectId,
         ref: 'MapData',
         required: true
     },
+    
 },
 
     {

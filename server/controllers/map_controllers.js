@@ -100,16 +100,38 @@ const getMap = asyncHandler(async (req, res) => {
             message: "Could not find map data"
         })
     }
+    const mapWithComments = await map.populate('comments')
+    if (!mapWithComments) {
+        return res.status(400).json({
+            message: "Could not find comments"
+        })
+    }
+    return res.json(mapWithComments)
+})
 
-    return res.json(mapWithData)
+
+//Expects a mapID and userId, increments 
+//Put
+const changeLikesMap = asyncHandler(async (req, res) => {
+    const { user_id, map_id, amount } = req.body
+    console.log('Changing likes',amount)
+    const map = await Map.findByIdAndUpdate(map_id, {$inc:{ likes: amount } }, { new: true } )
+
+    if (!map) {
+        return res.status(400).json({
+            message: "Failed to find map"
+        })
+    }
+    return res.status(200).json({map})
+
 
 })
+
 
 //Gets All Maps that are public
 //GET
 // query should contain what they searched, and time/sort vars
 const getAllMaps = asyncHandler(async (req, res) => {
-
     console.log('req', req.query)
     const {q, page} = req.query
     console.log('page #', page)
@@ -132,5 +154,6 @@ module.exports = {
     saveUserMap,
     createMap,
     getMap,
-    getAllMaps
+    getAllMaps,
+    changeLikesMap
 }

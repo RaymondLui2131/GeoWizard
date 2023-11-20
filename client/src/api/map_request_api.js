@@ -49,15 +49,17 @@ export const getMap = async (mapID) => {
     }
 }
 
+//changesthe like counter for a map
+export const changeLikesMap = async (user_id, map_id, amount) => {
+    try {
+        const response = await axios.put(`${API_URL}changeLikesMap`, {
+            user_id: user_id,
+            map_id: map_id,
+            amount:amount
+        })
+        return response
+    } catch (err) {
+        return err.response
+    }
+}
 
-// get all maps that are public == true (Not getting the mapdata)
-// export const getAllMaps = async () => {
-//     try {
-//         const response = await axios.get(`${API_URL}getAllMaps`, {
-//         })
-//         const data = response.data
-//         return data
-//     } catch (err) {
-//         return err.response
-//     }
-// }
