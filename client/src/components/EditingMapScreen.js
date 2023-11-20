@@ -279,7 +279,7 @@ const MapEditOptions = (props) => {
                 <>
                     <div className='invisible'>gap space</div>
                     <div className='h-full w-3/5 bg-gray-50 rounded-3xl'>
-                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt'onClick={setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
+                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt'onClick={() => setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
                         <div className='grid grid-cols-2 gap-2  h-4/5  mx-auto'>
                             <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
                                 style={{ borderColor: selected === 'circle' ? selectedColor : '#F9FAFB' }}>
@@ -317,7 +317,7 @@ const MapEditOptions = (props) => {
                 <>
                     <div className='invisible'>gap space</div>
                     <div className='h-full w-3/5 bg-gray-50 rounded-3xl'>
-                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt'onClick={setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
+                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt'onClick={() => setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
                         <div className='grid grid-cols-2 gap-2  h-4/5  mx-auto'>
                             <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
                                 style={{ borderColor: selected === 'a1' ? selectedColor : '#F9FAFB' }}>
@@ -418,7 +418,7 @@ const MapView = () => {
                                     :
                                     <>
                                         <button className='w-3/5 bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked )}>{mapString}</button>
-                                        <MapEditOptions {...{ mapType: typeSelected, setType:setType}} />
+                                        <MapEditOptions mapType={typeSelected}  setType={setType} />
                                     </>
                                 }
                             </>
