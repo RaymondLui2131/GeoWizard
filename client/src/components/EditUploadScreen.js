@@ -71,6 +71,7 @@ const EditUpload = () => {
                 dispatch({ type: MapActionType.UPLOAD, payload: geojson })
             }
 
+            dispatch({ type: MapActionType.RESET })
             reader.readAsText(selected_file)
             navigate('/editingMap')   //For now brings you back to / change later
         }

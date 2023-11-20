@@ -4,7 +4,8 @@ export const MapContext = createContext()
 
 export const MapActionType = {
     UPLOAD: "UPLOAD",
-    VIEW: "VIEW"
+    VIEW: "VIEW",
+    RESET: "RESET"
 }
 
 export const mapReducer = (state, action) => {
@@ -15,6 +16,10 @@ export const mapReducer = (state, action) => {
         }
         case "VIEW": {
             return { ...state, map: payload }
+        }
+
+        case "RESET": {
+            return { ...state, map: null }
         }
 
         default:

@@ -1,7 +1,6 @@
 import { useState, useContext,useEffect } from 'react'
 import { MapContainer, TileLayer,GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
-import PropTypes from 'prop-types';
 import {ReactComponent as ThumbsIcon} from '../assets/MapViewAssets/thumpsUp.svg'
 import {ReactComponent as ThumbsGreen} from '../assets/MapViewAssets/thumpsUpGreen.svg'
 import {ReactComponent as ThumbsRed} from '../assets/MapViewAssets/thumpsUpRed.svg'
@@ -10,9 +9,8 @@ import {AlphaSlider} from 'react-slider-color-picker'
 import franceMap from '../assets/EditMapAssets/france-r.geo.json'  //To be removed
 import { UserContext } from "../api/UserContext.js"
 import { MapContext } from "../api/MapContext"
-import { getMap,changeLikesMap } from '../api/map_request_api';  //for now requesting, will change to context later
-
-
+import { changeLikesMap } from '../api/map_request_api';  //for now requesting, will change to context later
+import { changeLikesComment,postComment } from '../api/comment_request_api.js';
 const fakeView = {
     title:'The Title of the Map',
     author: 'anon123',
@@ -67,35 +65,43 @@ const TitleDisplay = (props) =>{
     const author = props.author
     const userLikes = props.userLikes
     const userDislikes = props.userDislikes
+    useEffect(() => {
+        if(user)
+        {
+            const foundLike = userLikes.filter((id) => id === user._id)
+            console.log("All Likes",userLikes)
+            console.log("found like",foundLike)
+            if(foundLike.length > 0)
+            {
+                setLike('green')
+                console.log("Setting Greenn")
+            }
+            else
+            {
+                const foundDislike = userDislikes.filter((id) => id === user._id)
+                if(foundDislike.length > 0)
+                    setLike('red')
+            }
+        }
+    },[])
+
     const handleLike = async (likeClicked) =>{
 
         if(!user) //not signed in handle not sign in todo
                 return
-        else
-        {
-            const foundLike = userLikes.filter((id) => id === user._id)
-            if(foundLike.length > 1)
-                setLike('green')
-            else
-            {
-                const foundDislike = userDislikes.filter((id) => id === user._id)
-                if(foundDislike.length > 1)
-                    setLike('red')
-            }
-        }
         if(currentLike === likeClicked)
         {
             setLike(null)
             if(currentLike === 'green')
             {
                 setCounter(currentCounter - 1)
-                const response = await changeLikesMap(user._id, map_id,-1)
+                const response = await changeLikesMap(user._id, map_id,-1,true)
                 console.log(response)
             }
             else
             {
                 setCounter(currentCounter + 1)
-                const response = await changeLikesMap(user._id, map_id,1)
+                const response = await changeLikesMap(user._id, map_id,1,true)
                 console.log(response)
             }
             return
@@ -105,26 +111,26 @@ const TitleDisplay = (props) =>{
             if(likeClicked === 'green')
             {
                 setCounter(currentCounter + 1)
-                const response = await changeLikesMap(user._id, map_id,1)
+                const response = await changeLikesMap(user._id, map_id,1,false)
                 console.log(response)
             }
             else
             {
                 setCounter(currentCounter - 1)
-                const response = await changeLikesMap(user._id, map_id,-1)
+                const response = await changeLikesMap(user._id, map_id,-1,false)
                 console.log(response)
             }
         else
             if(likeClicked === 'green')
             {
                 setCounter(currentCounter + 2)
-                const response = await changeLikesMap(user._id, map_id,2)
+                const response = await changeLikesMap(user._id, map_id,2,false)
                 console.log(response)
             }
             else
             {
                 setCounter(currentCounter - 2)
-                const response = await changeLikesMap(user._id, map_id,-2)
+                const response = await changeLikesMap(user._id, map_id,-2,false)
                 console.log(response)
             }
     }
@@ -269,23 +275,57 @@ const Key = (props) =>{//Note this key layout only works for color
 
 const Comment = (props) => {
     const comment = props.comment
-
+    console.log("This is comment",comment)
     const [currentLike,setLike] = useState(false)
     const [votes,setVotes] = useState(comment.votes)
-
+    const {user} = useContext(UserContext)
     const currTime = new Date()
     const commentTime = new Date(comment.createdAt)
-    const time_diff = currTime.getSeconds() - commentTime.getSeconds() //replace with better time diff
+    const time_diff = currTime - commentTime //replace with better time diff
 
-    const handleLike = () =>{
+    const secondsDiff = Math.floor(time_diff / 1000);
+    const minutesDiff = Math.floor(secondsDiff / 60);
+    const hoursDiff = Math.floor(minutesDiff / 60);
+    const daysDiff = Math.floor(hoursDiff / 24);
+    let formattedTimeDiff;
+    if (daysDiff > 0) {
+        formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-daysDiff, 'day');
+    } else if (hoursDiff > 0) {
+        formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-hoursDiff, 'hour');
+    } else if (minutesDiff > 0) {
+        formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-minutesDiff, 'minute');
+    } else {
+        formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-secondsDiff, 'second');
+    }
+    useEffect(() => {
+        if(user)
+        {
+            const foundLikedUser = (comment.usersVoted).filter((id) => id === user._id)
+            if(foundLikedUser > 0)
+                setLike(true)
+        }
+    },[])
+    
+    const handleLike = async () =>{
+        if(!user)//handle user not signed in later
+            return 
         if(currentLike)
+        {
+            const response = changeLikesComment(user._id,comment._id, -1)
             setVotes(votes - 1)
+            console.log(response)
+        }
         else
+        {
+            const response = changeLikesComment(user._id,comment._id, 1)
             setVotes(votes + 1)
+            console.log(response)
+        }
         setLike(!currentLike)
     }
     if(!comment)
         return null
+    
     return(
         <>
         <div className='flex flex-row justify-between border-2 rounded-full bg-gray-50 mb-1 mt-2'>
@@ -302,7 +342,7 @@ const Comment = (props) => {
                 <div className='font-NanumSquareNeoOTF-Lt'>{comment.text}</div>
             </div>
             <div className='w-1/12 h-24 flex flex-col justify-center items-center text-2x1'>
-                <div className='font-NanumSquareNeoOTF-Lt'>{'-'+ time_diff + " seconds"}</div> {/*Replace with better time*/}
+                <div className='font-NanumSquareNeoOTF-Lt'>{'-'+ formattedTimeDiff}</div> {/*Replace with better time*/}
             </div>
         </div>
         </>
@@ -311,69 +351,65 @@ const Comment = (props) => {
 
 const AllComments = (props) =>{
     const comments = props.comments
-    return null
-    // if(!comments)
-    //     return(<></>)
-    // const comProps = comments.map((c,i) =><Comment {...{key:c._id, comment:c}}/> )
-    // return(
-    //     <>
-    //         {comProps}
-    //     </>
-    // )
+    // console.log("THis is comments",comments)
+    // return null
+    if(!comments)
+        return(null)
+    const comProps = comments.map((c) =><Comment {...{key:c._id, comment:c}}/> )
+    return(
+        <>
+            {comProps}
+        </>
+    )
 }
 
 
 const MapView = () => {
 
-    // const { map } = useContext(MapContext) 
+    const { map } = useContext(MapContext) 
+    const { user } = useContext(UserContext) 
     // console.log(map)
-    const [map,setMap] = useState(null); //REPLACE WITH MAP CONTEXT
-    const [likeCount, setLikes] = useState(map?.likes || 0)
-    const [map_id, setMapID] = useState(map?._id || '')
-    const [title, setTitle] = useState(map?.title || '')
-    const [author, setAuthor] = useState(map?.user_id?.username || '')
-    const [userLikes, setUserLikes] = useState(map?.userLikes || [])
-    const [userDislikes, setUserDislikes] = useState(map?.userDislikes || [])
-    const [mapType, setMapType] = useState(map?.mapType || '')
+    const [mapView,] = useState(map||null); //REPLACE WITH MAP CONTEXT
+    const [likeCount, setLikes] = useState(mapView?.likes || 0)
+    const [map_id,] = useState(mapView?._id || '')
+    const [title,] = useState(mapView?.title || '')
+    const [author,] = useState(mapView?.user_id?.username || '')
+    const [userLikes,] = useState(mapView?.userLikes || [])
+    const [userDislikes,] = useState(mapView?.userDislikes || [])
+    const [mapType,] = useState(mapView?.mapType || '')
+    const [comments, setComments] = useState(mapView?.comments || [])
 
     const [sortSelected, setSort] = useState('time')
     const [newComment,setNewComment] = useState('')
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                console.log("In view")
-                const responseMap = await getMap('655a88b538ae7a688d3d18ce')
-                setMap(responseMap)
-                setMapID(responseMap._id)
-                setTitle(responseMap.title)
-                setAuthor(responseMap.user_id.username)
-                setLikes(responseMap.likes)
-                setMapType(responseMap.mapType)
-                setUserLikes(responseMap.userLikes)
-                setUserDislikes(responseMap.userDislikes)
-            } catch (error) {
-                console.error('Error fetching map data:', error);
-            }
-        };
-
-        fetchData();
-    }, [])
 
     const selectedColor = '#3b82f6' 
 
     console.log(newComment)    
-    // const { map } = useContext(MapContext)
     console.log("Map Type",mapType)
+
+    const postNewComment = async () =>{
+        if(!user)       //case where user not signed in
+            return
+        const response  = await postComment(newComment,user._id,map_id)
+        // console.log(response)
+        if(response.status === 200)
+        {
+            const commentList = comments.slice()
+            commentList.push(response.data.newComment)
+            setComments(commentList)
+            setNewComment('')
+        }
+    }
     return(
         <>
         <div className='bg-primary-GeoPurple min-h-screen max-h-screen flex justify-between items-center flex-col overflow-auto'>
             <div className='w-4/5 pt-5'>
-                {map
+                {mapView
                     ?<TitleDisplay {...{likes:likeCount, setLikes:setLikes, map_id: map_id, title:title, author:author, userLikes:userLikes, userDislikes:userDislikes}}></TitleDisplay>
                     :null
                 }
                 <div className='flex flex-row justify-between h-[650px]'>
-                    {map
+                    {mapView
                             ?<><MapDisplay {...{MapData: map.MapData}}/>
                                 <Key {...{type: mapType}}/>  
                              </>
@@ -398,16 +434,16 @@ const MapView = () => {
                     <div className='w-1/12 h-12 flex flex-col justify-center items-center FORSPACING'>
                     </div> 
                     <div className='flex items-center w-9/12'>
-                        <input type="text" name="newComment" placeholder='Enter new comment...' onChange={(e) => setNewComment(e.target.value)}
+                        <input type="text" name="newComment" placeholder='Enter new comment...' value={newComment} onChange={(e) => setNewComment(e.target.value)}
                             className='w-full bg-gray-50 font-NanumSquareNeoOTF-Lt'/>
                     </div>
                     <div className='w-1/12 h-11 flex flex-col  justify-center items-center '>
-                        <button className='bg-primary-GeoBlue text-2x1 font-NanumSquareNeoOTF-Lt w-full h-full rounded-full '
+                        <button className='bg-primary-GeoBlue text-2x1 font-NanumSquareNeoOTF-Lt w-full h-full rounded-full' onClick={()=> postNewComment()}
                         >Post</button>
                     </div>
                 </div>
-                {map
-                    ?<AllComments {...{comments:map.comments}} />
+                {mapView
+                    ?<AllComments {...{comments:comments}} />
                     :null   
                 }
                 
@@ -417,7 +453,6 @@ const MapView = () => {
     )
 
 }
-
 
 
 

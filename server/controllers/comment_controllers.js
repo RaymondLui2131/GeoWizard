@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler')
 const User = require("../models/user_model")
 const Comment = require("../models/comments_model")
+const Map = require("../models/map_model")
 
 
 /**
@@ -29,7 +30,7 @@ const postComment = asyncHandler(async (req, res) => {
     const userExists = await User.findOne({ _id: user_id });
     
     if (userExists) {
-        userExists.comments.push(userExists.id);
+        userExists.comments.push(newComment.id);
         await userExists.save();    
     }
     else {
@@ -38,12 +39,27 @@ const postComment = asyncHandler(async (req, res) => {
         })
     }
 
+    // adds comment into the Map's comments array
+    const mapExists = await Map.findOne({ _id: map_id });
+
+    if (mapExists) {
+        mapExists.comments.push(newComment.id);
+        await mapExists.save();    
+    }
+    else {
+        return res.status(400).json({
+            message: "Map not found"
+        })
+    }
+
     if (newComment) {
-        return res.status(200).json({
-            _id: newComment.id,
-            text: newComment.text,
-            user_id: newComment.user_id,
-            map_id: newComment.map_id
+        await newComment.populate('user_id')
+        console.log("serverNew".newComment)
+        return res.status(200).json({newComment
+            // _id: newComment.id,
+            // text: newComment.text,
+            // user_id: newComment.user_id,
+            // map_id: newComment.map_id
         })
     }
     
@@ -77,8 +93,26 @@ const getComment = asyncHandler(async (req, res) => {
 })
 
 
-
+//PUT increments/decrement vote counter on comment
+const changeLikesComment = asyncHandler(async (req, res) => {
+    const { user_id, comment_id, amount} = req.body
+    console.log('Changing likes',amount)
+    var comment
+    {
+        if(amount > 0)
+        comment = await Comment.findByIdAndUpdate(comment_id, {$inc:{ votes: amount }, $push: {usersVoted: user_id }}, { new: true } )
+        else
+        comment = await Comment.findByIdAndUpdate(comment_id, {$inc:{ votes: amount }, $pull: {usersVoted: user_id }} , { new: true } )
+    }
+    if (!comment) {
+        return res.status(400).json({
+            message: "Failed to find comment"
+        })
+    }
+    return res.status(200).json({comment})
+})
 module.exports = {
     postComment,
-    getComment
+    getComment,
+    changeLikesComment
 }

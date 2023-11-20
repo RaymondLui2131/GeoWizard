@@ -8,6 +8,7 @@ on:
       - raymondlui
       - jason_dep
       - jaden
+      - dev
 
 jobs:
   Server:
