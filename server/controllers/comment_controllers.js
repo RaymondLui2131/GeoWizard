@@ -53,6 +53,7 @@ const postComment = asyncHandler(async (req, res) => {
     }
 
     if (newComment) {
+        newComment.populate('user_id')
         return res.status(200).json({newComment
             // _id: newComment.id,
             // text: newComment.text,
