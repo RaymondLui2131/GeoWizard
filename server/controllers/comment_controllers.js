@@ -53,11 +53,11 @@ const postComment = asyncHandler(async (req, res) => {
     }
 
     if (newComment) {
-        return res.status(200).json({
-            _id: newComment.id,
-            text: newComment.text,
-            user_id: newComment.user_id,
-            map_id: newComment.map_id
+        return res.status(200).json({newComment
+            // _id: newComment.id,
+            // text: newComment.text,
+            // user_id: newComment.user_id,
+            // map_id: newComment.map_id
         })
     }
     
