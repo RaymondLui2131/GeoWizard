@@ -1,38 +1,66 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useCallback} from 'react'
 //import { Link } from 'react-router-dom'
 //import {authgetUser } from "../auth/auth_request_api"
 //import {useGetUser} from "./UserContext" //updating user via Context jadenw2542@gmail.com
-import HomeScreenMapCard from "./HomeScreenMapCard.js"
-import gz_2010_us_outline_500k from "../assets/gz_2010_us_outline_500k.json"
-//import useMapSearch from './useMapSearch.js'
+//import HomeScreenMapCard from "./HomeScreenMapCard.js"
+//import gz_2010_us_outline_500k from "../assets/gz_2010_us_outline_500k.json"
+import useMapSearch from './useMapSearch.js'
+//import { getAllMaps } from '../api/map_request_api.js'
+
 const HomeScreen = () => {
     //const user = useGetUser()
-
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [dropdownTimeOpen, setDropdownTimeOpen] = useState(false);
-    // const[query, setQuery] = useState('')
-    // const[pageNumber, setPageNumber] = useState('')
 
-    // const{
-    //     maps,
-    //     hasMore,
-    //     loading,
-    //     error
-    // } = useMapSearch(query, pageNumber)
+    const [maps1, setMaps] = useState(null)
 
-    const testMaps = []
+    const [query, setQuery] = useState('')
+    const [pageNumber, setPageNumber] = useState(1)
 
-    // function handleSearch(e){
-    //     setQuery(e.target.value)
-    //     setPageNumber(1)
-    // }
+    const {
+        maps,
+        hasMore,
+        loading,
+        error
+      } = useMapSearch(query, pageNumber)
 
-    for(let i = 0; i < 7; i++){
-       testMaps.push(gz_2010_us_outline_500k)
-    }
+    const observer = useRef()
+    const lastMapElementRef = useCallback(node =>{
+        if(loading) return
+        if(observer.current) observer.current.disconnect()
+        observer.current = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting && hasMore){
+                console.log('Visible')
+                setPageNumber(prevPageNumber => prevPageNumber + 1)
+            }
+        })
+        if(node) observer.current.observe(node)
+        console.log(node)
+    },[loading, hasMore])
+  
+
+    
+
+    function handleSearch(e) {
+        setQuery(e.target.value)
+        setPageNumber(1)
+      }
+
+    
+    // useEffect(() => {
+    //     getAllMaps().then(mapsData => {
+    //         setMaps(mapsData);
+    //         console.log(maps1)
+    //     }).catch(error => {
+    //         console.error('Error fetching maps:', error);
+    //     });
+    // }, []);
+
+    
 
     function handleRecents(){
         console.log("recents")
+        console.log(maps1)
     }
 
     function handleMostComments(){
@@ -116,21 +144,21 @@ const HomeScreen = () => {
             </div>
 
 
-                <div className="grid grid-cols-3 mx-24 py-5 z-0">
-                    {testMaps.map((map, index) => (
-                        <HomeScreenMapCard key={index} file={map} />
-                    ))}
 
-
-                {/* {maps.map(map =>{
-                    return <div key={map}>{map} </div>
-                })}        
+            <div>
+                <input type="text" value={query} onChange={handleSearch}></input>
+                <div className="grid grid-cols-2 mx-24 py-5 z-0">
+                    {maps.map((map, index) => {
+                    if (maps.length === index + 1) { //last book
+                        return <div ref={lastMapElementRef} key={map.id}>{map}</div>
+                    } else { 
+                        return <div key={map.id}>{map}</div>
+                    }
+                    })}
+                </div>
                 <div>{loading && 'Loading...'}</div>
-                <div>{loading && 'Error'}</div> */}
-
-
+                <div>{error && 'Error'}</div>
             </div>
-
         </div>
 
 
@@ -138,3 +166,14 @@ const HomeScreen = () => {
 }
 
 export default HomeScreen
+
+//<HomeScreenMapCard key={index} file={map} />
+
+// {maps && (
+//     <div className="grid grid-cols-3 mx-24 py-5 z-0">
+//         {/* You can map through the data if there are multiple items */}
+//         {maps.map((mapItem, index) => (
+//             <div key={index}>{mapItem.title}</div>
+//         ))}
+//     </div>
+//     )}

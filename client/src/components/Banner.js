@@ -94,7 +94,7 @@ const Banner = () => {
 
                         {user &&
                             (<div className="text-l font-PyeongChangPeace-Bold ml-10 py-2 px-6 text-gray-600">
-                                Welcome {user.name}! </div>)
+                                Welcome {user.username}! </div>)
                         }
 
                         {!user &&

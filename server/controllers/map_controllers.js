@@ -105,10 +105,32 @@ const getMap = asyncHandler(async (req, res) => {
 
 })
 
+//Gets All Maps that are public
+//GET
+// query should contain what they searched, and time/sort vars
+const getAllMaps = asyncHandler(async (req, res) => {
 
+    console.log('req', req.query)
+    const {q, page} = req.query
+    console.log('page #', page)
+    const pageSize = 3;
+    const skip = pageSize * (page - 1);
+
+    const publicMaps = await Map.find({ isPublic: true })
+            .skip(skip)
+            .limit(pageSize);
+    console.log(publicMaps)
+    if (!publicMaps) {
+        return res.status(400).json({
+            message: "Could not find map data"
+        })
+    }
+    return res.json(publicMaps)
+})
 
 module.exports = {
     saveUserMap,
     createMap,
-    getMap
+    getMap,
+    getAllMaps
 }

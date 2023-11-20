@@ -38,10 +38,26 @@ export const getMap = async (mapID) => {
         })
         const data = response.data
         const decompressedMapData = geobuf_api.geojson_decompress(data.MapData.original_map)
+        console.log(decompressedMapData)
         // console.log(data.MapData.original_map)
         data.MapData.original_map = decompressedMapData
+        console.log("hello", data)
+        console.log(data)
         return data
     } catch (err) {
         return err.response
     }
 }
+
+
+// get all maps that are public == true (Not getting the mapdata)
+// export const getAllMaps = async () => {
+//     try {
+//         const response = await axios.get(`${API_URL}getAllMaps`, {
+//         })
+//         const data = response.data
+//         return data
+//     } catch (err) {
+//         return err.response
+//     }
+// }
