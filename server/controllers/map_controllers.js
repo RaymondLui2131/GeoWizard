@@ -76,7 +76,7 @@ const createMap = asyncHandler(async (req, res) => { // used within saveUserMap
     return map._id // return only the id so it can be stored by the user
 })
 
-//Expects a mapID and returns the Map data 
+//Expects a mapID and returns the Map data  with MapData field that has geojson
 //GET
 const getMap = asyncHandler(async (req, res) => {
     const mapID = req.query.mapID;
@@ -128,7 +128,7 @@ const changeLikesMap = asyncHandler(async (req, res) => {
 })
 
 
-//Gets All Maps that are public
+//Gets Maps that are public
 //GET
 // query should contain what they searched, and time/sort vars
 const getAllMaps = asyncHandler(async (req, res) => {
