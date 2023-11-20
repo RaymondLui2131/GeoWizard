@@ -10,7 +10,7 @@ import franceMap from '../assets/EditMapAssets/france-r.geo.json'  //To be remov
 import { UserContext } from "../api/UserContext.js"
 import { MapContext } from "../api/MapContext"
 import { changeLikesMap } from '../api/map_request_api';  //for now requesting, will change to context later
-import { changeLikesComment } from '../api/comment_request_api.js';
+import { changeLikesComment,postComment } from '../api/comment_request_api.js';
 const fakeView = {
     title:'The Title of the Map',
     author: 'anon123',
@@ -275,7 +275,7 @@ const Key = (props) =>{//Note this key layout only works for color
 
 const Comment = (props) => {
     const comment = props.comment
-
+    console.log("This is comment",comment)
     const [currentLike,setLike] = useState(false)
     const [votes,setVotes] = useState(comment.votes)
     const {user} = useContext(UserContext)
@@ -325,6 +325,7 @@ const Comment = (props) => {
     }
     if(!comment)
         return null
+    
     return(
         <>
         <div className='flex flex-row justify-between border-2 rounded-full bg-gray-50 mb-1 mt-2'>
@@ -350,7 +351,7 @@ const Comment = (props) => {
 
 const AllComments = (props) =>{
     const comments = props.comments
-    console.log("THis is comments",comments)
+    // console.log("THis is comments",comments)
     // return null
     if(!comments)
         return(null)
@@ -366,6 +367,7 @@ const AllComments = (props) =>{
 const MapView = () => {
 
     const { map } = useContext(MapContext) 
+    const { user } = useContext(UserContext) 
     // console.log(map)
     const [mapView,] = useState(map||null); //REPLACE WITH MAP CONTEXT
     const [likeCount, setLikes] = useState(mapView?.likes || 0)
@@ -375,6 +377,7 @@ const MapView = () => {
     const [userLikes,] = useState(mapView?.userLikes || [])
     const [userDislikes,] = useState(mapView?.userDislikes || [])
     const [mapType,] = useState(mapView?.mapType || '')
+    const [comments, setComments] = useState(mapView?.comments || [])
 
     const [sortSelected, setSort] = useState('time')
     const [newComment,setNewComment] = useState('')
@@ -383,6 +386,19 @@ const MapView = () => {
 
     console.log(newComment)    
     console.log("Map Type",mapType)
+
+    const postNewComment = async () =>{
+        if(!user)       //case where user not signed in
+            return
+        const response  = await postComment(newComment,user._id,map_id)
+        // console.log(response)
+        if(response.status === 200)
+        {
+            const commentList = comments.slice()
+            commentList.push(response.data.newComment)
+            setComments(commentList)
+        }
+    }
     return(
         <>
         <div className='bg-primary-GeoPurple min-h-screen max-h-screen flex justify-between items-center flex-col overflow-auto'>
@@ -421,12 +437,12 @@ const MapView = () => {
                             className='w-full bg-gray-50 font-NanumSquareNeoOTF-Lt'/>
                     </div>
                     <div className='w-1/12 h-11 flex flex-col  justify-center items-center '>
-                        <button className='bg-primary-GeoBlue text-2x1 font-NanumSquareNeoOTF-Lt w-full h-full rounded-full '
+                        <button className='bg-primary-GeoBlue text-2x1 font-NanumSquareNeoOTF-Lt w-full h-full rounded-full' onClick={()=> postNewComment()}
                         >Post</button>
                     </div>
                 </div>
                 {mapView
-                    ?<AllComments {...{comments:map.comments}} />
+                    ?<AllComments {...{comments:comments}} />
                     :null   
                 }
                 

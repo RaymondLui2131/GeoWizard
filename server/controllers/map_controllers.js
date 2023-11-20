@@ -100,7 +100,14 @@ const getMap = asyncHandler(async (req, res) => {
             message: "Could not find map data"
         })
     }
-    const mapWithComments = await map.populate('comments')
+    const mapWithComments = await map
+    .populate({
+        path: 'comments',
+        populate: {
+            path: 'user_id',
+            model: 'User' 
+        }
+    })
     if (!mapWithComments) {
         return res.status(400).json({
             message: "Could not find comments"
