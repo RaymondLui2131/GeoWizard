@@ -2,50 +2,69 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faComment, faEye } from '@fortawesome/free-solid-svg-icons';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-//import gz_2010_us_outline_500k from "../assets/gz_2010_us_outline_500k.json";
 import { getMap } from '../api/map_request_api';
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useContext } from 'react';
+import { MapContext, MapActionType } from "../api/MapContext"
+import { useNavigate } from "react-router-dom";
+
 const HomeScreenMapCard = ({mapObject}) => {
-    const mapRef = useRef(null); // Create a ref for the map container
-    console.log(mapObject)
+    const {map, dispatch } = useContext(MapContext)
+    const navigate = useNavigate()
     
-    const geoJson = async() => (await getMap(mapObject.MapData)) 
+
+    const mapRef = useRef(null); // Create a ref for the map container
+    //console.log(mapObject)
+    
+    const geoJson = null //async() => (await getMap(mapObject.MapData)) 
 
     useEffect(() => {
         if (!mapObject || !mapObject.id) return;
         
         geoJson().then(geojsonData => {
-            if (!mapRef.current) return; // If the ref is not attached to the element, do nothing
+            if (!mapRef.current) return // If the ref is not attached to the element, do nothing
 
-            const map = L.map(mapRef.current).setView([39.50, -98.35], 4); // Use the ref here
+            const displayMap = L.map(mapRef.current).setView([39.50, -98.35], 4); // Use the ref here
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19
-            }).addTo(map);
+            }).addTo(displayMap)
 
-            const geojsonLayer = L.geoJSON(geojsonData).addTo(map);
+            const geojsonLayer = L.geoJSON(geojsonData).addTo(displayMap)
             
-            map.fitBounds(geojsonLayer.getBounds());
+            displayMap.fitBounds(geojsonLayer.getBounds())
 
             // Cleanup function to remove the map
             return () => {
-                if(map) map.remove();
+                if(displayMap) displayMap.remove()
             };
         }).catch(error => {
-            console.error("Error loading map data:", error);
+            console.error("Error loading map data:", error)
         });
         
-    }, [mapObject, geoJson]);
+    }, [mapObject, geoJson])
 
-    function handleView(){
-        console.log("view")
+    function handleView() {
+        //console.log("view");
+        //console.log(mapObject._id);
+
+        async function fetchAndDispatchMapData() {
+            try {
+                const data = await getMap(mapObject._id);
+                //console.log(data); 
+                dispatch({ type: MapActionType.VIEW, payload: data });
+                navigate('/mapView');
+            } catch (error) {
+                console.error("Error loading map data:", error);
+            }
+        }
+        fetchAndDispatchMapData();
     }
 
     return(
             <div className=" max-w-xl rounded border-2 border-primary-GeoBlue overflow-hidden shadow-lg bg-white m-4">
                 <div ref={mapRef} className="z-0 w-full h-96"></div>
                 <div className="px-6 py-4">
-                    <div className="font-NanumSquareNeoOTF-Bd text-3xl mb-2">US Outline</div>
+                    <div className="font-NanumSquareNeoOTF-Bd text-3xl mb-2">{mapObject.title}</div>
                     <p className="font-NanumSquareNeoOTF-Lt min-h-[10rem] text-gray-700 text-base">
                     {mapObject.description}
                     </p>

@@ -1,6 +1,6 @@
 const express = require("express")
 const router = express.Router()
-const { saveUserMap, createMap, getMap, getAllMaps } = require("../controllers/map_controllers")
+const { saveUserMap, createMap, getMap, getAllMaps, changeLikesMap } = require("../controllers/map_controllers")
 router.put("/save", saveUserMap)
 router.get("/getMap", getMap)
 router.get("/getAllMaps", getAllMaps)

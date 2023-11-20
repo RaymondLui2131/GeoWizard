@@ -3,13 +3,17 @@ import React, { createContext, useReducer, useMemo } from 'react'
 export const MapContext = createContext()
 
 export const MapActionType = {
-    UPLOAD: "UPLOAD"
+    UPLOAD: "UPLOAD",
+    VIEW: "VIEW"
 }
 
 export const mapReducer = (state, action) => {
     const { type, payload } = action
     switch (type) {
         case "UPLOAD": {
+            return { ...state, map: payload }
+        }
+        case "VIEW": {
             return { ...state, map: payload }
         }
 
@@ -25,7 +29,7 @@ export const MapContextProvider = ({ children }) => {
     })
 
     console.log("Map State: " + state)
-    const contextValue = useMemo(() => ({ ...state, dispatch }), [state, dispatch])
+    const contextValue = useMemo(() => ({ ...state, dispatch }), [state])
     return (
         <MapContext.Provider value={contextValue}>
             {children}

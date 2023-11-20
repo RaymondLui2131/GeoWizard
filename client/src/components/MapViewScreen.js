@@ -9,7 +9,9 @@ import {MAP_TYPES} from '../constants/MapTypes'
 import {AlphaSlider} from 'react-slider-color-picker'
 import franceMap from '../assets/EditMapAssets/france-r.geo.json'  //To be removed
 import { UserContext } from "../api/UserContext.js"
+import { MapContext } from "../api/MapContext"
 import { getMap,changeLikesMap } from '../api/map_request_api';  //for now requesting, will change to context later
+
 
 const fakeView = {
     title:'The Title of the Map',
@@ -322,6 +324,9 @@ const AllComments = (props) =>{
 
 
 const MapView = () => {
+
+    // const { map } = useContext(MapContext) 
+    // console.log(map)
     const [map,setMap] = useState(null); //REPLACE WITH MAP CONTEXT
     const [likeCount, setLikes] = useState(map?.likes || 0)
     const [map_id, setMapID] = useState(map?._id || '')

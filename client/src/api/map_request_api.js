@@ -41,7 +41,6 @@ export const getMap = async (mapID) => {
         console.log(decompressedMapData)
         // console.log(data.MapData.original_map)
         data.MapData.original_map = decompressedMapData
-        console.log("hello", data)
         console.log(data)
         return data
     } catch (err) {
