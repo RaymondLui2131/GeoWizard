@@ -8,15 +8,17 @@ import logo from "../assets/geowizlogo.png";
 import { useState, useContext } from 'react'
 import { useNavigate } from "react-router-dom";
 import { UserContext, UserActionType } from "../api/UserContext"
+import { SearchContext, SearchActionType } from "../api/SearchContext";
 
 const Banner = () => {
     const { user, dispatch } = useContext(UserContext)
+    const {searchQuery, searchDispatch} = useContext(SearchContext)
 
     const [searchTerm, setSearchTerm] = useState(''); // state for searchbar
-    const handleSearch = (event) => {
-        if (event.key === 'Enter') {
-            console.log("User hit enter")
-        }
+    const handleSearch = () => {
+
+        searchDispatch({ type: SearchActionType.SEARCH, payload: searchTerm })
+        console.log(searchQuery)
     };
 
     const menuItems = [
@@ -60,9 +62,13 @@ const Banner = () => {
                             style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            onKeyUp={handleSearch}
+                            onKeyUp={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleSearch();
+                                }
+                            }}
                         ></input>
-                        <button
+                        <button onClick={handleSearch}
                             className="text-l font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300 text-gray-600"
                         > Search</button>
                     </div>

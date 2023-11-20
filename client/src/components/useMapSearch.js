@@ -1,7 +1,6 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef} from "react";
 import axios from "axios";
 import HomeScreenMapCard from "./HomeScreenMapCard";
-//import { getMap } from "../api/map_request_api";
 const isLocal = process.env.NODE_ENV === "development";
 const host = isLocal ? "localhost" : window.location.hostname;
 const port = isLocal ? 4000 : window.location.port;
@@ -20,7 +19,6 @@ export default function useMapSearch(query, pageNumber) {
     const[hasMore, setHasMore] = useState(false)
     const isInitialMount = useRef(true);
 
-
     //reset maps if query changes
     useEffect(() => {
         setMaps([])
@@ -30,10 +28,10 @@ export default function useMapSearch(query, pageNumber) {
 
     useEffect(() => {
         if (isInitialMount.current) {
-            isInitialMount.current = false;
-            return;
+            isInitialMount.current = false
+            return
         }
-        console.log('Effect running:', { query, pageNumber });
+        console.log('Effect running:', { query, pageNumber })
         setLoading(true)
         setError(false)
         let cancel
@@ -43,9 +41,9 @@ export default function useMapSearch(query, pageNumber) {
             params: {q: query, page: pageNumber},
             cancelToken: new axios.CancelToken(c => cancel = c)
         }).then(res => {
-            //console.log(res)
+            console.log(res)
             setMaps(prevMaps => {
-                return [...new Set([...prevMaps, ...res.data.map(m => <HomeScreenMapCard mapObject={m}> </HomeScreenMapCard>)])] // concatenates more maps, change b.title to the map geojson file. 
+                return [...new Set([...prevMaps, ...res.data.map(m => <HomeScreenMapCard key={m} mapObject={m}> </HomeScreenMapCard>)])] // concatenates more maps, change b.title to the map geojson file. 
             })
             setHasMore(res.data.length > 0) // true if there are more maps, false if not
             setLoading(false)

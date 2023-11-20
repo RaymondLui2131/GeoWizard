@@ -15,12 +15,12 @@ const HomeScreenMapCard = ({mapObject}) => {
     const mapRef = useRef(null); // Create a ref for the map container
     //console.log(mapObject)
     
-    const geoJson = null //async() => (await getMap(mapObject.MapData)) 
+    const mapData = async() => (await getMap(mapObject._id)) 
 
     useEffect(() => {
         if (!mapObject || !mapObject.id) return;
         
-        geoJson().then(geojsonData => {
+        mapData().then(geojsonData => {
             if (!mapRef.current) return // If the ref is not attached to the element, do nothing
 
             const displayMap = L.map(mapRef.current).setView([39.50, -98.35], 4); // Use the ref here
@@ -41,23 +41,22 @@ const HomeScreenMapCard = ({mapObject}) => {
             console.error("Error loading map data:", error)
         });
         
-    }, [mapObject, geoJson])
+    }, [mapObject, mapData])
 
     function handleView() {
         //console.log("view");
         //console.log(mapObject._id);
 
-        async function fetchAndDispatchMapData() {
+        async function dispatchMapData() {
             try {
-                const data = await getMap(mapObject._id);
                 //console.log(data); 
-                dispatch({ type: MapActionType.VIEW, payload: data });
+                dispatch({ type: MapActionType.VIEW, payload: mapData });
                 navigate('/mapView');
             } catch (error) {
                 console.error("Error loading map data:", error);
             }
         }
-        fetchAndDispatchMapData();
+        dispatchMapData();
     }
 
     return(
