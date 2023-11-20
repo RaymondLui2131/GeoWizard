@@ -397,6 +397,7 @@ const MapView = () => {
             const commentList = comments.slice()
             commentList.push(response.data.newComment)
             setComments(commentList)
+            setNewComment('')
         }
     }
     return(
