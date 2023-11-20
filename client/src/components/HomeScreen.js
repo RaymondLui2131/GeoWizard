@@ -1,15 +1,9 @@
 import React, { useState, useRef, useCallback, useContext, useEffect} from 'react'
-//import { Link } from 'react-router-dom'
-//import {authgetUser } from "../auth/auth_request_api"
-//import {useGetUser} from "./UserContext" //updating user via Context jadenw2542@gmail.com
-//import HomeScreenMapCard from "./HomeScreenMapCard.js"
-//import gz_2010_us_outline_500k from "../assets/gz_2010_us_outline_500k.json"
 import useMapSearch from './useMapSearch.js'
 import { SearchContext, SearchActionType } from "../api/SearchContext";
 //import { getAllMaps } from '../api/map_request_api.js'
 
 const HomeScreen = () => {
-    //const user = useGetUser()
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [dropdownTimeOpen, setDropdownTimeOpen] = useState(false);
     const isInitialMount = useRef(true);
@@ -175,19 +169,19 @@ const HomeScreen = () => {
 
 
             <div>
-                <input type="text" value={query} className=' invisible'></input>
                 <div className="grid grid-cols-3 mx-24 py-5 z-0">
                     {maps.map((map, index) => {
                     if (maps.length === index + 1) { //last book
-                        return <div ref={lastMapElementRef} key={map._id}>{map}</div>
+                        return <div ref={lastMapElementRef} key={map._id + '-' + index}>{map}</div>
                     } else { 
-                        return <div key={map._id}>{map}</div>
+                        return <div key={map._id + '-' + index}>{map}</div>
                     }
                     })}
                 </div>
                 <div>{loading && 'Loading...'}</div>
                 <div>{error && 'Error'}</div>
             </div>
+            
         </div>
 
 
@@ -206,3 +200,5 @@ export default HomeScreen
 //         ))}
 //     </div>
 //     )}
+
+ {/* <input type="text" value={query} className=' invisible'></input> */}
