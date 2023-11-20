@@ -10,8 +10,7 @@ import franceMap from '../assets/EditMapAssets/france-r.geo.json'  //To be remov
 import { UserContext } from "../api/UserContext.js"
 import { MapContext } from "../api/MapContext"
 import { changeLikesMap } from '../api/map_request_api';  //for now requesting, will change to context later
-
-
+import { changeLikesComment } from '../api/comment_request_api.js';
 const fakeView = {
     title:'The Title of the Map',
     author: 'anon123',
@@ -279,16 +278,49 @@ const Comment = (props) => {
 
     const [currentLike,setLike] = useState(false)
     const [votes,setVotes] = useState(comment.votes)
-
+    const {user} = useContext(UserContext)
     const currTime = new Date()
     const commentTime = new Date(comment.createdAt)
-    const time_diff = currTime.getSeconds() - commentTime.getSeconds() //replace with better time diff
+    const time_diff = currTime - commentTime //replace with better time diff
 
-    const handleLike = () =>{
+    const secondsDiff = Math.floor(time_diff / 1000);
+    const minutesDiff = Math.floor(secondsDiff / 60);
+    const hoursDiff = Math.floor(minutesDiff / 60);
+    const daysDiff = Math.floor(hoursDiff / 24);
+    let formattedTimeDiff;
+    if (daysDiff > 0) {
+        formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-daysDiff, 'day');
+    } else if (hoursDiff > 0) {
+        formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-hoursDiff, 'hour');
+    } else if (minutesDiff > 0) {
+        formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-minutesDiff, 'minute');
+    } else {
+        formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-secondsDiff, 'second');
+    }
+    useEffect(() => {
+        if(user)
+        {
+            const foundLikedUser = (comment.usersVoted).filter((id) => id === user._id)
+            if(foundLikedUser > 0)
+                setLike(true)
+        }
+    },[])
+    
+    const handleLike = async () =>{
+        if(!user)//handle user not signed in later
+            return 
         if(currentLike)
+        {
+            const response = changeLikesComment(user._id,comment._id, -1)
             setVotes(votes - 1)
+            console.log(response)
+        }
         else
+        {
+            const response = changeLikesComment(user._id,comment._id, 1)
             setVotes(votes + 1)
+            console.log(response)
+        }
         setLike(!currentLike)
     }
     if(!comment)
@@ -309,7 +341,7 @@ const Comment = (props) => {
                 <div className='font-NanumSquareNeoOTF-Lt'>{comment.text}</div>
             </div>
             <div className='w-1/12 h-24 flex flex-col justify-center items-center text-2x1'>
-                <div className='font-NanumSquareNeoOTF-Lt'>{'-'+ time_diff + " seconds"}</div> {/*Replace with better time*/}
+                <div className='font-NanumSquareNeoOTF-Lt'>{'-'+ formattedTimeDiff}</div> {/*Replace with better time*/}
             </div>
         </div>
         </>
@@ -318,15 +350,16 @@ const Comment = (props) => {
 
 const AllComments = (props) =>{
     const comments = props.comments
-    return null
-    // if(!comments)
-    //     return(<></>)
-    // const comProps = comments.map((c,i) =><Comment {...{key:c._id, comment:c}}/> )
-    // return(
-    //     <>
-    //         {comProps}
-    //     </>
-    // )
+    console.log("THis is comments",comments)
+    // return null
+    if(!comments)
+        return(null)
+    const comProps = comments.map((c) =><Comment {...{key:c._id, comment:c}}/> )
+    return(
+        <>
+            {comProps}
+        </>
+    )
 }
 
 
@@ -334,38 +367,17 @@ const MapView = () => {
 
     const { map } = useContext(MapContext) 
     // console.log(map)
-    const [mapView,setMap] = useState(map||null); //REPLACE WITH MAP CONTEXT
+    const [mapView,] = useState(map||null); //REPLACE WITH MAP CONTEXT
     const [likeCount, setLikes] = useState(mapView?.likes || 0)
-    const [map_id, setMapID] = useState(mapView?._id || '')
-    const [title, setTitle] = useState(mapView?.title || '')
-    const [author, setAuthor] = useState(mapView?.user_id?.username || '')
-    const [userLikes, setUserLikes] = useState(mapView?.userLikes || [])
-    const [userDislikes, setUserDislikes] = useState(mapView?.userDislikes || [])
-    const [mapType, setMapType] = useState(mapView?.mapType || '')
+    const [map_id,] = useState(mapView?._id || '')
+    const [title,] = useState(mapView?.title || '')
+    const [author,] = useState(mapView?.user_id?.username || '')
+    const [userLikes,] = useState(mapView?.userLikes || [])
+    const [userDislikes,] = useState(mapView?.userDislikes || [])
+    const [mapType,] = useState(mapView?.mapType || '')
 
     const [sortSelected, setSort] = useState('time')
     const [newComment,setNewComment] = useState('')
-    console.log('mapContex',map)
-    // useEffect(() => {
-    //     const fetchData = async () => {
-    //         try {
-    //             console.log("In view")
-    //             const responseMap = await getMap('655a88b538ae7a688d3d18ce')
-    //             setMap(responseMap)
-    //             setMapID(responseMap._id)
-    //             setTitle(responseMap.title)
-    //             setAuthor(responseMap.user_id.username)
-    //             setLikes(responseMap.likes)
-    //             setMapType(responseMap.mapType)
-    //             setUserLikes(responseMap.userLikes)
-    //             setUserDislikes(responseMap.userDislikes)
-    //         } catch (error) {
-    //             console.error('Error fetching map data:', error);
-    //         }
-    //     };
-
-    //     fetchData();
-    // }, [])
 
     const selectedColor = '#3b82f6' 
 

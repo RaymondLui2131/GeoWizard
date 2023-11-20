@@ -91,8 +91,26 @@ const getComment = asyncHandler(async (req, res) => {
 })
 
 
-
+//PUT increments/decrement vote counter on comment
+const changeLikesComment = asyncHandler(async (req, res) => {
+    const { user_id, comment_id, amount} = req.body
+    console.log('Changing likes',amount)
+    var comment
+    {
+        if(amount > 0)
+        comment = await Comment.findByIdAndUpdate(comment_id, {$inc:{ votes: amount }, $push: {usersVoted: user_id }}, { new: true } )
+        else
+        comment = await Comment.findByIdAndUpdate(comment_id, {$inc:{ votes: amount }, $pull: {usersVoted: user_id }} , { new: true } )
+    }
+    if (!comment) {
+        return res.status(400).json({
+            message: "Failed to find comment"
+        })
+    }
+    return res.status(200).json({comment})
+})
 module.exports = {
     postComment,
-    getComment
+    getComment,
+    changeLikesComment
 }
