@@ -113,9 +113,23 @@ const getMap = asyncHandler(async (req, res) => {
 //Expects a mapID and userId, increments 
 //Put
 const changeLikesMap = asyncHandler(async (req, res) => {
-    const { user_id, map_id, amount } = req.body
+    const { user_id, map_id, amount, isNeutral } = req.body
     console.log('Changing likes',amount)
-    const map = await Map.findByIdAndUpdate(map_id, {$inc:{ likes: amount } }, { new: true } )
+    var map
+    if(isNeutral)//Resetting back 
+    {
+        if(amount > 0)
+            map = await Map.findByIdAndUpdate(map_id, {$inc:{ likes: amount }, $pull: {userDislikes: user_id }}, { new: true } )
+        else
+            map = await Map.findByIdAndUpdate(map_id, {$inc:{ likes: amount }, $pull:{userLikes: user_id } }, { new: true } )
+    }
+    else
+    {
+        if(amount > 0)
+            map = await Map.findByIdAndUpdate(map_id, {$inc:{ likes: amount }, $push: {userLikes: user_id } ,$pull: {userDislikes: user_id}} , { new: true } )
+        else
+            map = await Map.findByIdAndUpdate(map_id, {$inc:{ likes: amount }, $push: {userDislikes: user_id } ,$pull: {userLikes: user_id}} , { new: true } )
+    }
 
     if (!map) {
         return res.status(400).json({
