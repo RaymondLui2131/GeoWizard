@@ -34,6 +34,16 @@ describe('LoginScreen Component', () => {
   })
 })
 
+describe('LoginScreen test ', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:3000/login')
+  })
+
+  it('should exist', () => {
+    cy.get('[data-test-id="LoginEmailSection"]').should("exist")
+  })
+})
+
 describe('testing HomeScreen', () => {
   beforeEach(() => {
     cy.visit('http://localhost:3000/')
