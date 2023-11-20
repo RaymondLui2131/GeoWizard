@@ -1,7 +1,6 @@
 import { useState, useContext,useEffect } from 'react'
 import { MapContainer, TileLayer,GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
-import PropTypes from 'prop-types';
 import {ReactComponent as ThumbsIcon} from '../assets/MapViewAssets/thumpsUp.svg'
 import {ReactComponent as ThumbsGreen} from '../assets/MapViewAssets/thumpsUpGreen.svg'
 import {ReactComponent as ThumbsRed} from '../assets/MapViewAssets/thumpsUpRed.svg'
@@ -10,7 +9,7 @@ import {AlphaSlider} from 'react-slider-color-picker'
 import franceMap from '../assets/EditMapAssets/france-r.geo.json'  //To be removed
 import { UserContext } from "../api/UserContext.js"
 import { MapContext } from "../api/MapContext"
-import { getMap,changeLikesMap } from '../api/map_request_api';  //for now requesting, will change to context later
+import { changeLikesMap } from '../api/map_request_api';  //for now requesting, will change to context later
 
 
 const fakeView = {
@@ -67,35 +66,43 @@ const TitleDisplay = (props) =>{
     const author = props.author
     const userLikes = props.userLikes
     const userDislikes = props.userDislikes
+    useEffect(() => {
+        if(user)
+        {
+            const foundLike = userLikes.filter((id) => id === user._id)
+            console.log("All Likes",userLikes)
+            console.log("found like",foundLike)
+            if(foundLike.length > 0)
+            {
+                setLike('green')
+                console.log("Setting Greenn")
+            }
+            else
+            {
+                const foundDislike = userDislikes.filter((id) => id === user._id)
+                if(foundDislike.length > 0)
+                    setLike('red')
+            }
+        }
+    },[])
+
     const handleLike = async (likeClicked) =>{
 
         if(!user) //not signed in handle not sign in todo
                 return
-        else
-        {
-            const foundLike = userLikes.filter((id) => id === user._id)
-            if(foundLike.length > 1)
-                setLike('green')
-            else
-            {
-                const foundDislike = userDislikes.filter((id) => id === user._id)
-                if(foundDislike.length > 1)
-                    setLike('red')
-            }
-        }
         if(currentLike === likeClicked)
         {
             setLike(null)
             if(currentLike === 'green')
             {
                 setCounter(currentCounter - 1)
-                const response = await changeLikesMap(user._id, map_id,-1)
+                const response = await changeLikesMap(user._id, map_id,-1,true)
                 console.log(response)
             }
             else
             {
                 setCounter(currentCounter + 1)
-                const response = await changeLikesMap(user._id, map_id,1)
+                const response = await changeLikesMap(user._id, map_id,1,true)
                 console.log(response)
             }
             return
@@ -105,26 +112,26 @@ const TitleDisplay = (props) =>{
             if(likeClicked === 'green')
             {
                 setCounter(currentCounter + 1)
-                const response = await changeLikesMap(user._id, map_id,1)
+                const response = await changeLikesMap(user._id, map_id,1,false)
                 console.log(response)
             }
             else
             {
                 setCounter(currentCounter - 1)
-                const response = await changeLikesMap(user._id, map_id,-1)
+                const response = await changeLikesMap(user._id, map_id,-1,false)
                 console.log(response)
             }
         else
             if(likeClicked === 'green')
             {
                 setCounter(currentCounter + 2)
-                const response = await changeLikesMap(user._id, map_id,2)
+                const response = await changeLikesMap(user._id, map_id,2,false)
                 console.log(response)
             }
             else
             {
                 setCounter(currentCounter - 2)
-                const response = await changeLikesMap(user._id, map_id,-2)
+                const response = await changeLikesMap(user._id, map_id,-2,false)
                 console.log(response)
             }
     }
@@ -325,55 +332,55 @@ const AllComments = (props) =>{
 
 const MapView = () => {
 
-    // const { map } = useContext(MapContext) 
+    const { map } = useContext(MapContext) 
     // console.log(map)
-    const [map,setMap] = useState(null); //REPLACE WITH MAP CONTEXT
-    const [likeCount, setLikes] = useState(map?.likes || 0)
-    const [map_id, setMapID] = useState(map?._id || '')
-    const [title, setTitle] = useState(map?.title || '')
-    const [author, setAuthor] = useState(map?.user_id?.username || '')
-    const [userLikes, setUserLikes] = useState(map?.userLikes || [])
-    const [userDislikes, setUserDislikes] = useState(map?.userDislikes || [])
-    const [mapType, setMapType] = useState(map?.mapType || '')
+    const [mapView,setMap] = useState(map||null); //REPLACE WITH MAP CONTEXT
+    const [likeCount, setLikes] = useState(mapView?.likes || 0)
+    const [map_id, setMapID] = useState(mapView?._id || '')
+    const [title, setTitle] = useState(mapView?.title || '')
+    const [author, setAuthor] = useState(mapView?.user_id?.username || '')
+    const [userLikes, setUserLikes] = useState(mapView?.userLikes || [])
+    const [userDislikes, setUserDislikes] = useState(mapView?.userDislikes || [])
+    const [mapType, setMapType] = useState(mapView?.mapType || '')
 
     const [sortSelected, setSort] = useState('time')
     const [newComment,setNewComment] = useState('')
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                console.log("In view")
-                const responseMap = await getMap('655a88b538ae7a688d3d18ce')
-                setMap(responseMap)
-                setMapID(responseMap._id)
-                setTitle(responseMap.title)
-                setAuthor(responseMap.user_id.username)
-                setLikes(responseMap.likes)
-                setMapType(responseMap.mapType)
-                setUserLikes(responseMap.userLikes)
-                setUserDislikes(responseMap.userDislikes)
-            } catch (error) {
-                console.error('Error fetching map data:', error);
-            }
-        };
+    console.log('mapContex',map)
+    // useEffect(() => {
+    //     const fetchData = async () => {
+    //         try {
+    //             console.log("In view")
+    //             const responseMap = await getMap('655a88b538ae7a688d3d18ce')
+    //             setMap(responseMap)
+    //             setMapID(responseMap._id)
+    //             setTitle(responseMap.title)
+    //             setAuthor(responseMap.user_id.username)
+    //             setLikes(responseMap.likes)
+    //             setMapType(responseMap.mapType)
+    //             setUserLikes(responseMap.userLikes)
+    //             setUserDislikes(responseMap.userDislikes)
+    //         } catch (error) {
+    //             console.error('Error fetching map data:', error);
+    //         }
+    //     };
 
-        fetchData();
-    }, [])
+    //     fetchData();
+    // }, [])
 
     const selectedColor = '#3b82f6' 
 
     console.log(newComment)    
-    // const { map } = useContext(MapContext)
     console.log("Map Type",mapType)
     return(
         <>
         <div className='bg-primary-GeoPurple min-h-screen max-h-screen flex justify-between items-center flex-col overflow-auto'>
             <div className='w-4/5 pt-5'>
-                {map
+                {mapView
                     ?<TitleDisplay {...{likes:likeCount, setLikes:setLikes, map_id: map_id, title:title, author:author, userLikes:userLikes, userDislikes:userDislikes}}></TitleDisplay>
                     :null
                 }
                 <div className='flex flex-row justify-between h-[650px]'>
-                    {map
+                    {mapView
                             ?<><MapDisplay {...{MapData: map.MapData}}/>
                                 <Key {...{type: mapType}}/>  
                              </>
@@ -406,7 +413,7 @@ const MapView = () => {
                         >Post</button>
                     </div>
                 </div>
-                {map
+                {mapView
                     ?<AllComments {...{comments:map.comments}} />
                     :null   
                 }

@@ -49,12 +49,13 @@ export const getMap = async (mapID) => {
 }
 
 //changesthe like counter for a map
-export const changeLikesMap = async (user_id, map_id, amount) => {
+export const changeLikesMap = async (user_id, map_id, amount,isNeutral) => {
     try {
         const response = await axios.put(`${API_URL}changeLikesMap`, {
             user_id: user_id,
             map_id: map_id,
-            amount:amount
+            amount:amount,
+            isNeutral: isNeutral
         })
         return response
     } catch (err) {
