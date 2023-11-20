@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler')
 const User = require("../models/user_model")
 const Comment = require("../models/comments_model")
+const Map = require("../models/map_model")
 
 
 /**
@@ -29,12 +30,25 @@ const postComment = asyncHandler(async (req, res) => {
     const userExists = await User.findOne({ _id: user_id });
     
     if (userExists) {
-        userExists.comments.push(userExists.id);
+        userExists.comments.push(newComment.id);
         await userExists.save();    
     }
     else {
         return res.status(400).json({
             message: "User not found"
+        })
+    }
+
+    // adds comment into the Map's comments array
+    const mapExists = await Map.findOne({ _id: map_id });
+
+    if (mapExists) {
+        mapExists.comments.push(newComment.id);
+        await mapExists.save();    
+    }
+    else {
+        return res.status(400).json({
+            message: "Map not found"
         })
     }
 
