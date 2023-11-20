@@ -56,14 +56,17 @@ ColorSlider.propTypes = {
     changeHlsa: PropTypes.func.isRequired
 };
 
-const BottomRow = ({ title, typeSelected }) => {
+const BottomRow = ({ title, mapType, description }) => {
+    const [publicStatus, setPublic] = useState(false)
     const { user } = useContext(UserContext)
     const { map } = useContext(MapContext)
+
     const handleSaveMap = async (e) => {
         e.preventDefault()
         if (user) {
             // const mapData = geobuf_api.geojson_compress(map)
-            const response = await saveUserMap(user._id, "test title", false, 'NONE', "", map) // testing
+            const map_type = Object.keys(MAP_TYPES).find(key => MAP_TYPES[key] === mapType)
+            const response = await saveUserMap(user._id, title, publicStatus, map_type, description, map) // testing
             console.log(response)
         }
     }
@@ -90,11 +93,11 @@ const BottomRow = ({ title, typeSelected }) => {
                 </div>
                 <div>
                     <div className='inline-block'><button className='bg-green-200 text-3xl
-                                                    font-NanumSquareNeoOTF-Lt px-8 rounded-full py-2'>
+                                                    font-NanumSquareNeoOTF-Lt px-8 rounded-full py-2' onClick={() => setPublic(true)}>
                         Public</button>
                     </div>
                     <div className=' inline-block'> <button className='bg-red-300 text-3xl
-                                                    font-NanumSquareNeoOTF-Lt px-8  rounded-full py-2'>
+                                                    font-NanumSquareNeoOTF-Lt px-8  rounded-full py-2' onClick={() => setPublic(false)}>
                         Private</button>
                     </div>
 
@@ -129,13 +132,13 @@ const MapEditOptions = (props) => {
     const handleChangeColor = (newColor) => {
         setSymbColor(newColor)
     }
-    console.log("map selection",type_of_map)
+    console.log("map selection", type_of_map)
     switch (type_of_map) {
         case MAP_TYPES['NONE']:
             return (null)
 
         case MAP_TYPES['HEATMAP']:
-            console.log('This is selected',selected)
+            console.log('This is selected', selected)
             return (
                 <>
                     <div className='invisible'>gap space</div>
@@ -279,7 +282,7 @@ const MapEditOptions = (props) => {
                 <>
                     <div className='invisible'>gap space</div>
                     <div className='h-full w-3/5 bg-gray-50 rounded-3xl'>
-                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt'onClick={() => setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
+                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
                         <div className='grid grid-cols-2 gap-2  h-4/5  mx-auto'>
                             <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
                                 style={{ borderColor: selected === 'circle' ? selectedColor : '#F9FAFB' }}>
@@ -317,7 +320,7 @@ const MapEditOptions = (props) => {
                 <>
                     <div className='invisible'>gap space</div>
                     <div className='h-full w-3/5 bg-gray-50 rounded-3xl'>
-                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt'onClick={() => setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
+                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
                         <div className='grid grid-cols-2 gap-2  h-4/5  mx-auto'>
                             <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
                                 style={{ borderColor: selected === 'a1' ? selectedColor : '#F9FAFB' }}>
@@ -356,6 +359,7 @@ const MapView = () => {
     const { map, /** dispatch */ } = useContext(MapContext)
     // const [map, setMap] = useState(null)
     const [title, setTitle] = useState('')
+    const [description, setDescription] = useState('')
     console.log(title)
     // const [map,] = useState(franceMap) //For testing
     const [typeSelected, setType] = useState(MAP_TYPES['NONE'])
@@ -406,6 +410,11 @@ const MapView = () => {
                             <GeoJSON data={map.features} />
                         </MapContainer>
                     </div>
+
+                    <input type='text' name='description' className='bg-primary-GeoPurple text-white placeholder-white text-2xl w-[35rem]
+                        text-center'
+                        placeholder='Enter Description...' maxLength={48} onChange={(e) => setDescription(e.target.value)} >
+                    </input>
                 </div>
                 <div className='w-1/2 flex justify-center pt-32 ' >
                     <div className='w-full text-2xl font-NanumSquareNeoOTF-Lt flex flex-col  items-center text-center'>
@@ -417,8 +426,8 @@ const MapView = () => {
                                     ? <button className='w-3/5 bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked)}>Select Map Type ▼ </button>
                                     :
                                     <>
-                                        <button className='w-3/5 bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked )}>{mapString}</button>
-                                        <MapEditOptions mapType={typeSelected}  setType={setType} />
+                                        <button className='w-3/5 bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked)}>{mapString}</button>
+                                        <MapEditOptions mapType={typeSelected} setType={setType} />
                                     </>
                                 }
                             </>
@@ -437,7 +446,7 @@ const MapView = () => {
 
                 </div>
             </div>
-            <BottomRow title={title} mapType={typeSelected}></BottomRow>
+            <BottomRow title={title} mapType={typeSelected} description={description}></BottomRow>
         </>)
     )
 }
