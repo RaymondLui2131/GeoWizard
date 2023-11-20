@@ -434,7 +434,7 @@ const MapView = () => {
                     <div className='w-1/12 h-12 flex flex-col justify-center items-center FORSPACING'>
                     </div> 
                     <div className='flex items-center w-9/12'>
-                        <input type="text" name="newComment" placeholder='Enter new comment...' onChange={(e) => setNewComment(e.target.value)}
+                        <input type="text" name="newComment" placeholder='Enter new comment...' value={newComment} onChange={(e) => setNewComment(e.target.value)}
                             className='w-full bg-gray-50 font-NanumSquareNeoOTF-Lt'/>
                     </div>
                     <div className='w-1/12 h-11 flex flex-col  justify-center items-center '>
