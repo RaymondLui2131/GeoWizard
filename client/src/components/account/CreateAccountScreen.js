@@ -1,11 +1,13 @@
 
 import logo from "../../assets/geowizlogo.png";
-import { useState } from 'react'
-import { postUser, checkUserEmail } from '../../api/auth_request_api.js';
+import { useState, useContext } from 'react'
+import { postUser, checkUserEmail, authloginUser } from '../../api/auth_request_api.js';
 import { useNavigate } from 'react-router-dom'
+import { UserContext, UserActionType } from "../../api/UserContext.js"
 
 const LoginScreen = () => {
     const navigate = useNavigate();
+    const {errorMessage, dispatch } = useContext(UserContext)
     const [userName, setUserName] = useState(''); // state for username
     const [userEmail, setUserEmail] = useState(''); // state for email
     const [password, setPassword] = useState(''); // state for password
@@ -35,6 +37,12 @@ const LoginScreen = () => {
         return email.includes('@') && email.includes('.');
     }
 
+    const userData = {
+        email: userEmail,
+        username: userName,
+        password: password
+    }
+
     const handleCreateAccountClick= () => {
         setBlankErrors({
             userName: false,
@@ -58,31 +66,47 @@ const LoginScreen = () => {
             setPasswordMismatch(true); 
             return; 
         }
-
-        const userData = {
-            email: userEmail,
-            username: userName,
-            password: password
+              
+        const loginUser = async () => {
+            const response = await authloginUser(userEmail, password)
+            if (response.status == 200) {
+                dispatch({ type: UserActionType.LOGIN, payload: response.data })
+            } else {
+                dispatch({ type: UserActionType.ERROR, payload: response.data.message }) // login failed
+            }
         }
 
         const postCreatedAccount = async () =>{
             try {
                 const response = await postUser(userData);
                 if (response.status === 200) {
+                    loginUser();
                     navigate('/createAccountSuccess'); 
                 }
                 else if (response.status === 400){
-                    const emailCheckResponse = await checkUserEmail(userData);
-                    if (emailCheckResponse.status === 400){
-                        setEmailInDb(true)
-                    }
+                    console.log("Error in posting an account")
                 }
             } catch (error) {
                 console.error('Error registering user:', error);
             }
         }
 
-        postCreatedAccount();
+        const checkUniqueEmail = async () =>{
+            try {
+                const uniqueEmailresponse = await checkUserEmail(userData);
+                if (uniqueEmailresponse.status === 400) {
+                    setEmailInDb(true)
+                    return
+                }
+                else if (uniqueEmailresponse.status === 200){
+                    postCreatedAccount();
+                }
+            } catch (error) {
+                console.error('Error registering user:', error);
+            }
+        }
+
+        checkUniqueEmail()
     };
 
     return (
@@ -193,7 +217,9 @@ const LoginScreen = () => {
                         Create Account
                     </button>
                 </div>
-
+                {errorMessage && <p>
+                    {errorMessage}
+                </p>}
             </div>
         </div>
     );
