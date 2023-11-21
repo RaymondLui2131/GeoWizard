@@ -1,12 +1,11 @@
 import React, { useState, useRef, useCallback, useContext, useEffect} from 'react'
 import useMapSearch from './useMapSearch.js'
 import { SearchContext, SearchActionType } from "../api/SearchContext";
-//import { getAllMaps } from '../api/map_request_api.js'
 
 const HomeScreen = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [dropdownTimeOpen, setDropdownTimeOpen] = useState(false);
-    const isInitialMount = useRef(true);
+    //const isInitialMount = useRef(true);
     
     const [Sort, setSort] = useState()
 
@@ -28,7 +27,7 @@ const HomeScreen = () => {
         if(observer.current) observer.current.disconnect()
         observer.current = new IntersectionObserver(entries => {
             if (entries[0].isIntersecting && hasMore){
-                console.log('Visible')
+                //console.log('Visible')
                 setPageNumber(prevPageNumber => prevPageNumber + 1)
             }
         })
@@ -38,10 +37,10 @@ const HomeScreen = () => {
     
     useEffect(() => {
         console.log('search', searchQuery)
-        if (isInitialMount.current) {
-            isInitialMount.current = false
-            return
-        }
+        // if (isInitialMount.current) {
+        //     isInitialMount.current = false
+        //     return
+        // }
         if(searchQuery == '') return
         console.log(searchQuery)
         setQuery({
@@ -96,12 +95,15 @@ const HomeScreen = () => {
     function handleAllTheTime(){
 
     }
-    
+    // let test = true
+    // if(test){
+    //     return null  
+    // }
     return(
         <div className="min-h-screen max-h-[100%] bg-primary-GeoPurple">
             <div className='flex flex-wrap justify-between items-center mx-auto pt-5 px-28 z-10 '>
             
-                <div className= 'text-5xl font-PyeongChangPeace-Light text-primary-GeoBlue'>Popular Maps</div>
+                <div className= 'text-5xl font-PyeongChangPeace-Light text-primary-GeoBlue'>Welcome to GeoWizard!</div>
 
                 <div> 
                     <div className="relative inline-block z-[80]">
@@ -178,8 +180,8 @@ const HomeScreen = () => {
                     }
                     })}
                 </div>
-                <div>{loading && 'Loading...'}</div>
-                <div>{error && 'Error'}</div>
+                <div className='text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>{loading && 'Loading...'}</div>
+                <div className='text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>{error && 'Error'}</div>
             </div>
             
         </div>

@@ -36,7 +36,7 @@ export const getMap = async (mapID) => {
                 mapID: mapID
             }
         })
-        console.log('getMap', mapID)
+        //console.log('getMap', mapID)
         const data = response.data
         const decompressedMapData = geobuf_api.geojson_decompress(data.MapData.original_map)
         //console.log(decompressedMapData)
