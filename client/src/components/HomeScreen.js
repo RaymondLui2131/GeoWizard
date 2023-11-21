@@ -1,21 +1,19 @@
-import React, { useState, useRef, useCallback} from 'react'
-//import { Link } from 'react-router-dom'
-//import {authgetUser } from "../auth/auth_request_api"
-//import {useGetUser} from "./UserContext" //updating user via Context jadenw2542@gmail.com
-//import HomeScreenMapCard from "./HomeScreenMapCard.js"
-//import gz_2010_us_outline_500k from "../assets/gz_2010_us_outline_500k.json"
+import React, { useState, useRef, useCallback, useContext, useEffect} from 'react'
 import useMapSearch from './useMapSearch.js'
+import { SearchContext, SearchActionType } from "../api/SearchContext";
 //import { getAllMaps } from '../api/map_request_api.js'
 
 const HomeScreen = () => {
-    //const user = useGetUser()
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [dropdownTimeOpen, setDropdownTimeOpen] = useState(false);
+    const isInitialMount = useRef(true);
+    
+    const [Sort, setSort] = useState()
 
-    const [maps1, setMaps] = useState(null)
 
     const [query, setQuery] = useState('')
     const [pageNumber, setPageNumber] = useState(1)
+    const {searchQuery, searchDispatch} = useContext(SearchContext)
 
     const {
         maps,
@@ -35,44 +33,68 @@ const HomeScreen = () => {
             }
         })
         if(node) observer.current.observe(node)
-        console.log(node)
+        //console.log(node)
     },[loading, hasMore])
-  
-
     
-
-    function handleSearch(e) {
-        setQuery(e.target.value)
+    useEffect(() => {
+        console.log('search', searchQuery)
+        if (isInitialMount.current) {
+            isInitialMount.current = false
+            return
+        }
+        if(searchQuery == '') return
+        console.log(searchQuery)
+        setQuery({
+            query: searchQuery
+        })
         setPageNumber(1)
-      }
+        console.log("searched button clicked")
+    }, [searchQuery])
 
-    
-    // useEffect(() => {
-    //     getAllMaps().then(mapsData => {
-    //         setMaps(mapsData);
-    //         console.log(maps1)
-    //     }).catch(error => {
-    //         console.error('Error fetching maps:', error);
-    //     });
-    // }, []);
 
-    
+    // function handleSearch(e) {
+    //     setQuery({
+    //         query: e.target.value
+    //     })
+    //     setPageNumber(1)
+    //   }
+
 
     function handleRecents(){
         console.log("recents")
-        console.log(maps1)
     }
 
     function handleMostComments(){
         console.log("comments")
     }
 
-    function handleTrending(){
+    function handleOldest(){
         console.log("tredning")
     }
 
-    function handlePopular(){
+    function handleMostLikes(){
         console.log("Popular")
+    }
+
+    function handleMostViews(){
+        console.log("Popular")
+    }
+
+    function handleToday(){
+
+    }
+
+    function handleWeek(){
+
+    }
+    function handleMonth(){
+
+    }
+    function handleYear(){
+
+    }
+    function handleAllTheTime(){
+
     }
     
     return(
@@ -103,9 +125,10 @@ const HomeScreen = () => {
                         {dropdownOpen && (
                         <div className="absolute w-52 bg-primary-GeoOrange rounded-md shadow-lg ">
                             <a onClick={handleRecents} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-b-none ">Recents</a>
+                            <a onClick={handleOldest} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-b-none ">Oldest</a>
                             <a onClick={handleMostComments} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md" >Most Comments</a>
-                            <a onClick={handleTrending} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">Trending</a>
-                            <a onClick={handlePopular} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">Popular</a>
+                            <a onClick={handleMostLikes} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">Trending</a>
+                            <a onClick={handleMostViews} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">Popular</a>
 
                         </div>)}
                     </div>
@@ -131,11 +154,11 @@ const HomeScreen = () => {
                         </button>
                         {dropdownTimeOpen && (
                         <div className="absolute w-52 bg-primary-GeoOrange rounded-md shadow-lg ">
-                            <a onClick={handleRecents} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-b-none ">Today</a>
-                            <a onClick={handleMostComments} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md" >This Week</a>
-                            <a onClick={handleTrending} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">This Month</a>
-                            <a onClick={handlePopular} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">This Year</a>
-                            <a onClick={handlePopular} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">All The Time</a>
+                            <a onClick={handleToday} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-b-none ">Today</a>
+                            <a onClick={handleWeek} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md" >This Week</a>
+                            <a onClick={handleMonth} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">This Month</a>
+                            <a onClick={handleYear} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">This Year</a>
+                            <a onClick={handleAllTheTime} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">All The Time</a>
                         </div>)}
 
                     </div>
@@ -146,19 +169,19 @@ const HomeScreen = () => {
 
 
             <div>
-                <input type="text" value={query} onChange={handleSearch}></input>
-                <div className="grid grid-cols-2 mx-24 py-5 z-0">
+                <div className="grid grid-cols-3 mx-24 py-5 z-0">
                     {maps.map((map, index) => {
                     if (maps.length === index + 1) { //last book
-                        return <div ref={lastMapElementRef} key={map.id}>{map}</div>
+                        return <div ref={lastMapElementRef} key={map._id + '-' + index}>{map}</div>
                     } else { 
-                        return <div key={map.id}>{map}</div>
+                        return <div key={map._id + '-' + index}>{map}</div>
                     }
                     })}
                 </div>
                 <div>{loading && 'Loading...'}</div>
                 <div>{error && 'Error'}</div>
             </div>
+            
         </div>
 
 
@@ -177,3 +200,5 @@ export default HomeScreen
 //         ))}
 //     </div>
 //     )}
+
+ {/* <input type="text" value={query} className=' invisible'></input> */}

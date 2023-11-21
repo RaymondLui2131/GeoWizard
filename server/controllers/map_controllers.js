@@ -80,7 +80,7 @@ const createMap = asyncHandler(async (req, res) => { // used within saveUserMap
 //GET
 const getMap = asyncHandler(async (req, res) => {
     const mapID = req.query.mapID;
-    console.log(mapID)
+    console.log('getMap', mapID)
     const map = await Map.findById(mapID)
     if (!map) {
         return res.status(400).json({
@@ -94,7 +94,7 @@ const getMap = asyncHandler(async (req, res) => {
         })
     }
     const mapWithData = await mapWithUser.populate('MapData')
-    console.log(mapWithData)
+    //console.log(mapWithData)
     if (!mapWithData) {
         return res.status(400).json({
             message: "Could not find map data"
@@ -162,7 +162,7 @@ const getAllMaps = asyncHandler(async (req, res) => {
     const publicMaps = await Map.find({ isPublic: true })
             .skip(skip)
             .limit(pageSize);
-    console.log(publicMaps)
+    //console.log(publicMaps)
     if (!publicMaps) {
         return res.status(400).json({
             message: "Could not find map data"

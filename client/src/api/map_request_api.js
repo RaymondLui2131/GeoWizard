@@ -25,7 +25,7 @@ export const saveUserMap = async (user_id, title, isPublic, mapType, description
 
         return response
     } catch (err) {
-        return err.response
+        return err.response 
     }
 }
 
@@ -36,12 +36,13 @@ export const getMap = async (mapID) => {
                 mapID: mapID
             }
         })
+        console.log('getMap', mapID)
         const data = response.data
         const decompressedMapData = geobuf_api.geojson_decompress(data.MapData.original_map)
-        console.log(decompressedMapData)
+        //console.log(decompressedMapData)
         // console.log(data.MapData.original_map)
         data.MapData.original_map = decompressedMapData
-        console.log(data)
+        //console.log(data)
         return data
     } catch (err) {
         return err.response
