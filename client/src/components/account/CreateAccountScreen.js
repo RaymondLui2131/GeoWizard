@@ -217,9 +217,6 @@ const LoginScreen = () => {
                         Create Account
                     </button>
                 </div>
-                {errorMessage && <p>
-                    {errorMessage}
-                </p>}
             </div>
         </div>
     );

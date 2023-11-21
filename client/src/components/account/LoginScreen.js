@@ -20,7 +20,7 @@ const LoginScreen = () => {
                 const response = await googleLoginUser(codeResponse)
                 if (response.status == 200) {
                     dispatch({ type: UserActionType.LOGIN, payload: response.data })
-                    navigate("/dashboard")
+                    navigate("/")
                 }
             }
         },
@@ -46,6 +46,7 @@ const LoginScreen = () => {
         })
         validateInputs()
         const response = await authloginUser(userEmail, password)
+        console.log(response.status)
         if (response.status == 200) {
             dispatch({ type: UserActionType.LOGIN, payload: response.data })
             navigate("/dashboard") // login successful
@@ -122,9 +123,6 @@ const LoginScreen = () => {
                     </button>
                     <button onClick={() => googleLogin()} className="text-yellow-200 font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300">Sign In With Google</button>
                 </div>
-                {errorMessage && <p>
-                    {errorMessage}
-                </p>}
             </div>
         </div>
     );
