@@ -17,7 +17,7 @@ export default function useMapSearch(query, pageNumber) {
     const[error, setError] = useState(false)
     const[maps, setMaps] = useState([])
     const[hasMore, setHasMore] = useState(false)
-    const isInitialMount = useRef(true);
+    //const isInitialMount = useRef(true);
 
     //reset maps if query changes
     useEffect(() => {
@@ -27,17 +27,17 @@ export default function useMapSearch(query, pageNumber) {
 
 
     useEffect(() => {
-        if (isInitialMount.current) {
-            isInitialMount.current = false
-            return
-        }
+        // if (isInitialMount.current) {
+        //     isInitialMount.current = false
+        //     return
+        // }
         console.log('Effect running:', { query, pageNumber })
         setLoading(true)
         setError(false)
         let cancel
         axios({
             method: 'GET', 
-            url : `${API_URL}getAllMaps`,
+            url : `${API_URL}queryMaps`,
             params: {q: query, page: pageNumber},
             cancelToken: new axios.CancelToken(c => cancel = c)
         }).then(res => {

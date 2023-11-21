@@ -152,7 +152,7 @@ const changeLikesMap = asyncHandler(async (req, res) => {
 //Gets Maps that are public
 //GET
 // query should contain what they searched, and time/sort vars
-const getAllMaps = asyncHandler(async (req, res) => {
+const queryMaps = asyncHandler(async (req, res) => {
     console.log('req', req.query)
     const {q, page} = req.query
     console.log('page #', page)
@@ -175,6 +175,6 @@ module.exports = {
     saveUserMap,
     createMap,
     getMap,
-    getAllMaps,
+    queryMaps,
     changeLikesMap
 }
