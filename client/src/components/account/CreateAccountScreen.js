@@ -37,6 +37,12 @@ const LoginScreen = () => {
         return email.includes('@') && email.includes('.');
     }
 
+    const userData = {
+        email: userEmail,
+        username: userName,
+        password: password
+    }
+
     const handleCreateAccountClick= () => {
         setBlankErrors({
             userName: false,
@@ -60,14 +66,8 @@ const LoginScreen = () => {
             setPasswordMismatch(true); 
             return; 
         }
-
-        const userData = {
-            email: userEmail,
-            username: userName,
-            password: password
-        }
-
-        const loginUser = async (e) => {
+              
+        const loginUser = async () => {
             const response = await authloginUser(userEmail, password)
             if (response.status == 200) {
                 dispatch({ type: UserActionType.LOGIN, payload: response.data })
@@ -84,17 +84,29 @@ const LoginScreen = () => {
                     navigate('/createAccountSuccess'); 
                 }
                 else if (response.status === 400){
-                    const emailCheckResponse = await checkUserEmail(userData);
-                    if (emailCheckResponse.status === 400){
-                        setEmailInDb(true)
-                    }
+                    console.log("Error in posting an account")
                 }
             } catch (error) {
                 console.error('Error registering user:', error);
             }
         }
 
-        postCreatedAccount();
+        const checkUniqueEmail = async () =>{
+            try {
+                const uniqueEmailresponse = await checkUserEmail(userData);
+                if (uniqueEmailresponse.status === 400) {
+                    setEmailInDb(true)
+                    return
+                }
+                else if (uniqueEmailresponse.status === 200){
+                    postCreatedAccount();
+                }
+            } catch (error) {
+                console.error('Error registering user:', error);
+            }
+        }
+
+        checkUniqueEmail()
     };
 
     return (
