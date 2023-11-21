@@ -1,3 +1,5 @@
+import 'cypress-file-upload'
+
 describe('template spec', () => {
   it('passes', () => {
     cy.visit('http://localhost:3000') // change this later
@@ -32,6 +34,16 @@ describe('LoginScreen Component', () => {
   })
 })
 
+describe('LoginScreen test ', () => {
+  beforeEach(() => {
+    cy.visit('http://localhost:3000/login')
+  })
+
+  it('should exist', () => {
+    cy.get('[data-test-id="LoginEmailSection"]').should("exist")
+  })
+})
+
 describe('testing HomeScreen', () => {
   beforeEach(() => {
     cy.visit('http://localhost:3000/')
@@ -40,37 +52,58 @@ describe('testing HomeScreen', () => {
   it('should display GeoWizard in Banner', () => {
     cy.get('span').should('contain', 'GeoWizard')
   })
-
-  it('Should show dropdown when clicking time button', () => {
+  it('Should show dropdown when clicking Time button', () => {
     cy.contains('Time').click()
     cy.get('a').should('contain', "Today")
   })
 
-  it('should display in search bar', () => {
-    cy.get('input').type('America').should('have.value', 'America')
-  })
-
-})
-
-describe('testing SearchScreen', () => {
-  beforeEach(() => {
-    cy.visit('http://localhost:3000/search')
-  })
-
-  it('should display GeoWizard in Banner', () => {
-    cy.get('span').should('contain', 'GeoWizard')
-  })
-
-  it('Should show dropdown when clicking time button', () => {
+  it('Should show dropdown when clicking Sort button', () => {
     cy.contains('Sort').click()
-    cy.get('a').should('contain', "Trending")
+    cy.get('a').should('contain', "Recents")
   })
 
   it('should display in search bar', () => {
-    cy.get('input[placeholder="Search for maps').type('America').should('have.value', 'America')
+    cy.get('input[placeholder="Search for maps"]').type('America').should('have.value', 'America')
   })
 
+  it('Login Button should exist', () => {
+    cy.contains('button', 'Login').should('exist')
+  })
+
+  it('Sign Up Button should exists', () => {
+    cy.contains('button', 'Sign Up').should('exist')
+  })
+
+  it('Redirect to Login Page', () => {
+    cy.contains('button', 'Login').click()
+    cy.url().should('include', '/login')
+  })
+
+  it('Redirect to Register Page', () => {
+    cy.contains('button', 'Sign Up').click()
+    cy.url().should('include', '/createAccount')
+  })
 })
+
+// describe('testing SearchScreen', () => {
+//   beforeEach(() => {
+//     cy.visit('http://localhost:3000/search')
+//   })
+
+//   it('should display GeoWizard in Banner', () => {
+//     cy.get('span').should('contain', 'GeoWizard')
+//   })
+
+//   it('Should show dropdown when clicking time button', () => {
+//     cy.contains('Sort').click()
+//     cy.get('a').should('contain', "Trending")
+//   })
+
+//   it('should display in search bar', () => {
+//     cy.get('input[placeholder="Search for maps').type('America').should('have.value', 'America')
+//   })
+
+// })
 
 describe('testing edit upload', () => {
   beforeEach(() => {
@@ -80,7 +113,7 @@ describe('testing edit upload', () => {
   it('should move to editing page', () => {
 
     cy.get('.France').click()
-    cy.url().should('eq', 'http://localhost:3000/editingmap') 
+    cy.url().should('eq', 'http://localhost:3000/editingmap')
 
   })
 
@@ -90,10 +123,11 @@ describe('testing edit upload', () => {
   })
 
 })
-
 describe('testing editing map page', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:3000/editingmap')
+    cy.visit("http://localhost:3000/editUpload")
+    cy.get('[data-test-id="upload-button"]').click()
+    cy.get('input[type="file"]').attachFile("france-r.geo.json")
   })
 
   it('should change title', () => {
@@ -127,13 +161,13 @@ describe('testing editing map page', () => {
   })
 })
 
-describe('testing editing map page', () => {
+describe('testing view page', () => {
   beforeEach(() => {
     cy.visit('http://localhost:3000/mapview')
   })
 
-  it('should change title', () => {
-    cy.get('input[placeholder="Enter new comment...').type('New Comment').should('have.value', 'New Comment')
+  it('should change comment', () => {
+    cy.get('input[placeholder="Enter new comment..."]').type('New Comment').should('have.value', 'New Comment')
   })
 
 })
@@ -144,21 +178,23 @@ describe('testing create account screen', () => {
   })
 
   it('should type text into the input field', () => {
-    cy.get('.caUserName')
+
+    cy.get('.caUserEmail')
       .type('exampleText') 
       .should('have.value', 'exampleText'); 
+
   })
 
   it('should type text into the input field', () => {
     cy.get('.caPassword')
-      .type('exampleText') 
-      .should('have.value', 'exampleText'); 
+      .type('exampleText')
+      .should('have.value', 'exampleText');
   })
 
   it('should type text into the input field', () => {
     cy.get('.caComfirmPassword')
-      .type('exampleText') 
-      .should('have.value', 'exampleText'); 
+      .type('exampleText')
+      .should('have.value', 'exampleText');
   })
 
 })
@@ -184,8 +220,8 @@ describe('testing find email screen', () => {
 
   it('should type text into the input field', () => {
     cy.get('.theEmail')
-      .type('exampleText') 
-      .should('have.value', 'exampleText'); 
+      .type('exampleText')
+      .should('have.value', 'exampleText');
   })
 
   it('should display find your email message', () => {
@@ -211,14 +247,14 @@ describe('testing change password screen', () => {
 
   it('should type text into the input field', () => {
     cy.get('.cpPassword')
-      .type('exampleText') 
-      .should('have.value', 'exampleText'); 
+      .type('exampleText')
+      .should('have.value', 'exampleText');
   })
 
   it('should type text into the input field', () => {
     cy.get('.cpComfirmPassword')
-      .type('exampleText') 
-      .should('have.value', 'exampleText'); 
+      .type('exampleText')
+      .should('have.value', 'exampleText');
   })
 
 })

@@ -2,44 +2,122 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faComment, faEye } from '@fortawesome/free-solid-svg-icons';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-//import gz_2010_us_outline_500k from "../assets/gz_2010_us_outline_500k.json";
-import React, { useRef, useEffect } from 'react';
-const HomeScreenMapCard = ({file}) => {
-    const mapRef = useRef(null); // Create a ref for the map container
+import { getMap } from '../api/map_request_api';
+import React, { useRef, useEffect, useContext, useState } from 'react';
+import { MapContext, MapActionType } from "../api/MapContext"
+import { useNavigate } from "react-router-dom";
+import { MapContainer, TileLayer,GeoJSON } from 'react-leaflet';
+
+const HomeScreenMapCard = ({mapObject}) => {
+    const {map, dispatch } = useContext(MapContext)
+    const navigate = useNavigate()
+    //const [geojsonData, setGeojsonData] = useState(null); // State to store map data
+    //const [isLoading, setIsLoading] = useState(true); // Loading flag
+
+    //const mapRef = useRef(null); // Create a ref for the map container
+    //console.log(mapObject)
+    
+    //const mapData = async() => (await getMap(mapObject._id)) 
+
+    // useEffect(() => {
+    //     if (geojsonData) return;
+    
+    //     const fetchMapData = async () => {
+    //         try {
+    //             console.log('getmap in card')
+    //             //const data = await getMap(mapObject._id);
+    //             const data = null
+    //             setGeojsonData(data);
+    //             setIsLoading(false);
+    //         } catch (error) {
+    //             console.error("Error loading map data:", error);
+    //             setIsLoading(false);
+    //         }
+    //     };
+    
+    //     fetchMapData();
+    // }, [mapObject]); 
 
 
+    // const MapDisplay = () =>{
+    //     const mapData = geojsonData.MapData
+    //     //console.log('mapdata:', mapData)
+    
+    //     var center = [0,0]
+    //     var padded_NE = [0,0]
+    //     var padded_SW = [0,0]
+    //     if(mapData)
+    //     {
+    //         const geoJsonLayer = L.geoJSON(mapData.original_map)
+    //         const bounds = geoJsonLayer.getBounds()
+    //         center = bounds.getCenter()
+    //         //Padding for bounds
+    //         const currNe= bounds.getNorthEast()
+    //         const currSw = bounds.getSouthWest()
+    //         currNe.lat = currNe.lat + 5
+    //         currSw.lat = currSw.lat - 5
+    //         currNe.lng = currNe.lng + 5
+    //         currSw.lng = currSw.lng - 5
+    //         padded_NE = currNe
+    //         padded_SW = currSw
+    //     }
+    
+    //     if(!mapData)
+    //     {
+    //         return (<div>placeholder</div>)
+    //     }
+    //     return(
+    //         <>
+    //             <MapContainer 
+    //                 center={center} 
+    //                 zoom={6} 
+    //                 style={{ height: '650px' }} 
+    //                 className='z-0 w-full h-96'
+    //                 scrollWheelZoom={true}
+    //                 maxBounds={[padded_NE,padded_SW]}>
+    //                 <TileLayer
+    //                     url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+    //                     attribution='Tiles © Esri &mdash; Esri, DeLorme, NAVTEQ'
+    //                 />
+    //                 {Object.keys(mapData).length    
+    //                     ?<GeoJSON data={mapData.original_map.features}/>
+    //                     :null
+    //                 }
+                    
+    //             </MapContainer>
+    //         </>
+    //     )
+    // }
 
-    useEffect(() => {
-        if (!mapRef.current) return; // If the ref is not attached to the element, do nothing
+    function handleView() {
+        //console.log("view");
+        //console.log(mapObject._id);
 
-        const map = L.map(mapRef.current).setView([39.50, -98.35], 4); // Use the ref here
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 19
-        }).addTo(map);
-
-        const geojsonLayer = L.geoJSON(file).addTo(map);
-        
-        map.fitBounds(geojsonLayer.getBounds());
-
-        // Cleanup function to remove the map
-        return () => {
-            map.remove();
-        };
-    }, []);
-
-    function handleView(){
-        console.log("view")
+        async function dispatchMapData() {
+            try {
+                console.log(mapObject); 
+                const data = await getMap(mapObject._id);
+                dispatch({ type: MapActionType.VIEW, payload: data });
+                //console.log(map)
+                navigate('/mapView');
+            } catch (error) {
+                console.error("Error loading map data:", error);
+            }
+        }
+        dispatchMapData();
     }
-    //max-w-md
+
+    if (!mapObject) {
+        return <div className='max-w-xl text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>Loading...</div>; // Or any other placeholder for loading
+    }
     return(
             <div className=" max-w-xl rounded border-2 border-primary-GeoBlue overflow-hidden shadow-lg bg-white m-4">
-                {/* <img className="w-full" src="/path-to-your-image" alt="Map" /> */}
-                <div ref={mapRef} className="z-0 w-full h-96"></div>
+                {/* <div ref={mapRef} className="z-0 w-full h-96"></div> */}
+                {/* <div> <MapDisplay props={ {MapData :  geojsonData.MapData} } /> </div> */}
                 <div className="px-6 py-4">
-                    <div className="font-NanumSquareNeoOTF-Bd text-3xl mb-2">US Outline</div>
+                    <div className="font-NanumSquareNeoOTF-Bd text-3xl mb-2">{mapObject.title}</div>
                     <p className="font-NanumSquareNeoOTF-Lt min-h-[10rem] text-gray-700 text-base">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. At purus tellus arcu sit nibh consectetur.
+                    {mapObject.description}
                     </p>
                 </div>
                 <div className="px-6 pt-4 pb-0">
@@ -47,13 +125,13 @@ const HomeScreenMapCard = ({file}) => {
                 </div>
                 <div className="px-6 font-NanumSquareNeoOTF-Lt pt-0 pb-2 flex flex-row justify-between items-center">
                     <span className="inline-block mr-2">
-                    <FontAwesomeIcon icon={faThumbsUp} /> 899
+                    <FontAwesomeIcon icon={faThumbsUp} /> {mapObject.likes}
                     </span>
                     <span className="inline-block mr-2">
-                    <FontAwesomeIcon icon={faComment} /> 284
+                    <FontAwesomeIcon icon={faComment} /> {mapObject.dislikes}
                     </span>
                     <span className="inline-block">
-                    <FontAwesomeIcon icon={faEye} /> 3620
+                    <FontAwesomeIcon icon={faEye} /> {mapObject.views}
                     </span>
 
                     <div className="px-6 py-4">
@@ -62,10 +140,7 @@ const HomeScreenMapCard = ({file}) => {
                         </button>
                     </div>
                 </div>
-                
             </div>
-
-
 
     )
 }

@@ -990,10 +990,6 @@ video {
   width: 100%;
 }
 
-.max-w-md {
-  max-width: 28rem;
-}
-
 .max-w-xl {
   max-width: 36rem;
 }
@@ -1122,10 +1118,6 @@ video {
 
 .gap-6 {
   gap: 1.5rem;
-}
-
-.gap-4 {
-  gap: 1rem;
 }
 
 .self-center {
@@ -1293,6 +1285,16 @@ video {
   background-color: rgb(254 240 138 / var(--tw-bg-opacity));
 }
 
+.bg-blue-100 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(219 234 254 / var(--tw-bg-opacity));
+}
+
+.bg-red-500 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(239 68 68 / var(--tw-bg-opacity));
+}
+
 .bg-opacity-20 {
   --tw-bg-opacity: 0.2;
 }
@@ -1426,6 +1428,10 @@ video {
   padding-left: 4rem;
 }
 
+.pl-2 {
+  padding-left: 0.5rem;
+}
+
 .pl-3 {
   padding-left: 0.75rem;
 }
@@ -1440,6 +1446,10 @@ video {
 
 .pl-8 {
   padding-left: 2rem;
+}
+
+.pr-11 {
+  padding-right: 2.75rem;
 }
 
 .pr-14 {
@@ -1462,8 +1472,16 @@ video {
   padding-right: 2rem;
 }
 
+.pr-80 {
+  padding-right: 20rem;
+}
+
 .pt-0 {
   padding-top: 0px;
+}
+
+.pt-1 {
+  padding-top: 0.25rem;
 }
 
 .pt-10 {
@@ -1591,6 +1609,10 @@ video {
   font-weight: 600;
 }
 
+.uppercase {
+  text-transform: uppercase;
+}
+
 .text-black {
   --tw-text-opacity: 1;
   color: rgb(0 0 0 / var(--tw-text-opacity));
@@ -1655,6 +1677,22 @@ video {
   color: rgb(255 255 255 / var(--tw-placeholder-opacity));
 }
 
+.opacity-50 {
+  opacity: 0.5;
+}
+
+.opacity-40 {
+  opacity: 0.4;
+}
+
+.opacity-10 {
+  opacity: 0.1;
+}
+
+.opacity-70 {
+  opacity: 0.7;
+}
+
 .shadow-aesthetic {
   --tw-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
   --tw-shadow-colored: 0 3px 10px var(--tw-shadow-color);
@@ -1685,6 +1723,11 @@ video {
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
 }
 
+.filter {
+  -webkit-filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+          filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
+}
+
 @font-face {
   font-family: "PyeongChangPeace-Bold";
 
@@ -1707,6 +1750,31 @@ video {
   font-family: "NanumSquareNeoOTF-Lt";
 
   src: url("../assets/NanumSquareNeoOTF-Lt.otf");
+}
+
+.container{
+  padding-top: 30px;
+}
+
+/* This is the CSS for the deep purple rectangle in the center */
+
+.rectangle {
+  background-color: #6a0dad;
+  /* This is the deep purple color */
+  border-radius: 20px;
+  /* Rounded corners, adjust as needed */
+  padding: 30px;
+  /* Space inside the rectangle, adjust as needed */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  /* Optional: adds shadow for depth */
+  text-align: center;
+  /* Aligns the text in the center */
+  color: #fff;
+  /* White text color */
+  width: 600px;
+  /* Width of the rectangle, adjust as needed */
+  height: 600px;
+  /* Height of the rectangle, adjust as needed */
 }
 
 /* :root {
@@ -1831,6 +1899,10 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
+.disabled\:opacity-30:disabled {
+  opacity: 0.3;
+}
+
 @media (prefers-color-scheme: dark) {
   .dark\:bg-gray-800 {
     --tw-bg-opacity: 1;
@@ -1846,6 +1918,10 @@ button:focus-visible {
 @media (min-width: 640px) {
   .sm\:h-20 {
     height: 5rem;
+  }
+
+  .sm\:h-28 {
+    height: 7rem;
   }
 }
 

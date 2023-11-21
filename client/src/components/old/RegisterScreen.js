@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate} from 'react-router-dom'
-import { authRegisterUser } from "../auth/auth_request_api"
+import { authRegisterUser } from "../../api/auth_request_api"
 const RegisterScreen = () => {
   const [formData, setFormData] = useState({
     email: "",

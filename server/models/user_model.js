@@ -8,16 +8,19 @@ const Schema = mongoose.Schema
 const userSchema = new Schema({
     email: {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
+
     username: {
         type: String,
-        required: true
+        required: true,
     },
     password: {
         type: String,
         required: true
     },
+
     maps: {
         type: [{
             type: Schema.Types.ObjectId,
@@ -25,6 +28,7 @@ const userSchema = new Schema({
         }],
         default: []
     },
+
     comments: {
         type: [{
             type: Schema.Types.ObjectId,
@@ -32,12 +36,25 @@ const userSchema = new Schema({
         }],
         default: []
     },
+
     number_maps_posted: {
         type: Number,
         default: 0
     },
+
+    birthday: {
+        type: Date,
+        default: null
+    },
+
+    location: {
+        type: String,
+        default: ""
+    },
+
     about: {
         type: String,
+        default: ""
     }
 }, {
     timestamps: true // adds a timestamp for when the user is created

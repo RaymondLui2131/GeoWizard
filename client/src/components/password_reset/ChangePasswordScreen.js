@@ -1,5 +1,5 @@
-import Banner from './Banner.js'
-import logo from "../assets/geowizlogo.png";
+
+import logo from "../../assets/geowizlogo.png";
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
@@ -14,8 +14,6 @@ const ChangePasswordScreen = () => {
 
     return (
         <div className="min-h-screen max-h-screen bg-primary-GeoPurple">
-            <Banner/>
-
 
             <div className='flex justify-center w-full'>
 

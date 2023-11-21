@@ -1,11 +1,14 @@
-import Banner from './Banner.js'
-import yellowCheck from "../assets/yellowCheck.png";
+import yellowCheck from "../../assets/yellowCheck.png";
+import { useNavigate } from 'react-router-dom'
 
 const AccountCreationSuccessScreen = () => {
+    const navigate = useNavigate();
+    const returnToHomePageClick = () => {
+        navigate('/'); 
+    }
+
     return (
         <div className="min-h-screen max-h-screen bg-primary-GeoPurple">
-            <Banner/>
-
             <div className='flex justify-center w-full'>
 
                 <div className="flex justify-center container">
@@ -15,6 +18,13 @@ const AccountCreationSuccessScreen = () => {
                         </div>
                         <div className='pt-12 text-2xl'>Account Created!</div>
                         <div className='pt-12 text-base'>You have successfully created an account. You may now close this window.</div>
+                        
+                        <div className = "pt-8 pr-14 flex-col justify-center items-center">
+                            <button onClick={returnToHomePageClick} className = "text-yellow-200 font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300">
+                                Return to Homepage
+                            </button>
+                        </div>
+
                     </div>
                 </div>
 

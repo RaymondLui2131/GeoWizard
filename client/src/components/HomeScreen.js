@@ -1,36 +1,63 @@
-import React, { useState } from 'react'
-//import { Link } from 'react-router-dom'
-//import {authgetUser } from "../auth/auth_request_api"
-//import {useGetUser} from "./UserContext" //updating user via Context jadenw2542@gmail.com
-import Banner from './Banner.js'
-import HomeScreenMapCard from "./HomeScreenMapCard.js"
-import gz_2010_us_outline_500k from "../assets/gz_2010_us_outline_500k.json"
-//import useMapSearch from './useMapSearch.js'
-const HomeScreen = () => {
-    //const user = useGetUser()
+import React, { useState, useRef, useCallback, useContext, useEffect} from 'react'
+import useMapSearch from './useMapSearch.js'
+import { SearchContext, SearchActionType } from "../api/SearchContext";
 
+const HomeScreen = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [dropdownTimeOpen, setDropdownTimeOpen] = useState(false);
-    // const[query, setQuery] = useState('')
-    // const[pageNumber, setPageNumber] = useState('')
+    //const isInitialMount = useRef(true);
+    
+    const [Sort, setSort] = useState()
 
-    // const{
-    //     maps,
-    //     hasMore,
-    //     loading,
-    //     error
-    // } = useMapSearch(query, pageNumber)
 
-    const testMaps = []
+    const [query, setQuery] = useState('')
+    const [pageNumber, setPageNumber] = useState(1)
+    const {searchQuery, searchDispatch} = useContext(SearchContext)
 
-    // function handleSearch(e){
-    //     setQuery(e.target.value)
+    const {
+        maps,
+        hasMore,
+        loading,
+        error
+      } = useMapSearch(query, pageNumber)
+
+    const observer = useRef()
+    const lastMapElementRef = useCallback(node =>{
+        if(loading) return
+        if(observer.current) observer.current.disconnect()
+        observer.current = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting && hasMore){
+                //console.log('Visible')
+                setPageNumber(prevPageNumber => prevPageNumber + 1)
+            }
+        })
+        if(node) observer.current.observe(node)
+        //console.log(node)
+    },[loading, hasMore])
+    
+    useEffect(() => {
+        console.log('search', searchQuery)
+        // if (isInitialMount.current) {
+        //     isInitialMount.current = false
+        //     return
+        // }
+        if(searchQuery == '') return
+        console.log(searchQuery)
+        setQuery({
+            query: searchQuery
+        })
+        setPageNumber(1)
+        console.log("searched button clicked")
+    }, [searchQuery])
+
+
+    // function handleSearch(e) {
+    //     setQuery({
+    //         query: e.target.value
+    //     })
     //     setPageNumber(1)
-    // }
+    //   }
 
-    for(let i = 0; i < 7; i++){
-       testMaps.push(gz_2010_us_outline_500k)
-    }
 
     function handleRecents(){
         console.log("recents")
@@ -40,20 +67,43 @@ const HomeScreen = () => {
         console.log("comments")
     }
 
-    function handleTrending(){
+    function handleOldest(){
         console.log("tredning")
     }
 
-    function handlePopular(){
+    function handleMostLikes(){
         console.log("Popular")
     }
-    
+
+    function handleMostViews(){
+        console.log("Popular")
+    }
+
+    function handleToday(){
+
+    }
+
+    function handleWeek(){
+
+    }
+    function handleMonth(){
+
+    }
+    function handleYear(){
+
+    }
+    function handleAllTheTime(){
+
+    }
+    // let test = true
+    // if(test){
+    //     return null  
+    // }
     return(
         <div className="min-h-screen max-h-[100%] bg-primary-GeoPurple">
-            <Banner/> 
             <div className='flex flex-wrap justify-between items-center mx-auto pt-5 px-28 z-10 '>
             
-                <div className= 'text-5xl font-PyeongChangPeace-Light text-primary-GeoBlue'>Popular Maps</div>
+                <div className= 'text-5xl font-PyeongChangPeace-Light text-primary-GeoBlue'>Welcome to GeoWizard!</div>
 
                 <div> 
                     <div className="relative inline-block z-[80]">
@@ -77,9 +127,10 @@ const HomeScreen = () => {
                         {dropdownOpen && (
                         <div className="absolute w-52 bg-primary-GeoOrange rounded-md shadow-lg ">
                             <a onClick={handleRecents} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-b-none ">Recents</a>
+                            <a onClick={handleOldest} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-b-none ">Oldest</a>
                             <a onClick={handleMostComments} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md" >Most Comments</a>
-                            <a onClick={handleTrending} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">Trending</a>
-                            <a onClick={handlePopular} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">Popular</a>
+                            <a onClick={handleMostLikes} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">Trending</a>
+                            <a onClick={handleMostViews} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">Popular</a>
 
                         </div>)}
                     </div>
@@ -105,11 +156,11 @@ const HomeScreen = () => {
                         </button>
                         {dropdownTimeOpen && (
                         <div className="absolute w-52 bg-primary-GeoOrange rounded-md shadow-lg ">
-                            <a onClick={handleRecents} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-b-none ">Today</a>
-                            <a onClick={handleMostComments} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md" >This Week</a>
-                            <a onClick={handleTrending} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">This Month</a>
-                            <a onClick={handlePopular} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">This Year</a>
-                            <a onClick={handlePopular} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">All The Time</a>
+                            <a onClick={handleToday} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-b-none ">Today</a>
+                            <a onClick={handleWeek} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md" >This Week</a>
+                            <a onClick={handleMonth} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">This Month</a>
+                            <a onClick={handleYear} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">This Year</a>
+                            <a onClick={handleAllTheTime} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">All The Time</a>
                         </div>)}
 
                     </div>
@@ -118,21 +169,21 @@ const HomeScreen = () => {
             </div>
 
 
+
+            <div>
                 <div className="grid grid-cols-3 mx-24 py-5 z-0">
-                    {testMaps.map((map, index) => (
-                        <HomeScreenMapCard key={index} file={map} />
-                    ))}
-
-
-                {/* {maps.map(map =>{
-                    return <div key={map}>{map} </div>
-                })}        
-                <div>{loading && 'Loading...'}</div>
-                <div>{loading && 'Error'}</div> */}
-
-
+                    {maps.map((map, index) => {
+                    if (maps.length === index + 1) { //last book
+                        return <div ref={lastMapElementRef} key={map._id + '-' + index}>{map}</div>
+                    } else { 
+                        return <div key={map._id + '-' + index}>{map}</div>
+                    }
+                    })}
+                </div>
+                <div className='text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>{loading && 'Loading...'}</div>
+                <div className='text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>{error && 'Error'}</div>
             </div>
-
+            
         </div>
 
 
@@ -140,3 +191,16 @@ const HomeScreen = () => {
 }
 
 export default HomeScreen
+
+//<HomeScreenMapCard key={index} file={map} />
+
+// {maps && (
+//     <div className="grid grid-cols-3 mx-24 py-5 z-0">
+//         {/* You can map through the data if there are multiple items */}
+//         {maps.map((mapItem, index) => (
+//             <div key={index}>{mapItem.title}</div>
+//         ))}
+//     </div>
+//     )}
+
+ {/* <input type="text" value={query} className=' invisible'></input> */}

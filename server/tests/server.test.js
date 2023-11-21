@@ -4,7 +4,6 @@ const mongoose = require("mongoose")
 const User = require("../models/user_model")
 const { MongoMemoryServer } = require("mongodb-memory-server")
 const { signToken } = require("../jwt_middleware")
-
 const app = createServer()
 
 const user_data1 = {
@@ -172,6 +171,164 @@ describe("test POST users/login", () => {
     })
 })
 
+describe("testing Maps creation and get", () => {
+    let creatingUser 
+    beforeAll(async () => {
+        const testServer = await MongoMemoryServer.create()
+        await mongoose.connect(testServer.getUri())
+            creatingUser = await supertest(app)
+            .post("/users/register")
+            .send(user_data1)
+            .set("Content-type", "application/json")
+    })
+
+    afterAll(async () => {
+        await mongoose.disconnect()
+        await mongoose.connection.close()
+    })
+
+    it("should successfully create a map", async () => {
+        const user_id = creatingUser.body._id
+        const newMap = {user_id: user_id, 
+            title: "test title", 
+            isPublic: true, 
+            mapType: "NONE", 
+            description: "testing", 
+            mapData: Buffer.alloc(1024)
+        }//MapData is irrelevant
+        const mapCreationResponse = await supertest(app)
+            .put("/maps/save")
+            .send(newMap)
+            .set("Content-type", "application/json")
+        expect(mapCreationResponse.status).toBe(200)
+
+    })
+    it("should be able to get the map", async () => {
+        const user_id = creatingUser.body._id
+        const newMap = {user_id: user_id, 
+            title: "test title", 
+            isPublic: true, 
+            mapType: "NONE", 
+            description: "testing", 
+            mapData: Buffer.alloc(1024)
+        }//MapData is irrelevant
+        const mapCreationResponse = await supertest(app)
+            .put("/maps/save")
+            .send(newMap)
+            .set("Content-type", "application/json")
+        const mapID = mapCreationResponse.body.map_id
+        const mapGet = await supertest(app)
+            .get("/maps/getMap")
+            .query({ mapID: mapID})
+            .set("Content-type", "application/json")
+        expect(mapGet.status).toBe(200)   
+    })
+})
+
+describe("testing Maps Likes", () => {
+    let user_id
+    let mapID 
+    beforeAll(async () => {
+        const testServer = await MongoMemoryServer.create()
+        await mongoose.connect(testServer.getUri())
+        creatingUser = await supertest(app)
+        .post("/users/register")
+        .send(user_data1)
+        .set("Content-type", "application/json")
+        user_id = creatingUser.body._id
+        const newMap = {user_id: user_id, 
+            title: "test title", 
+            isPublic: true, 
+            mapType: "NONE", 
+            description: "testing", 
+            mapData: Buffer.alloc(1024)
+        }//MapData is irrelevant
+        const mapCreationResponse = await supertest(app)
+            .put("/maps/save")
+            .send(newMap)
+            .set("Content-type", "application/json")
+        mapID = mapCreationResponse.body.map_id
+    })
+    afterAll(async () => {
+        await mongoose.disconnect()
+        await mongoose.connection.close()
+    })
+
+    it("should be able to increment likes by 1", async () => {
+        const likeReq = {
+            user_id: user_id, 
+            map_id: mapID,
+            amount: 1, 
+            isNeutral: false
+        }
+        const likeResponse = await supertest(app)
+        .put("/maps/changeLikesMap")
+        .send(likeReq)
+        .set("Content-type", "application/json")
+        expect(likeResponse.status).toBe(200)   
+        expect(likeResponse.body.map.likes).toBe(1)
+        expect(likeResponse.body.map.userLikes.length).toBe(1)   
+        expect(likeResponse.body.map.userDislikes.length).toBe(0)   
+
+    })
+    it("should be able to decrement likes by 1", async () => {
+        const likeReq = {
+            user_id: user_id, 
+            map_id: mapID,
+            amount: -1, 
+            isNeutral: false
+        }
+        const likeResponse = await supertest(app)
+        .put("/maps/changeLikesMap")
+        .send(likeReq)
+        .set("Content-type", "application/json")
+        console.log(likeResponse.body.map)
+        expect(likeResponse.status).toBe(200)   
+        expect(likeResponse.body.map.likes).toBe(0)
+        expect(likeResponse.body.map.userLikes.length).toBe(0)   
+        expect(likeResponse.body.map.userDislikes.length).toBe(1) 
+    })
+})
+
+describe("test POST /comments/addComment", () => {
+    let user_id
+    let mapID 
+
+    beforeAll(async () => {
+        const testServer = await MongoMemoryServer.create()
+        await mongoose.connect(testServer.getUri())
+        creatingUser = await supertest(app)
+        .post("/users/register")
+        .send(user_data1)
+        .set("Content-type", "application/json")
+        user_id = creatingUser.body._id
+        const newMap = {user_id: user_id, 
+            title: "test title", 
+            isPublic: true, 
+            mapType: "NONE", 
+            description: "testing", 
+            mapData: Buffer.alloc(1024)
+        }//MapData is irrelevant
+        const mapCreationResponse = await supertest(app)
+            .put("/maps/save")
+            .send(newMap)
+            .set("Content-type", "application/json")
+        mapID = mapCreationResponse.body.map_id
+    })
+
+    afterAll(async () => {
+        await mongoose.disconnect()
+        await mongoose.connection.close()
+    })
+
+    it("should add a new comment", async () => {
+        const response = await supertest(app)
+            .post("/comments/addComment")
+            .send({ text: "This is example text", user_id: user_id, map_id: mapID })
+            .set("Content-type", "application/json")
+        expect(response.status).toBe(200)
+    })
+})
 // describe('testing static file serving', () => {
 //     beforeAll(async () => {
 //         const testServer = await MongoMemoryServer.create()
