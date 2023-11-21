@@ -25,7 +25,7 @@ const Banner = () => {
         ['Home', '/'],
         ['Create Map/Edit Map', '/editUpload'],
         user ? ['Profile', '/profile'] : null,
-        user ? ['Dashboard', '/dashboard'] : null,
+        // user ? ['Dashboard', '/dashboard'] : null,
         ['About', '/about']
     ]
 

@@ -11,21 +11,24 @@ const baseURL = isLocal
 const API_URL = `${baseURL}${endpoint}`;
 
 
-export const saveUserMap = async (user_id, title, isPublic, mapType, description, mapData) => {
+export const saveUserMap = async (token, title, isPublic, mapType, description, mapData) => {
     try {
         const compressedMapData = geobuf_api.geojson_compress(mapData)
         const response = await axios.put(`${API_URL}save`, {
-            user_id: user_id,
             title: title,
             isPublic: isPublic,
             mapType: mapType,
             description: description,
             mapData: compressedMapData
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         })
 
         return response
     } catch (err) {
-        return err.response 
+        return err.response
     }
 }
 
@@ -50,12 +53,12 @@ export const getMap = async (mapID) => {
 }
 
 //changesthe like counter for a map
-export const changeLikesMap = async (user_id, map_id, amount,isNeutral) => {
+export const changeLikesMap = async (user_id, map_id, amount, isNeutral) => {
     try {
         const response = await axios.put(`${API_URL}changeLikesMap`, {
             user_id: user_id,
             map_id: map_id,
-            amount:amount,
+            amount: amount,
             isNeutral: isNeutral
         })
         return response

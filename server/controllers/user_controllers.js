@@ -36,7 +36,7 @@ const googleLoginUser = asyncHandler(async (req, res) => {
             token: signToken(user._id),
         })
     } else {
-        return res.status(400).json({
+        return res.status(401).json({
             message: "Invalid credentials"
         })
     }
@@ -68,7 +68,7 @@ const loginUser = asyncHandler(async (req, res) => {
             token: signToken(user._id),
         })
     } else {
-        return res.status(400).json({
+        return res.status(401).json({
             message: "Invalid credentials"
         })
     }

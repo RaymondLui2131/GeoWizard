@@ -66,7 +66,7 @@ const BottomRow = ({ title, mapType, description }) => {
         if (user) {
             // const mapData = geobuf_api.geojson_compress(map)
             const map_type = Object.keys(MAP_TYPES).find(key => MAP_TYPES[key] === mapType)
-            const response = await saveUserMap(user._id, title, publicStatus, map_type, description, map) // testing
+            const response = await saveUserMap(user.token, title, publicStatus, map_type, description, map) // testing
             console.log(response)
         }
     }
