@@ -22,13 +22,13 @@ const HomeScreen = () => {
     const toggleMetricButton = (buttonKey) => {
         // If the clicked button is already active, deactivate it, otherwise activate it
         setActiveMetricButton(activeMetricButton === buttonKey ? '' : buttonKey);
-        console.log(activeMetricButton)
+        //console.log(activeMetricButton)
     };
 
     const toggleTimeButton = (buttonKey) => {
         // If the clicked button is already active, deactivate it, otherwise activate it
         setActiveTimeButton(activeTimeButton === buttonKey ? '' : buttonKey);
-        console.log(activeTimeButton)
+        //console.log(activeTimeButton)
     };
 
 
@@ -54,10 +54,10 @@ const HomeScreen = () => {
     },[loading, hasMore])
     
     useEffect(() => {
-        console.log('search', searchQuery)
+        //console.log('search', searchQuery)
 
         //if(searchQuery == '') return
-        console.log(searchQuery)
+        //console.log(searchQuery)
         setActiveMetricButton('')
         setActiveTimeButton('')
         setQuery({
@@ -66,19 +66,19 @@ const HomeScreen = () => {
             time: activeTimeButton
         })
         setPageNumber(1)
-        console.log("searched button clicked")
+        //console.log("searched button clicked")
     }, [searchQuery])
 
     useEffect(() => {
-        console.log('search', searchQuery)
-        console.log(searchQuery)
+        //console.log('search', searchQuery)
+        //console.log(searchQuery)
         setQuery({
             query: searchQuery,
             metric: activeMetricButton,
             time: activeTimeButton
         })
         setPageNumber(1)
-        console.log("searched button clicked")
+        //console.log("searched button clicked")
     }, [activeMetricButton, activeTimeButton])
 
 
