@@ -93,11 +93,11 @@ const BottomRow = ({ title, mapType, description }) => {
                 </div>
                 <div>
                     <div className='inline-block'><button className={`bg-green-200 text-3xl
-                                                    font-NanumSquareNeoOTF-Lt px-8 rounded-full py-2 ${publicStatus && 'opacity-50'}`} onClick={() => setPublic(true)}>
+                                                    font-NanumSquareNeoOTF-Lt px-8 rounded-full py-2 ${!publicStatus && 'opacity-50'}`} onClick={() => setPublic(true)}>
                         Public</button>
                     </div>
                     <div className=' inline-block'> <button className={`bg-red-300 text-3xl
-                                                    font-NanumSquareNeoOTF-Lt px-8  rounded-full py-2 ${!publicStatus && 'opacity-50'}`} onClick={() => setPublic(false)}>
+                                                    font-NanumSquareNeoOTF-Lt px-8  rounded-full py-2 ${publicStatus && 'opacity-50'}`} onClick={() => setPublic(false)}>
                         Private</button>
                     </div>
 
