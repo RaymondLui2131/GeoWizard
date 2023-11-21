@@ -100,18 +100,18 @@ export const postUser = async (userData) => {
 }
 
 export const checkUserEmail = async (userData) => {
-    let link;
+    let checkEmailLink;
     if (process.env.NODE_ENV == 'development'){
-        link = 'http://localhost:4000/users/emailCheck'
+        checkEmailLink = 'http://localhost:4000/users/emailCheck'
     }
     else if (process.env.NODE_ENV == 'production'){
-        link = 'https://geowizard-app-b802ae01ce7f.herokuapp.com/users/emailCheck'
+        checkEmailLink = 'https://geowizard-app-b802ae01ce7f.herokuapp.com/users/emailCheck'
     }
     try {
-        const response = await axios.post(link, userData);
+        const response = await axios.post(checkEmailLink, userData);
         return response
     } catch (err) {
-        console.log('link: %s', link);
+        console.log('checkEmailLink: %s', checkEmailLink);
         return err.response
     }
 }
