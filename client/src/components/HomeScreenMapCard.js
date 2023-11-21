@@ -3,45 +3,64 @@ import { faThumbsUp, faComment, faEye } from '@fortawesome/free-solid-svg-icons'
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getMap } from '../api/map_request_api';
-import React, { useRef, useEffect, useContext } from 'react';
+import React, { useRef, useEffect, useContext, useState } from 'react';
 import { MapContext, MapActionType } from "../api/MapContext"
 import { useNavigate } from "react-router-dom";
 
 const HomeScreenMapCard = ({mapObject}) => {
     const {map, dispatch } = useContext(MapContext)
     const navigate = useNavigate()
-    
+    const [geojsonData, setGeojsonData] = useState(null); // State to store map data
+    const [isLoading, setIsLoading] = useState(true); // Loading flag
 
     const mapRef = useRef(null); // Create a ref for the map container
     //console.log(mapObject)
     
-    const mapData = async() => (await getMap(mapObject._id)) 
+    //const mapData = async() => (await getMap(mapObject._id)) 
 
     useEffect(() => {
-        if (!mapObject || !mapObject.id) return;
+        if (geojsonData) return;
+    
+        const fetchMapData = async () => {
+            try {
+                console.log('getmap in card')
+                const data = await getMap(mapObject._id);
+                setGeojsonData(data);
+                setIsLoading(false);
+            } catch (error) {
+                console.error("Error loading map data:", error);
+                setIsLoading(false);
+            }
+        };
+    
+        fetchMapData();
+    }, [mapObject]); // This effect should only rerun if mapObject changes
+
+    // useEffect(() => {
+    //     if (isLoading || !geojsonData || !mapRef.current) return;
         
-        mapData().then(geojsonData => {
-            if (!mapRef.current) return // If the ref is not attached to the element, do nothing
+    //    // geojsonData().then(geojsonData => {
+    //         //if (!mapRef.current) return // If the ref is not attached to the element, do nothing
+    //         //console.log(mapData)
+    //         // const displayMap = L.map(mapRef.current).setView([39.50, -98.35], 4); // Use the ref here
 
-            const displayMap = L.map(mapRef.current).setView([39.50, -98.35], 4); // Use the ref here
+    //         // L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    //         //     maxZoom: 19
+    //         // }).addTo(displayMap)
 
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                maxZoom: 19
-            }).addTo(displayMap)
-
-            const geojsonLayer = L.geoJSON(geojsonData).addTo(displayMap)
+    //         // const geojsonLayer = L.geoJSON(geojsonData).addTo(displayMap)
             
-            displayMap.fitBounds(geojsonLayer.getBounds())
+    //         // displayMap.fitBounds(geojsonLayer.getBounds())
 
-            // Cleanup function to remove the map
-            return () => {
-                if(displayMap) displayMap.remove()
-            };
-        }).catch(error => {
-            console.error("Error loading map data:", error)
-        });
+    //         // // Cleanup function to remove the map
+    //         // return () => {
+    //         //     if(displayMap) displayMap.remove()
+    //         // }
+    //     // }).catch(error => {
+    //     //     console.error("Error loading map data:", error)
+    //     // });
         
-    }, [mapObject, mapData])
+    // }, [isLoading, geojsonData])
 
     function handleView() {
         //console.log("view");
@@ -49,8 +68,9 @@ const HomeScreenMapCard = ({mapObject}) => {
 
         async function dispatchMapData() {
             try {
-                //console.log(data); 
-                dispatch({ type: MapActionType.VIEW, payload: mapData });
+                console.log(geojsonData); 
+                dispatch({ type: MapActionType.VIEW, payload: geojsonData });
+                console.log(map)
                 navigate('/mapView');
             } catch (error) {
                 console.error("Error loading map data:", error);
@@ -59,6 +79,9 @@ const HomeScreenMapCard = ({mapObject}) => {
         dispatchMapData();
     }
 
+    if (!geojsonData) {
+        return <div>Loading...</div>; // Or any other placeholder for loading
+    }
     return(
             <div className=" max-w-xl rounded border-2 border-primary-GeoBlue overflow-hidden shadow-lg bg-white m-4">
                 <div ref={mapRef} className="z-0 w-full h-96"></div>
