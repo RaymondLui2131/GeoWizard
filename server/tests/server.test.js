@@ -289,6 +289,46 @@ describe("testing Maps Likes", () => {
         expect(likeResponse.body.map.userDislikes.length).toBe(1) 
     })
 })
+
+describe("test POST /comments/addComment", () => {
+    let user_id
+    let mapID 
+
+    beforeAll(async () => {
+        const testServer = await MongoMemoryServer.create()
+        await mongoose.connect(testServer.getUri())
+        creatingUser = await supertest(app)
+        .post("/users/register")
+        .send(user_data1)
+        .set("Content-type", "application/json")
+        user_id = creatingUser.body._id
+        const newMap = {user_id: user_id, 
+            title: "test title", 
+            isPublic: true, 
+            mapType: "NONE", 
+            description: "testing", 
+            mapData: Buffer.alloc(1024)
+        }//MapData is irrelevant
+        const mapCreationResponse = await supertest(app)
+            .put("/maps/save")
+            .send(newMap)
+            .set("Content-type", "application/json")
+        mapID = mapCreationResponse.body.map_id
+    })
+
+    afterAll(async () => {
+        await mongoose.disconnect()
+        await mongoose.connection.close()
+    })
+
+    it("should add a new comment", async () => {
+        const response = await supertest(app)
+            .post("/comments/addComment")
+            .send({ text: "This is example text", user_id: user_id, map_id: mapID })
+            .set("Content-type", "application/json")
+        expect(response.status).toBe(200)
+    })
+})
 // describe('testing static file serving', () => {
 //     beforeAll(async () => {
 //         const testServer = await MongoMemoryServer.create()
