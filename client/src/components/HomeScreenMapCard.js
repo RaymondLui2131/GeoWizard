@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faThumbsUp, faComment, faEye } from '@fortawesome/free-solid-svg-icons';
+import { faThumbsUp, faComment, faEye, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getMap } from '../api/map_request_api';
@@ -11,6 +11,13 @@ import { MapContainer, TileLayer,GeoJSON } from 'react-leaflet';
 const HomeScreenMapCard = ({mapObject}) => {
     const {map, dispatch } = useContext(MapContext)
     const navigate = useNavigate()
+
+    const date = new Date(mapObject.createdAt);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0'); // getMonth() returns a zero-based index
+    const year = date.getFullYear();
+    const formattedDate = `${day}/${month}/${year}`;
+
     //const [geojsonData, setGeojsonData] = useState(null); // State to store map data
     //const [isLoading, setIsLoading] = useState(true); // Loading flag
 
@@ -95,7 +102,7 @@ const HomeScreenMapCard = ({mapObject}) => {
 
         async function dispatchMapData() {
             try {
-                console.log(mapObject); 
+                //console.log(mapObject); 
                 const data = await getMap(mapObject._id);
                 dispatch({ type: MapActionType.VIEW, payload: data });
                 //console.log(map)
@@ -110,6 +117,7 @@ const HomeScreenMapCard = ({mapObject}) => {
     if (!mapObject) {
         return <div className='max-w-xl text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>Loading...</div>; // Or any other placeholder for loading
     }
+    //console.log(mapObject)
     return(
             <div className=" max-w-xl rounded border-2 border-primary-GeoBlue overflow-hidden shadow-lg bg-white m-4">
                 {/* <div ref={mapRef} className="z-0 w-full h-96"></div> */}
@@ -120,15 +128,19 @@ const HomeScreenMapCard = ({mapObject}) => {
                     {mapObject.description}
                     </p>
                 </div>
-                <div className="px-6 pt-4 pb-0">
-                    <span className="font-NanumSquareNeoOTF-Lt inline-block bg-primary-GeoOrange text-white rounded-full px-3 py-1  font-semibold  mr-2 mb-2">Submitted By: Anon2131</span>
+                <div className="px-6 pt-4 pb-0 flex flex-row justify-between items-center">
+                    <span className="font-NanumSquareNeoOTF-Lt inline-block bg-primary-GeoOrange text-white rounded-full px-3 py-1  font-semibold  mr-2 mb-2">Author  : {mapObject.user_id.username}</span>
+                    <span className="font-NanumSquareNeoOTF-Lt inline-block text-black rounded-full px-3 py-1  font-semibold  mr-2 mb-2">Created On : {formattedDate}</span>
                 </div>
                 <div className="px-6 font-NanumSquareNeoOTF-Lt pt-0 pb-2 flex flex-row justify-between items-center">
                     <span className="inline-block mr-2">
                     <FontAwesomeIcon icon={faThumbsUp} /> {mapObject.likes}
                     </span>
                     <span className="inline-block mr-2">
-                    <FontAwesomeIcon icon={faComment} /> {mapObject.dislikes}
+                    <FontAwesomeIcon icon={faThumbsDown} /> {mapObject.dislikes}
+                    </span>
+                    <span className="inline-block mr-2">
+                    <FontAwesomeIcon icon={faComment} /> {mapObject.comments.length}
                     </span>
                     <span className="inline-block">
                     <FontAwesomeIcon icon={faEye} /> {mapObject.views}

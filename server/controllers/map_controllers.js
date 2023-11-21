@@ -155,13 +155,71 @@ const changeLikesMap = asyncHandler(async (req, res) => {
 const queryMaps = asyncHandler(async (req, res) => {
     console.log('req', req.query)
     const {q, page} = req.query
-    console.log('page #', page)
+    const{query, metric, time} = q
     const pageSize = 3;
     const skip = pageSize * (page - 1);
 
-    const publicMaps = await Map.find({ isPublic: true })
+    let queryObj = { isPublic: true };
+    if(query) {
+        queryObj.title = { $regex: query, $options: 'i' }
+    }
+
+    if (time != '') {
+        const now = new Date();
+        let startDate;
+
+        switch (time) {
+            case 'Today':
+                startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                break;
+            case 'This Week':
+                startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+                break;
+            case 'This Month':
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                break;
+            case 'This Year':
+                startDate = new Date(now.getFullYear(), 0, 1);
+                break;
+            case 'All The Time':
+                startDate = new Date(0);  // The Unix Epoch
+                break;
+        }
+        if (startDate) {
+            queryObj.createdAt = { $gte: startDate };
+        }
+    }
+    
+    let sortObj = {};
+    if(metric != ''){
+        switch (metric) {
+            case 'Recents':
+                sortObj = { createdAt: -1 }; // Sort by most recent first
+                break;
+            case 'Oldest':
+                sortObj = { createdAt: 1 }; // Sort by oldest first
+                break;
+            case 'Most Comments':
+                sortObj = { comments: -1 }; // Sort by number of comments, descending
+                break;
+            case 'Most Likes':
+                sortObj = { likes: -1 }; // Sort by number of likes, descending
+                break;
+            case 'Most Views':
+                sortObj = { views: -1 }; // Sort by number of views, descending
+                break;
+        }
+    }
+
+    //console.log(sortObj)
+    const publicMaps = await Map.find(queryObj)
+            .sort(sortObj)
             .skip(skip)
-            .limit(pageSize);
+            .limit(pageSize)
+            .populate({
+                path: 'user_id',
+                select: 'username _id'  // Only include the username and _id fields
+            });
     //console.log(publicMaps)
     if (!publicMaps) {
         return res.status(400).json({
