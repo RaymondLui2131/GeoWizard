@@ -22,7 +22,7 @@ const Banner = () => {
     };
 
     const menuItems = [
-        ['Home Test', '/'],
+        ['Home', '/'],
         ['Create Map/Edit Map', '/editUpload'],
         user ? ['Profile', '/profile'] : null,
         user ? ['Dashboard', '/dashboard'] : null,
