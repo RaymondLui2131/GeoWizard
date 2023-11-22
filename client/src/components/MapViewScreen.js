@@ -301,7 +301,7 @@ const Comment = (props) => {
         if(user)
         {
             const foundLikedUser = (comment.usersVoted).filter((id) => id === user._id)
-            if(foundLikedUser > 0)
+            if(foundLikedUser.length > 0)
                 setLike(true)
         }
     },[])
