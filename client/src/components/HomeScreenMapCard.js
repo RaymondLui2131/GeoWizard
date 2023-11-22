@@ -95,8 +95,9 @@ const HomeScreenMapCard = ({mapObject}) => {
 
         async function dispatchMapData() {
             try {
-                console.log(mapObject); 
+                // console.log(mapObject); 
                 const data = await getMap(mapObject._id);
+                console.log(data)
                 dispatch({ type: MapActionType.VIEW, payload: data });
                 //console.log(map)
                 navigate('/mapView');

@@ -360,7 +360,7 @@ const MapView = () => {
     // const [map, setMap] = useState(null)
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
-    console.log(title)
+    // console.log(title)
     // const [map,] = useState(franceMap) //For testing
     const [typeSelected, setType] = useState(MAP_TYPES['NONE'])
     const [mapTypeClicked, isClicked] = useState(false)

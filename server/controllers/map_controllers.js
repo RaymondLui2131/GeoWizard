@@ -28,7 +28,7 @@ const saveUserMap = asyncHandler(async (req, res) => {
             message: "Save user map failed"
         })
     }
-    
+
     // add the map_id to user.maps
     user.maps.push(map_id)
     await user.save()
@@ -95,13 +95,13 @@ const getMap = asyncHandler(async (req, res) => {
         })
     }
     const mapWithComments = await map
-    .populate({
-        path: 'comments',
-        populate: {
-            path: 'user_id',
-            model: 'User' 
-        }
-    })
+        .populate({
+            path: 'comments',
+            populate: {
+                path: 'user_id',
+                model: 'User'
+            }
+        })
     if (!mapWithComments) {
         return res.status(400).json({
             message: "Could not find comments"
@@ -115,21 +115,20 @@ const getMap = asyncHandler(async (req, res) => {
 //Put
 const changeLikesMap = asyncHandler(async (req, res) => {
     const { user_id, map_id, amount, isNeutral } = req.body
-    console.log('Changing likes',amount)
+    console.log('Changing likes', amount)
     var map
-    if(isNeutral)//Resetting back 
+    if (isNeutral)//Resetting back 
     {
-        if(amount > 0)
-            map = await Map.findByIdAndUpdate(map_id, {$inc:{ likes: amount }, $pull: {userDislikes: user_id }}, { new: true } )
+        if (amount > 0)
+            map = await Map.findByIdAndUpdate(map_id, { $inc: { likes: amount }, $pull: { userDislikes: user_id } }, { new: true })
         else
-            map = await Map.findByIdAndUpdate(map_id, {$inc:{ likes: amount }, $pull:{userLikes: user_id } }, { new: true } )
+            map = await Map.findByIdAndUpdate(map_id, { $inc: { likes: amount }, $pull: { userLikes: user_id } }, { new: true })
     }
-    else
-    {
-        if(amount > 0)
-            map = await Map.findByIdAndUpdate(map_id, {$inc:{ likes: amount }, $push: {userLikes: user_id } ,$pull: {userDislikes: user_id}} , { new: true } )
+    else {
+        if (amount > 0)
+            map = await Map.findByIdAndUpdate(map_id, { $inc: { likes: amount }, $push: { userLikes: user_id }, $pull: { userDislikes: user_id } }, { new: true })
         else
-            map = await Map.findByIdAndUpdate(map_id, {$inc:{ likes: amount }, $push: {userDislikes: user_id } ,$pull: {userLikes: user_id}} , { new: true } )
+            map = await Map.findByIdAndUpdate(map_id, { $inc: { likes: amount }, $push: { userDislikes: user_id }, $pull: { userLikes: user_id } }, { new: true })
     }
 
     if (!map) {
@@ -137,7 +136,7 @@ const changeLikesMap = asyncHandler(async (req, res) => {
             message: "Failed to find map"
         })
     }
-    return res.status(200).json({map})
+    return res.status(200).json({ map })
 
 
 })
@@ -148,14 +147,14 @@ const changeLikesMap = asyncHandler(async (req, res) => {
 // query should contain what they searched, and time/sort vars
 const queryMaps = asyncHandler(async (req, res) => {
     console.log('req', req.query)
-    const {q, page} = req.query
+    const { q, page } = req.query
     console.log('page #', page)
     const pageSize = 3;
     const skip = pageSize * (page - 1);
 
     const publicMaps = await Map.find({ isPublic: true })
-            .skip(skip)
-            .limit(pageSize);
+        .skip(skip)
+        .limit(pageSize);
     //console.log(publicMaps)
     if (!publicMaps) {
         return res.status(400).json({
