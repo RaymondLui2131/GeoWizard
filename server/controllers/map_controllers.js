@@ -81,39 +81,33 @@ const createMap = asyncHandler(async (req, res) => { // used within saveUserMap
 const getMap = asyncHandler(async (req, res) => {
     const mapID = req.query.mapID;
     console.log('getMap', mapID)
-    const map = await Map.findById(mapID)
-    if (!map) {
-        return res.status(400).json({
-            message: "Could not find map"
-        })
-    }
-    const mapWithUser = await map.populate('user_id')
-    if (!mapWithUser) {
-        return res.status(400).json({
-            message: "Could not find user"
-        })
-    }
-    const mapWithData = await mapWithUser.populate('MapData')
-    //console.log(mapWithData)
-    if (!mapWithData) {
-        return res.status(400).json({
-            message: "Could not find map data"
-        })
-    }
-    const mapWithComments = await map
-    .populate({
-        path: 'comments',
-        populate: {
+    const mapWithDetails = await Map.findById(mapID)
+        .populate({
             path: 'user_id',
-            model: 'User' 
-        }
-    })
-    if (!mapWithComments) {
-        return res.status(400).json({
-            message: "Could not find comments"
+            select: '_id username' 
         })
+        .populate({
+            path: 'MapData',
+            select: 'original_map edits' 
+        })
+        .populate({
+            path: 'comments',
+            select: '_id text user_id votes usersVoted createdAt', 
+            populate: [
+                {
+                    path: 'user_id',
+                    model: 'User',
+                    select: '_id username'
+                }
+            ]
+        })
+        
+    if (!mapWithDetails) {
+        return res.status(404).json({ message: "Could not find map or related data" });
     }
-    return res.json(mapWithComments)
+    console.log(mapWithDetails)
+
+    return res.json(mapWithDetails);
 })
 
 
@@ -139,7 +133,7 @@ const changeLikesMap = asyncHandler(async (req, res) => {
     }
 
     if (!map) {
-        return res.status(400).json({
+        return res.status(404).json({
             message: "Failed to find map"
         })
     }

@@ -22,7 +22,6 @@ export const saveUserMap = async (user_id, title, isPublic, mapType, description
             description: description,
             mapData: compressedMapData
         })
-
         return response
     } catch (err) {
         return err.response 
