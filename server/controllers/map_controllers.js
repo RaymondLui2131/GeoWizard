@@ -81,39 +81,33 @@ const createMap = asyncHandler(async (req, res) => { // used within saveUserMap
 const getMap = asyncHandler(async (req, res) => {
     const mapID = req.query.mapID;
     console.log('getMap', mapID)
-    const map = await Map.findById(mapID)
-    if (!map) {
-        return res.status(404).json({ // 404 Not Found
-            message: "Could not find map"
-        })
-    }
-    const mapWithUser = await map.populate('user_id')
-    if (!mapWithUser) {
-        return res.status(404).json({ // 404 Not Found
-            message: "Could not find user"
-        })
-    }
-    const mapWithData = await mapWithUser.populate('MapData')
-    //console.log(mapWithData)
-    if (!mapWithData) {
-        return res.status(404).json({ // 404 Not Found
-            message: "Could not find map data"
-        })
-    }
-    const mapWithComments = await map
-    .populate({
-        path: 'comments',
-        populate: {
+    const mapWithDetails = await Map.findById(mapID)
+        .populate({
             path: 'user_id',
-            model: 'User' 
-        }
-    })
-    if (!mapWithComments) {
-        return res.status(404).json({ // 404 Not Found
-            message: "Could not find comments"
+            select: '_id username' 
         })
+        .populate({
+            path: 'MapData',
+            select: 'original_map edits' 
+        })
+        .populate({
+            path: 'comments',
+            select: '_id text user_id votes usersVoted createdAt', 
+            populate: [
+                {
+                    path: 'user_id',
+                    model: 'User',
+                    select: '_id username'
+                }
+            ]
+        })
+        
+    if (!mapWithDetails) {
+        return res.status(404).json({ message: "Could not find map or related data" });
     }
-    return res.json(mapWithComments)
+    console.log(mapWithDetails)
+
+    return res.json(mapWithDetails);
 })
 
 
@@ -139,7 +133,7 @@ const changeLikesMap = asyncHandler(async (req, res) => {
     }
 
     if (!map) {
-        return res.status(400).json({
+        return res.status(404).json({
             message: "Failed to find map"
         })
     }
@@ -155,13 +149,71 @@ const changeLikesMap = asyncHandler(async (req, res) => {
 const queryMaps = asyncHandler(async (req, res) => {
     console.log('req', req.query)
     const {q, page} = req.query
-    console.log('page #', page)
+    const{query, metric, time} = q
     const pageSize = 3;
     const skip = pageSize * (page - 1);
 
-    const publicMaps = await Map.find({ isPublic: true })
+    let queryObj = { isPublic: true };
+    if(query) {
+        queryObj.title = { $regex: query, $options: 'i' }
+    }
+
+    if (time != '') {
+        const now = new Date();
+        let startDate;
+
+        switch (time) {
+            case 'Today':
+                startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                break;
+            case 'This Week':
+                startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() - now.getDay());
+                break;
+            case 'This Month':
+                startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                break;
+            case 'This Year':
+                startDate = new Date(now.getFullYear(), 0, 1);
+                break;
+            case 'All The Time':
+                startDate = new Date(0);  // The Unix Epoch
+                break;
+        }
+        if (startDate) {
+            queryObj.createdAt = { $gte: startDate };
+        }
+    }
+    
+    let sortObj = {};
+    if(metric != ''){
+        switch (metric) {
+            case 'Recents':
+                sortObj = { createdAt: -1 }; // Sort by most recent first
+                break;
+            case 'Oldest':
+                sortObj = { createdAt: 1 }; // Sort by oldest first
+                break;
+            case 'Most Comments':
+                sortObj = { comments: -1 }; // Sort by number of comments, descending
+                break;
+            case 'Most Likes':
+                sortObj = { likes: -1 }; // Sort by number of likes, descending
+                break;
+            case 'Most Views':
+                sortObj = { views: -1 }; // Sort by number of views, descending
+                break;
+        }
+    }
+
+    //console.log(sortObj)
+    const publicMaps = await Map.find(queryObj)
+            .sort(sortObj)
             .skip(skip)
-            .limit(pageSize);
+            .limit(pageSize)
+            .populate({
+                path: 'user_id',
+                select: 'username _id'  // Only include the username and _id fields
+            });
     //console.log(publicMaps)
     if (!publicMaps) {
         return res.status(404).json({ // 404 Not Found

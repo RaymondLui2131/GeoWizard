@@ -33,7 +33,7 @@ export const MapContextProvider = ({ children }) => {
         map: null
     })
 
-    console.log("Map State: " + state)
+    //console.log("Map State: " + state)
     const contextValue = useMemo(() => ({ ...state, dispatch }), [state])
     return (
         <MapContext.Provider value={contextValue}>
