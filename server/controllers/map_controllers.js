@@ -68,7 +68,7 @@ const createMap = asyncHandler(async (req, res) => { // used within saveUserMap
     })
 
     if (!map) {
-        return res.status(400).json({
+        return res.status(500).json({ //Internal Server Error
             message: "Map creation failed"
         })
     }
@@ -83,20 +83,20 @@ const getMap = asyncHandler(async (req, res) => {
     console.log('getMap', mapID)
     const map = await Map.findById(mapID)
     if (!map) {
-        return res.status(400).json({
+        return res.status(404).json({ // 404 Not Found
             message: "Could not find map"
         })
     }
     const mapWithUser = await map.populate('user_id')
     if (!mapWithUser) {
-        return res.status(400).json({
+        return res.status(404).json({ // 404 Not Found
             message: "Could not find user"
         })
     }
     const mapWithData = await mapWithUser.populate('MapData')
     //console.log(mapWithData)
     if (!mapWithData) {
-        return res.status(400).json({
+        return res.status(404).json({ // 404 Not Found
             message: "Could not find map data"
         })
     }
@@ -109,7 +109,7 @@ const getMap = asyncHandler(async (req, res) => {
         }
     })
     if (!mapWithComments) {
-        return res.status(400).json({
+        return res.status(404).json({ // 404 Not Found
             message: "Could not find comments"
         })
     }
@@ -164,7 +164,7 @@ const queryMaps = asyncHandler(async (req, res) => {
             .limit(pageSize);
     //console.log(publicMaps)
     if (!publicMaps) {
-        return res.status(400).json({
+        return res.status(404).json({ // 404 Not Found
             message: "Could not find map data"
         })
     }

@@ -9,7 +9,7 @@
 const bcrypt = require("bcryptjs")
 const asyncHandler = require('express-async-handler')
 const User = require("../models/user_model")
-const { signToken } = require("../jwt_middleware")
+const { signToken } = require("../jwt_middleware") 
 
 /**
  * if the user does not exist yet, register the user in the database,
