@@ -152,7 +152,7 @@ const api = {
     authgetMaps,
     googleLoginUser,
     postUser,
-    checkEmail,
+    checkEmail, 
     checkUser
 }
 
