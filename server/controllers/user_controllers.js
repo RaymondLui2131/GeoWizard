@@ -36,11 +36,7 @@ const googleLoginUser = asyncHandler(async (req, res) => {
             token: signToken(user._id),
         })
     } else {
-<<<<<<< HEAD
-        return res.status(401).json({
-=======
         return res.status(401).json({ // 401 Unauthorized
->>>>>>> cb881b6300768337efbe30abb4350119f7c2b2b1
             message: "Invalid credentials"
         })
     }
@@ -72,11 +68,7 @@ const loginUser = asyncHandler(async (req, res) => {
             token: signToken(user._id),
         })
     } else {
-<<<<<<< HEAD
-        return res.status(401).json({
-=======
         return res.status(401).json({ // 401 Unauthorized
->>>>>>> cb881b6300768337efbe30abb4350119f7c2b2b1
             message: "Invalid credentials"
         })
     }
