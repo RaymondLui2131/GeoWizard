@@ -19,6 +19,8 @@
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@react-oauth/google": "^0.11.1",
+    "@turf/simplify": "^6.5.0",
+    "@turf/turf": "^6.5.0",
     "axios": "^1.6.0",
     "buffer": "^6.0.3",
     "eslint-plugin-react": "^7.33.2",
