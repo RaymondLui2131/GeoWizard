@@ -19,7 +19,6 @@ const User = require("../models/user_model")
     mapData: mapData
  */
 const saveUserMap = asyncHandler(async (req, res) => {
-    const { title, isPublic, mapType, description, mapData } = req.body
     const user = req.user // GET THE USER FROM JWT_MIDDLEWARE IF TOKEN VERIFICATION IS SUCCESSFUL
     console.log(user)
     const map_id = await createMap(req, user)
@@ -34,7 +33,7 @@ const saveUserMap = asyncHandler(async (req, res) => {
     await user.save()
 
     return res.status(200).json({
-        user_id: user_id,
+        user_id: user._id,
         map_id: map_id
     })
 })

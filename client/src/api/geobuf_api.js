@@ -3,9 +3,11 @@ import geobuf from 'geobuf'
 import Pbf from 'pbf'
 const { Buffer } = require('buffer');
 const gp = require("geojson-precision")
+const simplify = require('simplify-geojson')
 export const geojson_compress = (data) =>{
     const trimmed_data = gp.parse(data, 3)
-    const encoded = Buffer.from(geobuf.encode(trimmed_data, new Pbf()));
+    const simplify_data = simplify(trimmed_data, 0.001)
+    const encoded = Buffer.from(geobuf.encode(simplify_data, new Pbf()));
     console.log(encoded.byteLength / 1e6)
     return encoded
 }
