@@ -301,7 +301,7 @@ const Comment = (props) => {
         if(user)
         {
             const foundLikedUser = (comment.usersVoted).filter((id) => id === user._id)
-            if(foundLikedUser > 0)
+            if(foundLikedUser.length > 0)
                 setLike(true)
         }
     },[])
@@ -368,7 +368,7 @@ const MapView = () => {
 
     const { map } = useContext(MapContext) 
     const { user } = useContext(UserContext) 
-    console.log(map)
+    //console.log(map)
     const [mapView,] = useState(map||null); //REPLACE WITH MAP CONTEXT
     const [likeCount, setLikes] = useState(mapView?.likes || 0)
     const [map_id,] = useState(mapView?._id || '')

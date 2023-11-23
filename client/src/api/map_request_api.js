@@ -25,7 +25,6 @@ export const saveUserMap = async (token, title, isPublic, mapType, description, 
                 Authorization: `Bearer ${token}`
             }
         })
-
         return response
     } catch (err) {
         return err.response
