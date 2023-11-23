@@ -102,11 +102,7 @@ const HomeScreenMapCard = ({mapObject}) => {
 
         async function dispatchMapData() {
             try {
-<<<<<<< HEAD
-                // console.log(mapObject); 
-=======
                 //console.log(mapObject); 
->>>>>>> cb881b6300768337efbe30abb4350119f7c2b2b1
                 const data = await getMap(mapObject._id);
                 console.log(data)
                 dispatch({ type: MapActionType.VIEW, payload: data });
