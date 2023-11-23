@@ -22,6 +22,9 @@ const LoginScreen = () => {
                     dispatch({ type: UserActionType.LOGIN, payload: response.data })
                     navigate("/dashboard")
                 }
+                else {
+                    dispatch({ type: UserActionType.ERROR, payload: response.data.message }) // login failed
+                }
             }
         },
         onError: (error) => {
@@ -95,6 +98,7 @@ const LoginScreen = () => {
 
                 <div className="pl-4 pt-4 flex flex-col justify-center items-center">
                     <input
+                        type="password"
                         className="text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
                         style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
                         value={password}
