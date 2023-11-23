@@ -34,7 +34,7 @@ const postComment = asyncHandler(async (req, res) => {
         await userExists.save();    
     }
     else {
-        return res.status(400).json({
+        return res.status(404).json({ //404 not found
             message: "User not found"
         })
     }
@@ -47,7 +47,7 @@ const postComment = asyncHandler(async (req, res) => {
         await mapExists.save();    
     }
     else {
-        return res.status(400).json({
+        return res.status(404).json({
             message: "Map not found"
         })
     }
@@ -78,7 +78,7 @@ const getComment = asyncHandler(async (req, res) => {
     const commentExists = await Comment.findOne({ _id: comment_id });
 
     if (!commentExists) {
-        return res.status(400).json({
+        return res.status(404).json({
             message: "Comment_id doesn't exist"
         })
     }
@@ -105,7 +105,7 @@ const changeLikesComment = asyncHandler(async (req, res) => {
         comment = await Comment.findByIdAndUpdate(comment_id, {$inc:{ votes: amount }, $pull: {usersVoted: user_id }} , { new: true } )
     }
     if (!comment) {
-        return res.status(400).json({
+        return res.status(404).json({
             message: "Failed to find comment"
         })
     }
