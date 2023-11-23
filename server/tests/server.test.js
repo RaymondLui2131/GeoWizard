@@ -50,7 +50,7 @@ describe("testing POST users/register", () => {
             .post("/users/register")
             .send(user_data1)
             .set("Content-type", "application/json")
-        expect(response.status).toBe(400)
+        expect(response.status).toBe(409)
         expect(response.body).toEqual({
             message: "User already exists"
         })
@@ -164,7 +164,7 @@ describe("test POST users/login", () => {
             .post("/users/login")
             .send({ email: "test123@gmail.com", password: "wrongpass" })
             .set("Content-type", "application/json")
-        expect(response.status).toBe(400)
+        expect(response.status).toBe(401)
         expect(response.body).toEqual({
             message: "Invalid credentials"
         })
