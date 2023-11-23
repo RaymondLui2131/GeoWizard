@@ -52,7 +52,7 @@ describe("testing POST users/register", () => {
             .set("Content-type", "application/json")
         expect(response.status).toBe(409)
         expect(response.body).toEqual({
-            message: "User already exists"
+            message: "Email already exists"
         })
     })
 
