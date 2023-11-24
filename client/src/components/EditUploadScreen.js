@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import { useState, useContext, useRef } from "react";
 import { useNavigate } from 'react-router-dom'
 import { MapContext, MapActionType } from "../api/MapContext"
+import {simplify} from '@turf/turf'
+
 import france from "../assets/EditMapAssets/france.png"
 import ireland from "../assets/EditMapAssets/ireland.png"
 import finland from "../assets/EditMapAssets/finland.png"
@@ -64,11 +66,14 @@ const EditUpload = () => {
         const selected_file = event.target.files[0]
         const file_type = selected_file.name.split('.').pop().toLowerCase()
         console.log(file_type)
+        const options = {tolerance: 0.01, highQuality: true}
         if (selected_file && file_type === "json") {
             const reader = new FileReader()
             reader.onload = (e) => {
-                const geojson = JSON.parse(e.target.result)
-                dispatch({ type: MapActionType.UPLOAD, payload: geojson })
+                const geojson = JSON.parse(e.target.result)//REMEMBER TO COMPRESS AFTER HANDLING OTHER FILE FORMATS
+                const compressed = simplify(geojson, options);
+
+                dispatch({ type: MapActionType.UPLOAD, payload: compressed })
             }
 
             dispatch({ type: MapActionType.RESET })

@@ -5,7 +5,7 @@ import {ReactComponent as ThumbsIcon} from '../assets/MapViewAssets/thumpsUp.svg
 import {ReactComponent as ThumbsGreen} from '../assets/MapViewAssets/thumpsUpGreen.svg'
 import {ReactComponent as ThumbsRed} from '../assets/MapViewAssets/thumpsUpRed.svg'
 import {MAP_TYPES} from '../constants/MapTypes'
-import {AlphaSlider} from 'react-slider-color-picker'
+import {SaturationSlider} from 'react-slider-color-picker'
 import franceMap from '../assets/EditMapAssets/france-r.geo.json'  //To be removed
 import { UserContext } from "../api/UserContext.js"
 import { MapContext } from "../api/MapContext"
@@ -262,7 +262,7 @@ const Key = (props) =>{//Note this key layout only works for color
                 <div className = 'flex justify-center'>
                     9999                {/*Should get from map data/prop */}
                 </div>
-                <div className='rotate-[-90deg] w-96 pointer-events-none'> <AlphaSlider color={hlsaColor} /></div>
+                <div className='rotate-[-90deg] w-96 pointer-events-none'> <SaturationSlider color={hlsaColor} /></div>
                 <div className = 'flex justify-center'>
                     50
                 </div>
