@@ -33,8 +33,16 @@ export const HeatUi = (props) => {
     const setEditsList = props.setEditsList
     const setLower = props.setLower
     const setUpper = props.setUpper
+    const lowerBound = props.lowerBound
+    const upperBound = props.upperBound
     const hexToHlsa = props.hexToHlsa
+    const validHeatRange = props.validHeatRange
+    const setBaseColor = props.setBaseColor
     console.log("sele",selected)
+    const lower = parseInt(lowerBound)
+    const upper = parseInt(upperBound)
+    if(upper>lower)
+        validHeatRange(true)
     if(selected === '')
     {
         setHlsa(hexToHlsa('#ff0000'))
@@ -62,6 +70,20 @@ export const HeatUi = (props) => {
         console.log("Updating edits",editsList)
         setEditsList([...editsList])
         setHlsa(hslaForm)
+        setBaseColor(hslaForm)
+    }
+
+    const handleLower = (value) =>{
+        if(value === '')
+            setLower('0')
+        else    
+            setLower(value)
+    }
+    const handleUpper = (value) =>{
+        if(value === '')
+            setUpper('1')
+        else
+            setUpper(value)
     }
     return(
         <>
@@ -108,13 +130,20 @@ export const HeatUi = (props) => {
                                 </div>
                                 <div className='flex flex-row justify-between w-full items-center'>
                                     <div className='w-1/2 '>
-                                        <input className='w-4/12 border-2 border-black' onChange={(e) => { setLower(e.target.value) }} />
+                                        <input className='w-4/12 border-2 border-black text-sm'
+                                        type='number' placeholder="0" value={lowerBound} onChange={(e) => { handleLower(e.target.value) }} />
                                     </div>
                                     <div className='w-1/2'>
-                                        <input className='w-4/12 border-2 border-black' onChange={(e) => { setUpper(e.target.value) }} />
+                                        <input className='w-4/12 border-2 border-black text-sm' 
+                                        type='number' placeholder='1' value={upperBound} onChange={(e) => { handleUpper(e.target.value) }} />
                                     </div>
                                 </div>
                             </div>
+                            {validHeatRange
+                                ? null
+                                :<div className="text-red-300">Invalid Ranges</div>
+                            }
+
                         </>
                         :
                         null

@@ -13,14 +13,15 @@ const API_URL = `${baseURL}${endpoint}`;
 
 export const saveUserMap = async (user_id, title, isPublic, mapType, description, mapData) => {
     try {
-        const compressedMapData = geobuf_api.geojson_compress(mapData)
+        const compressedMapData = geobuf_api.geojson_compress(mapData.original_map)
+        mapData.original_map = compressedMapData
         const response = await axios.put(`${API_URL}save`, {
             user_id: user_id,
             title: title,
             isPublic: isPublic,
             mapType: mapType,
             description: description,
-            mapData: compressedMapData
+            mapData: mapData
         })
         return response
     } catch (err) {

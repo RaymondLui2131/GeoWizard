@@ -16,6 +16,10 @@ const user_data2 = {
     email: "bob123@gmail.com",
     password: "abc123"
 }
+const mapData = {//Change with actual map
+    original_map:  Buffer.alloc(1024),
+    edits: Buffer.alloc(1024)
+}
 
 describe("testing POST users/register", () => {
     beforeAll(async () => {
@@ -194,7 +198,7 @@ describe("testing Maps creation and get", () => {
             isPublic: true, 
             mapType: "NONE", 
             description: "testing", 
-            mapData: Buffer.alloc(1024)
+            mapData: mapData
         }//MapData is irrelevant
         const mapCreationResponse = await supertest(app)
             .put("/maps/save")
@@ -210,7 +214,7 @@ describe("testing Maps creation and get", () => {
             isPublic: true, 
             mapType: "NONE", 
             description: "testing", 
-            mapData: Buffer.alloc(1024)
+            mapData: mapData
         }//MapData is irrelevant
         const mapCreationResponse = await supertest(app)
             .put("/maps/save")
@@ -241,7 +245,7 @@ describe("testing Maps Likes", () => {
             isPublic: true, 
             mapType: "NONE", 
             description: "testing", 
-            mapData: Buffer.alloc(1024)
+            mapData: mapData
         }//MapData is irrelevant
         const mapCreationResponse = await supertest(app)
             .put("/maps/save")
@@ -307,7 +311,7 @@ describe("test POST /comments/addComment", () => {
             isPublic: true, 
             mapType: "NONE", 
             description: "testing", 
-            mapData: Buffer.alloc(1024)
+            mapData: mapData
         }//MapData is irrelevant
         const mapCreationResponse = await supertest(app)
             .put("/maps/save")

@@ -14,9 +14,14 @@ const mapDataSchema = new Schema({
         required: true
     },
 
+    /*
+        Will follow format of
+        header: contains the header info //refer to client/editMapDataStructures
+        editsList: contains list of edits
+    */
     edits: {
-        type:[Schema.Types.Mixed],
-        default:[]
+        type: Object,
+        default:{}
     },
 
 },
