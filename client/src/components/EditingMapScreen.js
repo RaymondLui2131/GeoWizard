@@ -1,6 +1,6 @@
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
-import { useState, useContext } from "react";
+import { useState, useContext,useRef,useEffect } from "react";
 import L from 'leaflet';
 import PropTypes from 'prop-types';
 import { AlphaSlider, HueSlider } from 'react-slider-color-picker'
@@ -17,25 +17,29 @@ import { authgetUser } from '../api/auth_request_api.js';
 import { saveUserMap, createMap } from "../api/map_request_api.js"
 import { /**UserActionType, */ UserContext } from "../api/UserContext.js"
 import { /**MapActionType，*/ MapContext } from "../api/MapContext.js"
-import geobuf_api from '../api/geobuf_api.js';
+import { HeatMapEdit } from '../editMapDataStructures/HeatMapData.js';
+
 const hexToHlsa = (hexString) => {
 
     const color = tinycolor(hexString)
-    const hsl = color.toHsv()
-    const hslReformat = {
-        h: hsl.h,
-        s: hsl.s,
-        l: hsl.v,
-        a: hsl.a
-    }
-    console.log(hslReformat)
-    console.log(typeof hslReformat);
+    const hsl = color.toHsl()
+    
+    console.log(hexString, hsl)
+    return hsl
+}
+const hlsaToRGBA = (hlsa) => {
 
-    return hslReformat
+
+    const color = tinycolor(hlsa)
+    const rgba = color.toRgb()
+    const rgbaString = `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
+    console.log("Input", hlsa)
+    console.log("COnversion",rgbaString)
+    return rgbaString
 }
 
 
-const ColorSlider = (props) => {
+const ColorSliderComponent = (props) => {
     const hlsaColor = props.hlsaColor
     const changeHlsa = props.changeHlsa
 
@@ -44,14 +48,14 @@ const ColorSlider = (props) => {
         console.log(newcolor)
         changeHlsa(newcolor)
     }
-
+    console.log("CURENT HSLA COLOR", hlsaColor)
     return (
         <>
             <AlphaSlider handleChangeColor={handleChangeColor} color={hlsaColor} />
         </>
     )
 }
-ColorSlider.propTypes = {
+ColorSliderComponent.propTypes = {
     hlsaColor: PropTypes.object.isRequired,
     changeHlsa: PropTypes.func.isRequired
 };
@@ -110,15 +114,18 @@ const BottomRow = ({ title, mapType, description }) => {
 const MapEditOptions = (props) => {
     const type_of_map = props.mapType
     const setType = props.setType
+    const areaClicked = props.areaClicked
+    const setAreaClicked = props.setAreaClicked
+    const editsList = props.editsList
+    const setEditsList = props.setEditsList
+
     const selectedColor = '#3b82f6' //used for heatmap
 
     const [selected, setSelected] = useState('') //used to control current item can for any
     const [heatColor, setHlsa] = useState(hexToHlsa('#000000')) //Used for heat map, in hlsa format
     const [lowerBound, setLower] = useState('')
     const [upperBound, setUpper] = useState('')
-    console.log(lowerBound)
-    console.log(upperBound)
-
+  
 
     const [choroColor, setColor] = useState("#aabbcc");  //Used for choro map, hex format
     const choroColorFormat = choroColor.toUpperCase()
@@ -132,13 +139,31 @@ const MapEditOptions = (props) => {
     const handleChangeColor = (newColor) => {
         setSymbColor(newColor)
     }
-    console.log("map selection", type_of_map)
+    console.log('CUrrent Heat color',heatColor)
     switch (type_of_map) {
         case MAP_TYPES['NONE']:
             return (null)
 
         case MAP_TYPES['HEATMAP']:
-            console.log('This is selected', selected)
+            // console.log('editsList',editsList)
+            if(selected === '')
+            {
+                setHlsa(hexToHlsa('#ff0000'))
+                setSelected('red')
+            }
+            if(areaClicked)
+            {
+                if(setSelected !== '')
+                {
+                    const newEdit = new HeatMapEdit(areaClicked,heatColor)
+                    let copyEdits = [...editsList]
+                    copyEdits= copyEdits.filter((edit) => {return edit.featureName !== areaClicked})//removing edit entry for new one
+                    copyEdits.push(newEdit)
+                    setEditsList(copyEdits)
+                    setAreaClicked(null)//resetting clicked
+                }
+                
+            }
             return (
                 <>
                     <div className='invisible'>gap space</div>
@@ -163,8 +188,8 @@ const MapEditOptions = (props) => {
                             <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { setHlsa(hexToHlsa('#ffb400')); setSelected('orange') }}
                                 style={{ borderColor: selected === 'orange' ? selectedColor : '#000000', backgroundColor: '#ffb400' }}></div>
 
-                            <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { setHlsa(hexToHlsa('#000000')); setSelected('black') }}
-                                style={{ borderColor: selected === 'black' ? selectedColor : '#000000', backgroundColor: '#000000' }}></div>
+                            <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { setHlsa(hexToHlsa('#2d8a74')); setSelected('darkgreen') }}
+                                style={{ borderColor: selected === 'darkgreen' ? selectedColor : '#000000', backgroundColor: '#2d8a74' }}></div>
 
                             <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { setHlsa(hexToHlsa('#ff00d9')); setSelected('pink') }}
                                 style={{ borderColor: selected === 'pink' ? selectedColor : '#000000', backgroundColor: '#ff00d9' }}></div>
@@ -176,7 +201,7 @@ const MapEditOptions = (props) => {
                             selected != ''
                                 ?
                                 <>
-                                    <div><ColorSlider {...{ hlsaColor: heatColor, changeHlsa: setHlsa }} /></div>
+                                    <div><ColorSliderComponent {...{ hlsaColor: heatColor, changeHlsa: setHlsa }} /></div>
                                     <div className='flex justify-between flex-col'>
                                         <div className='flex flex-row justify-between text-1xl'>
                                             <div>Lower Bound</div>
@@ -360,11 +385,16 @@ const MapView = () => {
     // const [map, setMap] = useState(null)
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
-    console.log(title)
+    // console.log(title)
     // const [map,] = useState(franceMap) //For testing
     const [typeSelected, setType] = useState(MAP_TYPES['NONE'])
     const [mapTypeClicked, isClicked] = useState(false)
+    const [editsList, setEditsList] = useState([])
+    const [styleMapping, setStyleMapping] = useState({});
 
+    const [areaClicked, setAreaClicked] = useState(null) //In heat/choro should be feature, coordinates for other
+
+    const possibleNames = ['name', 'nom', 'nombre','title', 'label', 'id']
     // console.log(map)
     // const zoomLevel = 2
     // const center = [46.2276, 2.2137]
@@ -386,6 +416,67 @@ const MapView = () => {
         padded_SW.lng = padded_SW.lng - 5
     }
     const mapString = STRING_MAPPING[typeSelected]
+
+    const typeSelectedRef = useRef(typeSelected)
+    useEffect(() => {
+        typeSelectedRef.current = typeSelected
+    }, [typeSelected])
+    const editsListRef = useRef(editsList)
+    useEffect(() => {
+        editsListRef.current = editsList
+        const newMappings = {}
+        editsListRef.current.forEach((edit)=>{
+            switch(typeSelectedRef.current)
+            {
+                case MAP_TYPES['HEATMAP']:
+                {
+                    console.log("Adding", edit.featureName)
+                    newMappings[edit.featureName] = {fillColor: hlsaToRGBA(edit.colorHLSA)}
+                    break
+                }
+                default:
+                    break
+            }
+        }
+        )
+        setStyleMapping(newMappings)
+    }, [editsList])
+
+    // console.log("CUrrent Edits",editsListRef.current)
+    const geoJsonKey = JSON.stringify(styleMapping); // Create a key that changes when styleMapping changes
+    console.log("Style Mapping",styleMapping)
+    const getFeatureStyle = (feature) => {
+        console.log("AM HERE")
+        const foundName = possibleNames.find(propertyName => propertyName in feature.properties)
+        if (foundName) 
+        {
+            console.log("STYLING", styleMapping[feature.properties[foundName]] )
+            return styleMapping[feature.properties[foundName]] || {fillColor:'#ffffff'}
+        }
+        return {}
+    }
+    const onFeatureClick = (feature) => {
+        const clickedFeature = feature;
+        // console.log(typeSelectedRef.current)
+        switch(typeSelectedRef.current)
+        {
+            case MAP_TYPES['HEATMAP']:
+            {
+                const foundName = possibleNames.find(propertyName => propertyName in clickedFeature.properties)
+                // console.log("found Name",foundName)
+                if (foundName) {
+                    console.log('Clicked feature ' + clickedFeature.properties[foundName])
+                    setAreaClicked(clickedFeature.properties[foundName])
+                } else {
+                    console.log('No known name property found in clicked feature', clickedFeature)
+                }  
+                break
+            }
+            default:
+                break
+        }
+    }
+    // console.log("type", typeSelected)
     return (
         map && (<>
             <div className='w-4/5 flex justify-center flex-row'>
@@ -402,12 +493,22 @@ const MapView = () => {
                             zoom={5}
                             style={{ height: '750px', width: '900px' }}
                             scrollWheelZoom={true}
-                            maxBounds={[padded_NE, padded_SW]}>
+                            maxBounds={[padded_NE, padded_SW]}
+                            doubleClickZoom={ false}
+                            >
                             <TileLayer
                                 url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
                                 attribution='Tiles © Esri &mdash; Esri, DeLorme, NAVTEQ'
                             />
-                            <GeoJSON data={map.features} />
+                            <GeoJSON 
+                                key = {geoJsonKey}
+                                data={map.features}
+                                onEachFeature={(feature, layer) => {
+                                    layer.on('click', () => onFeatureClick(feature))
+                                    const featureStyle = getFeatureStyle(feature)
+                                    layer.setStyle(featureStyle); 
+                                }}
+                             />
                         </MapContainer>
                     </div>
 
@@ -427,7 +528,9 @@ const MapView = () => {
                                     :
                                     <>
                                         <button className='w-3/5 bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked)}>{mapString}</button>
-                                        <MapEditOptions mapType={typeSelected} setType={setType} />
+                                        <MapEditOptions mapType={typeSelected} setType={setType} areaClicked = {areaClicked} setAreaClicked={setAreaClicked}
+                                            editsList = {editsList} setEditsList={setEditsList}
+                                        />
                                     </>
                                 }
                             </>
