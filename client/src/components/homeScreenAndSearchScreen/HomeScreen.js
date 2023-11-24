@@ -170,12 +170,6 @@ const HomeScreen = () => {
                     }
                     })}
                 </div>
-
-                {maps.length === 0 && (
-                <div className='px-28 py-5 text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>
-                    No results found
-                </div>
-                )}
                 <div className=' mx-24 py-5 text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>{loading && 'Loading...'}</div>
                 <div className='text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>{error && 'Error'}</div>
             </div>

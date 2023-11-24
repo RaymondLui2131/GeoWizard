@@ -172,6 +172,12 @@ const SearchScreen = () => {
                     })}
                 </div>
 
+                {maps.length === 0 && (
+                <div className='px-28 py-5 text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>
+                    No results found
+                </div>
+                )}
+
                 {maps && <div className='px-28 py-5 text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>{loading && 'Loading...'}</div>}
                 <div className='px-28 py-5 text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>{error && 'Error'}</div>
             </div>
