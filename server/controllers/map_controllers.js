@@ -146,8 +146,11 @@ const queryMaps = asyncHandler(async (req, res) => {
     const skip = pageSize * (page - 1);
 
     let queryObj = { isPublic: true };
-    if(query) {
-        queryObj.title = { $regex: query, $options: 'i' }
+    if (query) {    
+        queryObj.$or = [
+            { title: { $regex: query, $options: 'i' } },
+            { description: { $regex: query, $options: 'i' } }
+        ];
     }
 
     if (time != '') {
@@ -204,8 +207,26 @@ const queryMaps = asyncHandler(async (req, res) => {
             .limit(pageSize)
             .populate({
                 path: 'user_id',
-                select: 'username _id'  // Only include the username and _id fields
-            });
+                select: '_id username' 
+            })
+            .populate({
+                path: 'MapData',
+                select: 'original_map edits' 
+            })
+            .populate({
+                path: 'comments',
+                select: '_id text user_id votes usersVoted createdAt', 
+                populate: [
+                    {
+                        path: 'user_id',
+                        model: 'User',
+                        select: '_id username'
+                    }
+                ]
+            })
+
+
+        
     //console.log(publicMaps)
     if (!publicMaps) {
         return res.status(404).json({ // 404 Not Found

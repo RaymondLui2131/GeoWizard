@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">97.87% </span>
+                <span class="strong">59.57% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>46/47</span>
+                <span class='fraction'>28/47</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">66.66% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>2/3</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">97.87% </span>
+                <span class="strong">59.57% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>46/47</span>
+                <span class='fraction'>28/47</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line high'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -123,25 +123,25 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -149,10 +149,10 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
-<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">/**
@@ -169,25 +169,25 @@ const asyncHandler = require("express-async-handler")
 const User = require("./models/user_model")
 &nbsp;
 const verifyToken = asyncHandler(async (req, res, next) =&gt; {
-    let token
-&nbsp;
-    // check if the request has an "authorization" header with a Bearer token
-    if (req.headers.authorization &amp;&amp; req.headers.authorization.startsWith("Bearer")) {
-        try {
-            // extract the token from the header
-            token = req.headers.authorization.split(" ")[1]
-            // verify the token
-            const decoded = jwt.verify(token, jwtSecret)
-            // find the user with the token
-            req.user = await User.findById(decoded.id).select("-password")
-<span class="cstat-no" title="statement not covered" ><span class="branch-0 cbranch-no" title="branch not covered" >            next()</span></span>
-        } catch (error) {
-            res.status(401).json({
-                message: "Not authorized, token failed"
-            })
-        }
-    }
-})
+<span class="cstat-no" title="statement not covered" >    let token</span>
+<span class="cstat-no" title="statement not covered" ></span>
+<span class="cstat-no" title="statement not covered" >    // check if the request has an "authorization" header with a Bearer token</span>
+<span class="cstat-no" title="statement not covered" >    if (req.headers.authorization &amp;&amp; req.headers.authorization.startsWith("Bearer")) {</span>
+<span class="cstat-no" title="statement not covered" >        try {</span>
+<span class="cstat-no" title="statement not covered" >            // extract the token from the header</span>
+<span class="cstat-no" title="statement not covered" >            token = req.headers.authorization.split(" ")[1]</span>
+<span class="cstat-no" title="statement not covered" >            // verify the token</span>
+<span class="cstat-no" title="statement not covered" >            const decoded = jwt.verify(token, jwtSecret)</span>
+<span class="cstat-no" title="statement not covered" >            // find the user with the token</span>
+<span class="cstat-no" title="statement not covered" >            req.user = await User.findById(decoded.id).select("-password")</span>
+<span class="cstat-no" title="statement not covered" >            next()</span>
+<span class="cstat-no" title="statement not covered" >        } catch (error) {</span>
+<span class="cstat-no" title="statement not covered" >            res.status(401).json({</span>
+<span class="cstat-no" title="statement not covered" >                message: "Not authorized, token failed"</span>
+<span class="cstat-no" title="statement not covered" >            })</span>
+<span class="cstat-no" title="statement not covered" >        }</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+<span class="cstat-no" title="statement not covered" >})</span>
 &nbsp;
 /**
  * 
@@ -208,7 +208,7 @@ module.exports = { verifyToken, signToken }</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2023-11-14T18:03:04.689Z
+                at 2023-11-24T23:15:04.460Z
             </div>
         <script src="../prettify.js"></script>
         <script>

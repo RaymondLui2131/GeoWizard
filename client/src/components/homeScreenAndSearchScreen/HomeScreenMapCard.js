@@ -2,99 +2,78 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faComment, faEye, faThumbsDown } from '@fortawesome/free-solid-svg-icons';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { getMap } from '../api/map_request_api';
-import React, { useRef, useEffect, useContext, useState } from 'react';
-import { MapContext, MapActionType } from "../api/MapContext"
+import { getMap } from '../../api/map_request_api';
+import React, { useEffect, useContext, useState } from 'react';
+import { MapContext, MapActionType } from "../../api/MapContext"
 import { useNavigate } from "react-router-dom";
 import { MapContainer, TileLayer,GeoJSON } from 'react-leaflet';
+import geobuf_api from '../../api/geobuf_api';
 
 const HomeScreenMapCard = ({mapObject}) => {
     const {map, dispatch } = useContext(MapContext)
     const navigate = useNavigate()
+    //console.log(mapObject)
 
     const date = new Date(mapObject.createdAt);
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0'); // getMonth() returns a zero-based index
     const year = date.getFullYear();
-    const formattedDate = `${day}/${month}/${year}`;
+    const formattedDate = `${month}/${day}/${year}`;
+    const [isLoading, setIsLoading] = useState(true); // Loading flag
 
-    //const [geojsonData, setGeojsonData] = useState(null); // State to store map data
-    //const [isLoading, setIsLoading] = useState(true); // Loading flag
+    
 
-    //const mapRef = useRef(null); // Create a ref for the map container
-    //console.log(mapObject)
+    const MapDisplay = (props) =>{
+        //const mapData = mapObject.MapData
+        //console.log('mapdata:', props.props.MapData)
+        //console.log(props)
+        const mapData = props.props.MapData
+        //console.log(mapData)
+        var center = [0,0]
+        var padded_NE = [0,0]
+        var padded_SW = [0,0]
+        if(mapData)
+        {
+            const geoJsonLayer = L.geoJSON(mapData.original_map)
+            const bounds = geoJsonLayer.getBounds()
+            center = bounds.getCenter()
+            //Padding for bounds
+            const currNe= bounds.getNorthEast()
+            const currSw = bounds.getSouthWest()
+            currNe.lat = currNe.lat + 5
+            currSw.lat = currSw.lat - 5
+            currNe.lng = currNe.lng + 5
+            currSw.lng = currSw.lng - 5
+            padded_NE = currNe
+            padded_SW = currSw
+        }
     
-    //const mapData = async() => (await getMap(mapObject._id)) 
-
-    // useEffect(() => {
-    //     if (geojsonData) return;
-    
-    //     const fetchMapData = async () => {
-    //         try {
-    //             console.log('getmap in card')
-    //             //const data = await getMap(mapObject._id);
-    //             const data = null
-    //             setGeojsonData(data);
-    //             setIsLoading(false);
-    //         } catch (error) {
-    //             console.error("Error loading map data:", error);
-    //             setIsLoading(false);
-    //         }
-    //     };
-    
-    //     fetchMapData();
-    // }, [mapObject]); 
-
-
-    // const MapDisplay = () =>{
-    //     const mapData = geojsonData.MapData
-    //     //console.log('mapdata:', mapData)
-    
-    //     var center = [0,0]
-    //     var padded_NE = [0,0]
-    //     var padded_SW = [0,0]
-    //     if(mapData)
-    //     {
-    //         const geoJsonLayer = L.geoJSON(mapData.original_map)
-    //         const bounds = geoJsonLayer.getBounds()
-    //         center = bounds.getCenter()
-    //         //Padding for bounds
-    //         const currNe= bounds.getNorthEast()
-    //         const currSw = bounds.getSouthWest()
-    //         currNe.lat = currNe.lat + 5
-    //         currSw.lat = currSw.lat - 5
-    //         currNe.lng = currNe.lng + 5
-    //         currSw.lng = currSw.lng - 5
-    //         padded_NE = currNe
-    //         padded_SW = currSw
-    //     }
-    
-    //     if(!mapData)
-    //     {
-    //         return (<div>placeholder</div>)
-    //     }
-    //     return(
-    //         <>
-    //             <MapContainer 
-    //                 center={center} 
-    //                 zoom={6} 
-    //                 style={{ height: '650px' }} 
-    //                 className='z-0 w-full h-96'
-    //                 scrollWheelZoom={true}
-    //                 maxBounds={[padded_NE,padded_SW]}>
-    //                 <TileLayer
-    //                     url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
-    //                     attribution='Tiles © Esri &mdash; Esri, DeLorme, NAVTEQ'
-    //                 />
-    //                 {Object.keys(mapData).length    
-    //                     ?<GeoJSON data={mapData.original_map.features}/>
-    //                     :null
-    //                 }
+        if(!mapData)
+        {
+            return (<div>placeholder</div>)
+        }
+        return(
+            <>
+                <MapContainer 
+                    center={center} 
+                    zoom={6} 
+                    style={{ height: '25rem' }} 
+                    className='z-0 w-full h-96'
+                    scrollWheelZoom={true}
+                    maxBounds={[padded_NE,padded_SW]}>
+                    <TileLayer
+                        url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+                        attribution='Tiles © Esri &mdash; Esri, DeLorme, NAVTEQ'
+                    />
+                    {Object.keys(mapData).length    
+                        ?<GeoJSON data={mapData.original_map.features}/>
+                        :null
+                    }
                     
-    //             </MapContainer>
-    //         </>
-    //     )
-    // }
+                </MapContainer>
+            </>
+        )
+    }
 
     function handleView() {
         //console.log("view");
@@ -103,8 +82,7 @@ const HomeScreenMapCard = ({mapObject}) => {
         async function dispatchMapData() {
             try {
                 //console.log(mapObject); 
-                const data = await getMap(mapObject._id);
-                console.log(data)
+                const data = mapObject
                 dispatch({ type: MapActionType.VIEW, payload: data });
                 //console.log(map)
                 navigate('/mapView');
@@ -118,14 +96,13 @@ const HomeScreenMapCard = ({mapObject}) => {
     if (!mapObject) {
         return <div className='max-w-xl text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>Loading...</div>; // Or any other placeholder for loading
     }
-    //console.log(mapObject)
     return(
             <div className=" max-w-xl rounded border-2 border-primary-GeoBlue overflow-hidden shadow-lg bg-white m-4">
                 {/* <div ref={mapRef} className="z-0 w-full h-96"></div> */}
-                {/* <div> <MapDisplay props={ {MapData :  geojsonData.MapData} } /> </div> */}
+                 <div> <MapDisplay props={{MapData :  mapObject.MapData}} /> </div> 
                 <div className="px-6 py-4">
                     <div className="font-NanumSquareNeoOTF-Bd text-3xl mb-2">{mapObject.title}</div>
-                    <p className="font-NanumSquareNeoOTF-Lt min-h-[10rem] text-gray-700 text-base">
+                    <p style={{ minHeight: '6rem' }} className="font-NanumSquareNeoOTF-Lt text-gray-700 text-base">
                     {mapObject.description}
                     </p>
                 </div>
