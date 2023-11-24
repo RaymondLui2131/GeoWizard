@@ -2,7 +2,7 @@ import './App.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Build1LoginScreen from './components/old/Build1LoginScreen.js'
 import RegisterScreen from './components/old/RegisterScreen.js'
-import HomeScreen from './components/HomeScreen'
+import HomeScreen from './components/homeScreenAndSearchScreen/HomeScreen.js'
 import EditUpload from './components/EditUploadScreen'
 import EditingMap from './components/EditingMapScreen'
 import LoginScreen from './components/account/LoginScreen.js'
@@ -11,7 +11,7 @@ import AccountCreationSuccessScreen from './components/account/AccountCreationSu
 import ProfileScreen from "./components/profile/ProfileScreen.js"
 import MapView from './components/MapViewScreen'
 import AboutScreen from './components/AboutScreen'
-import SearchScreen from './components/SearchScreen'
+import SearchScreen from './components/homeScreenAndSearchScreen/SearchScreen'
 import FindEmailScreen from './components/password_reset/FindEmailScreen.js'
 import ResetEmailMessageScreen from './components/password_reset/ResetEmailMessageScreen.js'
 import ChangePasswordScreen from './components/password_reset/ChangePasswordScreen.js'
