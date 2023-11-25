@@ -5,17 +5,23 @@ const { signToken, verifyToken } = require("../jwt_middleware")
 const bcrypt = require("bcryptjs")
 const UserController = require("../controllers/user_controllers")
 const app = createServer()
-
+const jwt = require("jsonwebtoken")
 const user_data1 = {
     id: "123",
     username: "testuser",
     email: "test123@gmail.com",
 }
 
+jest.mock("jsonwebtoken", () => ({
+    verify: jest.fn()
+}));
+
+
 jest.mock("../models/user_model", () => ({
     findOne: jest.fn(),
     create: jest.fn(),
-    findById: jest.fn()
+    findById: jest.fn(),
+    select: jest.fn()
 }));
 
 jest.mock("bcryptjs", () => ({
@@ -30,7 +36,6 @@ jest.mock('../jwt_middleware', () => {
     return {
         ...originalModule,
         signToken: jest.fn(), // Mock only the signToken function
-        verifyToken: jest.fn()
     };
 });
 
@@ -224,8 +229,97 @@ describe("testing registering user", () => {
 })
 
 describe('Testing getUser function', () => {
+    it('should get user data with valid bearer token', async () => {
+        const token = signToken("123");
 
+        const mockedUser = {
+            _id: "123",
+            username: "testUser",
+            email: "test@example.com"
+            // Add other necessary user details
+        };
+        jwt.verify.mockResolvedValueOnce({ id: "123" })
+        // Mock the behavior of User.findById and select
+        User.findById.mockReturnThis(); // Mocking chaining behavior
+
+        // Mock the `select` function behavior to return the mocked user data
+        User.findById().select.mockResolvedValueOnce(mockedUser);
+
+        const res = await request(app)
+            .get('/users/me')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(res.status).toBe(200); // Expect a 200 status for valid token
+        expect(res.body).toEqual(mockedUser); // Expect the response body to match the user data
+        // Add more specific assertions if necessary
+    });
+
+    it('should fail with invalid bearer token', async () => {
+        // Mock the `select` function behavior to return the mocked user data
+        const res = await request(app)
+            .get('/users/me')
+            .set('Authorization', `Bearer bad_token`);
+
+        expect(res.status).toBe(401); // Expect a 200 status for valid token
+        expect(res.body).toEqual({
+            message: "Not authorized, token failed"
+        }); // Expect the response body to match the user data
+    });
 });
+
+
+describe("testing checkUniqueUser", () => {
+    it('should return "User already exists" for existing username', async () => {
+        // Mocking an existing username in the database
+        User.findOne.mockResolvedValueOnce({ username: 'existingUser' });
+
+        const res = await request(app)
+            .get('/users/checkUniqueUser')
+            .query({ username: 'existingUser' });
+
+        expect(res.status).toBe(409);
+        expect(res.body).toEqual({ message: 'User already exists' });
+    });
+
+    it('should return "User is unique" for non-existing username', async () => {
+        // Mocking a non-existing username in the database
+        User.findOne.mockResolvedValueOnce(null);
+
+        const res = await request(app)
+            .get('/users/checkUniqueUser')
+            .query({ username: 'newUser' });
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ message: 'User is unique' });
+    });
+})
+
+
+describe("testing checkUniqueEmail", () => {
+    it('should return "Email already exists" for existing email', async () => {
+        // Mocking an existing username in the database
+        User.findOne.mockResolvedValueOnce({ email: 'existingEmail' });
+
+        const res = await request(app)
+            .get('/users/checkUniqueEmail')
+            .query({ email: 'existingEmail' });
+
+        expect(res.status).toBe(409);
+        expect(res.body).toEqual({ message: 'Email already exists' });
+    });
+
+    it('should return "Email is unique" for non-existing email', async () => {
+        // Mocking a non-existing username in the database
+        User.findOne.mockResolvedValueOnce(null);
+
+        const res = await request(app)
+            .get('/users/checkUniqueEmail')
+            .query({ email: 'newEmail' });
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ message: 'Email is unique' });
+    });
+})
 
 
 // describe("testing Maps Likes", () => {
