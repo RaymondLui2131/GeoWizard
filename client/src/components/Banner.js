@@ -13,12 +13,13 @@ import { SearchContext, SearchActionType } from "../api/SearchContext";
 const Banner = () => {
     const { user, dispatch } = useContext(UserContext)
     const {searchQuery, searchDispatch} = useContext(SearchContext)
-
     const [searchTerm, setSearchTerm] = useState(''); // state for searchbar
-    const handleSearch = () => {
+    const navigate = useNavigate()
 
+    const handleSearch = () => {
         searchDispatch({ type: SearchActionType.SEARCH, payload: searchTerm })
         console.log(searchQuery)
+        navigate("/search")
     };
 
     const menuItems = [
@@ -28,11 +29,6 @@ const Banner = () => {
         user ? ['Dashboard', '/dashboard'] : null,
         ['About', '/about']
     ]
-
-    //console.log(user)
-    //const logOutUser = useUserLogOut()
-    const navigate = useNavigate()
-    //console.log(user)
 
     function handleLogin() {
         //logOutUser()
@@ -48,7 +44,7 @@ const Banner = () => {
 
     return (
         <header>
-            <nav className="bg-white border-gray-200 px-4 lg:px-6 py-6 dark:bg-gray-800">
+            <nav className="bg-white border-gray-200 px-4 lg:px-6 py-2 dark:bg-gray-800">
                 <div className="flex flex-wrap justify-between items-center mx-auto  px-20" >
                     <a className="flex items-center">
                         <img src={logo} className="mr-6 h-9 sm:h-20" alt="Flowbite Logo" />
@@ -75,7 +71,7 @@ const Banner = () => {
 
                 </div>
 
-                <div className="flex flex-wrap justify-between items-center mt-2 px-20" >
+                <div className="flex flex-wrap justify-between items-center mb-2 px-20" >
                     <ul className="flex flex-col mt-4 font-PyeongChangPeace-Bold lg:flex-row lg:space-x-8 lg:mt-0">
                         {menuItems
                         .filter(Boolean) // remove null values

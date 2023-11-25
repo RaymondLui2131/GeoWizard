@@ -1,12 +1,10 @@
 import React, { useState, useRef, useCallback, useContext, useEffect} from 'react'
 import useMapSearch from './useMapSearch.js'
-import { SearchContext, SearchActionType } from "../api/SearchContext";
+import { SearchContext } from "../../api/SearchContext.js";
 
 const HomeScreen = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [dropdownTimeOpen, setDropdownTimeOpen] = useState(false);
-
-    const [sortTime, setSortTime] = useState('')
 
     const [activeMetricButton, setActiveMetricButton] = useState('');
     const [activeTimeButton, setActiveTimeButton] = useState('');
@@ -16,7 +14,7 @@ const HomeScreen = () => {
 
     const [query, setQuery] = useState('')
     const [pageNumber, setPageNumber] = useState(1)
-    const {searchQuery, searchDispatch} = useContext(SearchContext)
+    const {searchQuery} = useContext(SearchContext)
 
 
     const toggleMetricButton = (buttonKey) => {
@@ -61,7 +59,7 @@ const HomeScreen = () => {
         setActiveMetricButton('')
         setActiveTimeButton('')
         setQuery({
-            query: searchQuery,
+            query: '',
             metric: activeMetricButton,
             time: activeTimeButton
         })
@@ -73,7 +71,7 @@ const HomeScreen = () => {
         //console.log('search', searchQuery)
         //console.log(searchQuery)
         setQuery({
-            query: searchQuery,
+            query: '',
             metric: activeMetricButton,
             time: activeTimeButton
         })
@@ -81,17 +79,12 @@ const HomeScreen = () => {
         //console.log("searched button clicked")
     }, [activeMetricButton, activeTimeButton])
 
-
-    // let test = true
-    // if(test){
-    //     return null  
-    // }
     return(
         <div className="min-h-screen max-h-[100%] bg-primary-GeoPurple">
             <div className='flex flex-wrap justify-between items-center mx-auto pt-5 px-28 z-10 '>
-            
                 <div className= 'text-5xl font-PyeongChangPeace-Light text-primary-GeoBlue'>Welcome to GeoWizard!</div>
 
+                {/*Metric DropDown*/}
                 <div> 
                     <div className="relative inline-block z-[80]">
                         <button
@@ -124,15 +117,10 @@ const HomeScreen = () => {
                                     {key}
                                 </a>
                             ))}
-                            {/* <a onClick={handleRecents}  className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-b-none">Recents</a>
-                            <a onClick={handleOldest} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-b-none ">Oldest</a>
-                            <a onClick={handleMostComments} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md" >Most Comments</a>
-                            <a onClick={handleMostLikes} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">Most Likes</a>
-                            <a onClick={handleMostViews} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">Most Views</a> */}
                         </div>)}
                     </div>
 
-
+                    {/*Time DropDown*/}
                     <div className="relative inline-block z-[80] ml-5">
                         <button
                         onClick={() => setDropdownTimeOpen(!dropdownTimeOpen)}
@@ -164,11 +152,6 @@ const HomeScreen = () => {
                                     {key}
                                 </a>
                             ))}
-                            {/* <a onClick={handleToday} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-b-none ">Today</a>
-                            <a onClick={handleWeek} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md" >This Week</a>
-                            <a onClick={handleMonth} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">This Month</a>
-                            <a onClick={handleYear} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">This Year</a>
-                            <a onClick={handleAllTheTime} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">All The Time</a> */}
                         </div>)}
 
                     </div>
@@ -176,8 +159,7 @@ const HomeScreen = () => {
 
             </div>
 
-
-
+            {/* Infinite Loading */}
             <div>
                 <div className="grid grid-cols-3 mx-24 py-5 z-0">
                     {maps.map((map, index) => {
@@ -188,12 +170,11 @@ const HomeScreen = () => {
                     }
                     })}
                 </div>
-                <div className='text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>{loading && 'Loading...'}</div>
+                <div className=' mx-24 py-5 text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>{loading && 'Loading...'}</div>
                 <div className='text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>{error && 'Error'}</div>
             </div>
             
         </div>
-
 
     );
 }

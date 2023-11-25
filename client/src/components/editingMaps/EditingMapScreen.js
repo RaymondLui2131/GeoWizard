@@ -1,68 +1,53 @@
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
-import { useState, useContext } from "react";
+import { useState, useContext,useRef,useEffect } from "react";
 import L from 'leaflet';
-import PropTypes from 'prop-types';
-import { AlphaSlider, HueSlider } from 'react-slider-color-picker'
+import { SaturationSlider , HueSlider } from 'react-slider-color-picker'
 import tinycolor from "tinycolor2";
 import { HexColorPicker } from 'react-colorful';
-import undo from '../assets/EditMapAssets/undoSmall.png'
-import redo from '../assets/EditMapAssets/redoSmall.png'
+import undo from '../../assets/EditMapAssets/undoSmall.png'
+import redo from '../../assets/EditMapAssets/redoSmall.png'
 // import franceMap from '../assets/EditMapAssets/france-r.geo.json'  //To be removed
-import { MAP_TYPES, STRING_MAPPING } from '../constants/MapTypes.js'
-import { p1, p2, p3, p4, p5, p6, p7, p8, p9 } from '../assets/EditMapAssets/pointerImages/index.js'
-import { circle, triangle, square, star, hexagon, pentagon } from '../assets/EditMapAssets/symbolImages/index.js'
-import { a1, a2, a3, a4, a5, a6 } from '../assets/EditMapAssets/arrowImages/index.js'
-import { authgetUser } from '../api/auth_request_api.js';
-import { saveUserMap, createMap } from "../api/map_request_api.js"
-import { /**UserActionType, */ UserContext } from "../api/UserContext.js"
-import { /**MapActionType，*/ MapContext } from "../api/MapContext.js"
-import geobuf_api from '../api/geobuf_api.js';
+import { MAP_TYPES, STRING_MAPPING } from '../../constants/MapTypes.js'
+import { p1, p2, p3, p4, p5, p6, p7, p8, p9 } from '../../assets/EditMapAssets/pointerImages/index.js'
+import { circle, triangle, square, star, hexagon, pentagon } from '../../assets/EditMapAssets/symbolImages/index.js'
+import { a1, a2, a3, a4, a5, a6 } from '../../assets/EditMapAssets/arrowImages/index.js'
+import { authgetUser } from '../../api/auth_request_api.js';
+import { saveUserMap, createMap } from "../../api/map_request_api.js"
+import { /**UserActionType, */ UserContext } from "../../api/UserContext.js"
+import { /**MapActionType，*/ MapContext } from "../../api/MapContext.js"
+import HeatUi from './HeatMapUI.js';
+import { HeatMapHeader } from '../../editMapDataStructures/HeatMapData.js';
+
+//Note assigns saturation of 100 for satslider
 const hexToHlsa = (hexString) => {
 
     const color = tinycolor(hexString)
-    const hsl = color.toHsv()
-    const hslReformat = {
-        h: hsl.h,
-        s: hsl.s,
-        l: hsl.v,
-        a: hsl.a
-    }
-    console.log(hslReformat)
-    console.log(typeof hslReformat);
+    const hsl = color.toHsl()
+    
+    // console.log(hexString, hsl)
+    hsl.s = 100
+    return hsl
+}
 
-    return hslReformat
+const hlsaToRGBA = (hlsa) => {
+    const color = tinycolor(hlsa)
+    const rgba = color.toRgb()
+    const rgbaString = `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
+    // console.log("Input", hlsa)
+    // console.log("COnversion",rgbaString)
+    return rgbaString
 }
 
 
-const ColorSlider = (props) => {
-    const hlsaColor = props.hlsaColor
-    const changeHlsa = props.changeHlsa
-
-    const handleChangeColor = (newcolor) => {
-        console.log('Changer')
-        console.log(newcolor)
-        changeHlsa(newcolor)
-    }
-
-    return (
-        <>
-            <AlphaSlider handleChangeColor={handleChangeColor} color={hlsaColor} />
-        </>
-    )
-}
-ColorSlider.propTypes = {
-    hlsaColor: PropTypes.object.isRequired,
-    changeHlsa: PropTypes.func.isRequired
-};
-
-const BottomRow = ({ title, mapType, description }) => {
+const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound,setValidHeatRange,baseColor, setValidTitle }) => {
     const [publicStatus, setPublic] = useState(false)
     const { user } = useContext(UserContext)
     const { map } = useContext(MapContext)
     const [saveStatus, setSaveStatus] = useState('idle'); // 'idle', 'saving', 'completed' , 'error'
 
     const handleSaveMap = async (e) => {
+<<<<<<< HEAD:client/src/components/EditingMapScreen.js
         e.preventDefault();
         if (user && map) {
             setSaveStatus('saving');
@@ -86,6 +71,49 @@ const BottomRow = ({ title, mapType, description }) => {
                 setSaveStatus('error');
                 setTimeout(() => setSaveStatus('idle'), 2000);
             }
+=======
+        e.preventDefault()
+        if(title === '')
+        {
+            setValidTitle(false)
+            return
+        }
+        else
+            setValidTitle(true)
+        if (user) {
+            // const mapData = geobuf_api.geojson_compress(map)
+            const map_type = Object.keys(MAP_TYPES).find(key => MAP_TYPES[key] === mapType)
+            const mapInfo = {
+                original_map: {},
+                edits:{
+                    header:{},
+                    editsList:[]
+                }
+            }
+            switch(mapType){
+                case MAP_TYPES['HEATMAP']:
+                {
+                    const lower = parseFloat(lowerBound)
+                    const upper = parseFloat(upperBound)
+                    if(upper < lower) //handle invalid upper
+                    {
+                        setValidHeatRange(false)
+                        return
+                    }
+                    else
+                        setValidHeatRange(true)
+                    const newHeatHeader = new HeatMapHeader(lower,upper,baseColor)
+                    mapInfo.edits.header = newHeatHeader
+                    mapInfo.edits.editsList = editsList
+                    break
+                }
+                default:
+                    break
+            }
+            mapInfo.original_map = {...map}
+            const response = await saveUserMap(user._id, title, publicStatus, map_type, description, mapInfo) // testing
+            // console.log(response)
+>>>>>>> dev:client/src/components/editingMaps/EditingMapScreen.js
         }
     };
     return (
@@ -130,94 +158,68 @@ const BottomRow = ({ title, mapType, description }) => {
 const MapEditOptions = (props) => {
     const type_of_map = props.mapType
     const setType = props.setType
+    const areaClicked = props.areaClicked
+    const setAreaClicked = props.setAreaClicked
+    const editsList = props.editsList
+    const setEditsList = props.setEditsList
+    const setLower = props.setLower
+    const setUpper = props.setUpper
+    const lowerBound = props.lowerBound
+    const upperBound = props.upperBound
     const selectedColor = '#3b82f6' //used for heatmap
-
+    const validHeatRange = props.validHeatRange
+    const setValidHeatRange = props.setValidHeatRange
+    const setBaseColor = props.setBaseColor
     const [selected, setSelected] = useState('') //used to control current item can for any
     const [heatColor, setHlsa] = useState(hexToHlsa('#000000')) //Used for heat map, in hlsa format
-    const [lowerBound, setLower] = useState('')
-    const [upperBound, setUpper] = useState('')
-    console.log(lowerBound)
-    console.log(upperBound)
-
+    
+  
 
     const [choroColor, setColor] = useState("#aabbcc");  //Used for choro map, hex format
     const choroColorFormat = choroColor.toUpperCase()
     const [key, setKey] = useState('')
     const [label, setLabel] = useState('')
-    console.log(key)
-    console.log(label)
+    // console.log(key)
+    // console.log(label)
 
     const [symbColor, setSymbColor] = useState("#aabbcc");  //Used for symbmap color, hlsa
 
     const handleChangeColor = (newColor) => {
         setSymbColor(newColor)
     }
-    console.log("map selection", type_of_map)
+    // console.log('CUrrent Heat color',heatColor)
     switch (type_of_map) {
         case MAP_TYPES['NONE']:
             return (null)
 
         case MAP_TYPES['HEATMAP']:
-            console.log('This is selected', selected)
+        {
+            const props = {
+                setType : setType,
+                selected : selected,
+                setSelected : setSelected,
+                selectedColor : selectedColor,
+                areaClicked : areaClicked,
+                setAreaClicked: setAreaClicked,
+                heatColor : heatColor,
+                setHlsa : setHlsa,
+                editsList : editsList,
+                setEditsList : setEditsList,
+                setUpper: setUpper,
+                setLower:setLower,
+                hexToHlsa: hexToHlsa,
+                lowerBound: lowerBound,
+                upperBound: upperBound,
+                validHeatRange: validHeatRange,
+                setValidHeatRange: setValidHeatRange,
+                setBaseColor:setBaseColor
+            }
             return (
                 <>
-                    <div className='invisible'>gap space</div>
-                    <div className='h-full w-3/5 bg-gray-50 rounded-3xl '>
-                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}>Colors</div>
-                        <div className='grid grid-cols-3 gap-3 h-2/3 pt-12'>
-                            <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { setHlsa(hexToHlsa('#ff0000')); setSelected('red') }}
-                                style={{ borderColor: selected === 'red' ? selectedColor : '#000000', backgroundColor: '#ff0000' }}></div>
-
-                            <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { setHlsa(hexToHlsa('#00ff00')); setSelected('green') }}
-                                style={{ borderColor: selected === 'green' ? selectedColor : '#000000', backgroundColor: '#00ff00' }}></div>
-
-                            <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { setHlsa(hexToHlsa('#0019ff')); setSelected('blue') }}
-                                style={{ borderColor: selected === 'blue' ? selectedColor : '#000000', backgroundColor: '#0019ff' }}></div>
-
-                            <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { setHlsa(hexToHlsa('#00fffd')); setSelected('cyan') }}
-                                style={{ borderColor: selected === 'cyan' ? selectedColor : '#000000', backgroundColor: '#00fffd' }}></div>
-
-                            <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { setHlsa(hexToHlsa('#5b00ff')); setSelected('purple') }}
-                                style={{ borderColor: selected === 'purple' ? selectedColor : '#000000', backgroundColor: '#5b00ff' }}></div>
-
-                            <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { setHlsa(hexToHlsa('#ffb400')); setSelected('orange') }}
-                                style={{ borderColor: selected === 'orange' ? selectedColor : '#000000', backgroundColor: '#ffb400' }}></div>
-
-                            <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { setHlsa(hexToHlsa('#000000')); setSelected('black') }}
-                                style={{ borderColor: selected === 'black' ? selectedColor : '#000000', backgroundColor: '#000000' }}></div>
-
-                            <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { setHlsa(hexToHlsa('#ff00d9')); setSelected('pink') }}
-                                style={{ borderColor: selected === 'pink' ? selectedColor : '#000000', backgroundColor: '#ff00d9' }}></div>
-
-                            <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { setHlsa(hexToHlsa('#fffe00')); setSelected('yellow') }}
-                                style={{ borderColor: selected === 'yellow' ? selectedColor : '#000000', backgroundColor: '#fffe00' }}></div>
-                        </div>
-                        {
-                            selected != ''
-                                ?
-                                <>
-                                    <div><ColorSlider {...{ hlsaColor: heatColor, changeHlsa: setHlsa }} /></div>
-                                    <div className='flex justify-between flex-col'>
-                                        <div className='flex flex-row justify-between text-1xl'>
-                                            <div>Lower Bound</div>
-                                            <div>Upper Bound</div>
-                                        </div>
-                                        <div className='flex flex-row justify-between w-full items-center'>
-                                            <div className='w-1/2 '>
-                                                <input className='w-4/12 border-2 border-black' onChange={(e) => { setLower(e.target.value) }} />
-                                            </div>
-                                            <div className='w-1/2'>
-                                                <input className='w-4/12 border-2 border-black' onChange={(e) => { setUpper(e.target.value) }} />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </>
-                                :
-                                null
-                        }
-                    </div>
+                    <HeatUi  {...props}/>
                 </>
             )
+        }
         case MAP_TYPES['POINT']:
             return (
                 <>
@@ -379,12 +381,22 @@ const MapView = () => {
     const { map, /** dispatch */ } = useContext(MapContext)
     // const [map, setMap] = useState(null)
     const [title, setTitle] = useState('')
+    const [validTitle, setValidTitle] = useState(true)
     const [description, setDescription] = useState('')
-    console.log(title)
+    // console.log(title)
     // const [map,] = useState(franceMap) //For testing
     const [typeSelected, setType] = useState(MAP_TYPES['NONE'])
     const [mapTypeClicked, isClicked] = useState(false)
+    const [editsList, setEditsList] = useState([]) //Holds the data object(depends on type) of changes
+    const [styleMapping, setStyleMapping] = useState({});
 
+    const [areaClicked, setAreaClicked] = useState(null) //In heat/choro should be feature, coordinates for other
+    const [lowerBound, setLower] = useState('0')
+    const [upperBound, setUpper] = useState('1')
+    const [validHeatRange, setValidHeatRange] = useState(true)
+    const [baseColor,setBaseColor] = useState(hexToHlsa('#ffffff'))
+
+    const possibleNames = ['name', 'nom', 'nombre','title', 'label', 'id']
     // console.log(map)
     // const zoomLevel = 2
     // const center = [46.2276, 2.2137]
@@ -406,11 +418,76 @@ const MapView = () => {
         padded_SW.lng = padded_SW.lng - 5
     }
     const mapString = STRING_MAPPING[typeSelected]
+
+    const typeSelectedRef = useRef(typeSelected)
+    useEffect(() => {
+        typeSelectedRef.current = typeSelected
+    }, [typeSelected])
+    const editsListRef = useRef(editsList)
+    useEffect(() => {
+        editsListRef.current = editsList
+        const newMappings = {}
+        editsListRef.current.forEach((edit)=>{
+            switch(typeSelectedRef.current)
+            {
+                case MAP_TYPES['HEATMAP']:
+                {
+                    // console.log("Adding", edit.featureName)
+                    newMappings[edit.featureName] = {fillColor: hlsaToRGBA(edit.colorHLSA), fillOpacity: 1}
+                    break
+                }
+                default:
+                    break
+            }
+        }
+        )
+        setStyleMapping(newMappings)
+    }, [editsList])
+
+    // console.log("CUrrent Edits",editsListRef.current)
+    const geoJsonKey = JSON.stringify(styleMapping); // Create a key that changes when styleMapping changes
+    // console.log("Style Mapping",styleMapping)
+    const getFeatureStyle = (feature) => {
+        // console.log("AM HERE")
+        const foundName = possibleNames.find(propertyName => propertyName in feature.properties)
+        if (foundName) 
+        {
+            // console.log("STYLING", styleMapping[feature.properties[foundName]] )
+            return styleMapping[feature.properties[foundName]] || {fillColor:'#ffffff'}
+        }
+        return {}
+    }
+    const onFeatureClick = (feature) => {
+        const clickedFeature = feature;
+        // console.log(typeSelectedRef.current)
+        switch(typeSelectedRef.current)
+        {
+            case MAP_TYPES['HEATMAP']:
+            {
+                const foundName = possibleNames.find(propertyName => propertyName in clickedFeature.properties)
+                // console.log("found Name",foundName)
+                if (foundName) {
+                    // console.log('Clicked feature ' + clickedFeature.properties[foundName])
+                    setAreaClicked(clickedFeature.properties[foundName])
+                } else {
+                    // console.log('No known name property found in clicked feature', clickedFeature)
+                }  
+                break
+            }
+            default:
+                break
+        }
+    }
+    // console.log("type", typeSelected)
     return (
         map && (<>
             <div className='w-4/5 flex justify-center flex-row'>
                 <div className='w-1/2 flex justify-center flex-col pt-32 items-center'>
                     <div>
+                        {!validTitle
+                            ?<div className='text-red-300 text-center'>Need Title</div>
+                            :null
+                        }
                         <input type='text' name='title' className='bg-primary-GeoPurple text-white placeholder-white text-2xl w-[35rem]
                         text-center'
                             placeholder='Enter Title...' maxLength={48} onChange={(e) => setTitle(e.target.value)} >
@@ -422,12 +499,22 @@ const MapView = () => {
                             zoom={5}
                             style={{ height: '750px', width: '900px' }}
                             scrollWheelZoom={true}
-                            maxBounds={[padded_NE, padded_SW]}>
+                            maxBounds={[padded_NE, padded_SW]}
+                            doubleClickZoom={ false}
+                            >
                             <TileLayer
                                 url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
                                 attribution='Tiles © Esri &mdash; Esri, DeLorme, NAVTEQ'
                             />
-                            <GeoJSON data={map.features} />
+                            <GeoJSON 
+                                key = {geoJsonKey}
+                                data={map.features}
+                                onEachFeature={(feature, layer) => {
+                                    layer.on('click', () => onFeatureClick(feature))
+                                    const featureStyle = getFeatureStyle(feature)
+                                    layer.setStyle(featureStyle); 
+                                }}
+                             />
                         </MapContainer>
                     </div>
 
@@ -447,7 +534,10 @@ const MapView = () => {
                                     :
                                     <>
                                         <button className='w-3/5 bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked)}>{mapString}</button>
-                                        <MapEditOptions mapType={typeSelected} setType={setType} />
+                                        <MapEditOptions mapType={typeSelected} setType={setType} areaClicked = {areaClicked} setAreaClicked={setAreaClicked}
+                                            editsList = {editsList} setEditsList={setEditsList} setLower={setLower} setUpper = {setUpper} validHeatRange = {validHeatRange}
+                                            setValidHeatRange={setValidHeatRange} setBaseColor= {setBaseColor}
+                                        />
                                     </>
                                 }
                             </>
@@ -466,7 +556,9 @@ const MapView = () => {
 
                 </div>
             </div>
-            <BottomRow title={title} mapType={typeSelected} description={description}></BottomRow>
+            <BottomRow title={title} mapType={typeSelected} description={description} editsList={editsList} setValidTitle = {setValidTitle}
+                        lowerBound={lowerBound} upperBound={upperBound} setValidHeatRange={setValidHeatRange} baseColor={baseColor}
+            ></BottomRow>
         </>)
     )
 }

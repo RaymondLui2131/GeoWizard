@@ -20,6 +20,8 @@ const User = require("../models/user_model")
  */
 const saveUserMap = asyncHandler(async (req, res) => {
     const { user_id, title, isPublic, mapType, description, mapData } = req.body
+    console.log("Creating")
+
     const map_id = await createMap(req, res)
     if (!map_id) {
         return res.status(400).json({
@@ -52,10 +54,9 @@ const createMap = asyncHandler(async (req, res) => { // used within saveUserMap
             message: "Missing required fields for map creation"
         })
     }
-
     const map_data = await MapData.create({ // create the map data and store it in the database
-        original_map: mapData,
-        edits: []
+        original_map: mapData.original_map,
+        edits: mapData.edits
     })
 
     const map = await Map.create({ // create the map and add the reference to the corresponding map data
@@ -101,11 +102,10 @@ const getMap = asyncHandler(async (req, res) => {
                 }
             ]
         })
-        
+
     if (!mapWithDetails) {
         return res.status(404).json({ message: "Could not find map or related data" });
     }
-    console.log(mapWithDetails)
 
     return res.json(mapWithDetails);
 })
@@ -154,8 +154,11 @@ const queryMaps = asyncHandler(async (req, res) => {
     const skip = pageSize * (page - 1);
 
     let queryObj = { isPublic: true };
-    if(query) {
-        queryObj.title = { $regex: query, $options: 'i' }
+    if (query) {    
+        queryObj.$or = [
+            { title: { $regex: query, $options: 'i' } },
+            { description: { $regex: query, $options: 'i' } }
+        ];
     }
 
     if (time != '') {
@@ -212,8 +215,26 @@ const queryMaps = asyncHandler(async (req, res) => {
             .limit(pageSize)
             .populate({
                 path: 'user_id',
-                select: 'username _id'  // Only include the username and _id fields
-            });
+                select: '_id username' 
+            })
+            .populate({
+                path: 'MapData',
+                select: 'original_map edits' 
+            })
+            .populate({
+                path: 'comments',
+                select: '_id text user_id votes usersVoted createdAt', 
+                populate: [
+                    {
+                        path: 'user_id',
+                        model: 'User',
+                        select: '_id username'
+                    }
+                ]
+            })
+
+
+        
     //console.log(publicMaps)
     if (!publicMaps) {
         return res.status(404).json({ // 404 Not Found
