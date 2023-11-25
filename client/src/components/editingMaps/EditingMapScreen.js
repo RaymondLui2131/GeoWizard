@@ -44,6 +44,7 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
     const [publicStatus, setPublic] = useState(false)
     const { user } = useContext(UserContext)
     const { map } = useContext(MapContext)
+    const [saveStatus, setSaveStatus] = useState('idle'); // 'idle', 'saving', 'completed' , 'error'
 
     const handleSaveMap = async (e) => {
         e.preventDefault()
@@ -86,10 +87,27 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
             }
             mapInfo.original_map = {...map}
             const response = await saveUserMap(user._id, title, publicStatus, map_type, description, mapInfo) // testing
+            try {
+
+                if (response.status === 200) {
+                    // Assuming 'response.ok' is true when the request is successful
+                    console.log("Save successful:", response);
+                    setSaveStatus('completed');
+                    setTimeout(() => setSaveStatus('idle'), 2000);
+                } else {
+                    // Handle non-successful responses
+                    console.error("Server responded with an error:", response);
+                    setSaveStatus('error');
+                    setTimeout(() => setSaveStatus('idle'), 2000);
+                }
+            } catch (error) {
+                console.error("Error saving map:", error);
+                setSaveStatus('error');
+                setTimeout(() => setSaveStatus('idle'), 2000);
+            }
             // console.log(response)
         }
-    }
-
+    };
     return (
         <div className='w-4/5 flex  flex-row justify-between mt-4'>
             <div className='flex flex-row'>
@@ -105,9 +123,12 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
                                                 font-NanumSquareNeoOTF-Lt px-14 rounded-full py-2'>
                         Export</button>
                     </div>
-                    <div className='pl-12 inline-block pr-16'><button className='bg-primary-GeoOrange text-3xl
-                                                font-NanumSquareNeoOTF-Lt px-14 rounded-full py-2 disabled:opacity-30' onClick={handleSaveMap} disabled={!(map && user)}>
-                        Save</button>
+                    <div className='pl-12 inline-block pr-16'>
+                        <button className='bg-primary-GeoOrange text-3xl font-NanumSquareNeoOTF-Lt px-14 rounded-full py-2 disabled:opacity-30' 
+                                onClick={handleSaveMap} 
+                                disabled={!(map && user)}>
+                            {saveStatus === 'idle' ? 'Save' : saveStatus === 'error' ? 'Error' :  saveStatus === 'saving' ? 'Saving Map...' : 'Completed'}
+                        </button>
                     </div>
                 </div>
                 <div>
