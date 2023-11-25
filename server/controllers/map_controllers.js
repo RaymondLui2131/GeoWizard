@@ -19,21 +19,12 @@ const User = require("../models/user_model")
     mapData: mapData
  */
 const saveUserMap = asyncHandler(async (req, res) => {
-    const { user_id, title, isPublic, mapType, description, mapData } = req.body
-    console.log("Creating")
-
-    const map_id = await createMap(req, res)
+    const user = req.user // GET THE USER FROM JWT_MIDDLEWARE IF TOKEN VERIFICATION IS SUCCESSFUL
+    console.log(user)
+    const map_id = await createMap(req, user)
     if (!map_id) {
         return res.status(400).json({
             message: "Save user map failed"
-        })
-    }
-
-    // find user by id
-    const user = await User.findById(user_id)
-    if (!user) {
-        return res.status(404).json({
-            message: "User not found"
         })
     }
 
@@ -42,14 +33,14 @@ const saveUserMap = asyncHandler(async (req, res) => {
     await user.save()
 
     return res.status(200).json({
-        user_id: user_id,
+        user_id: user._id,
         map_id: map_id
     })
 })
 
-const createMap = asyncHandler(async (req, res) => { // used within saveUserMap
-    const { user_id, title, isPublic, mapType, description, mapData } = req.body
-    if (!(title && user_id && mapData)) {
+const createMap = async (req, user) => { // used within saveUserMap
+    const { title, isPublic, mapType, description, mapData } = req.body
+    if (!(title && user && mapData)) {
         return res.status(400).json({
             message: "Missing required fields for map creation"
         })
@@ -60,7 +51,7 @@ const createMap = asyncHandler(async (req, res) => { // used within saveUserMap
     })
 
     const map = await Map.create({ // create the map and add the reference to the corresponding map data
-        user_id: user_id,
+        user_id: user._id,
         title: title,
         isPublic: isPublic,
         mapType: mapType,
@@ -75,7 +66,7 @@ const createMap = asyncHandler(async (req, res) => { // used within saveUserMap
     }
 
     return map._id // return only the id so it can be stored by the user
-})
+}
 
 //Expects a mapID and returns the Map data  with MapData field that has geojson
 //GET
@@ -115,21 +106,20 @@ const getMap = asyncHandler(async (req, res) => {
 //Put
 const changeLikesMap = asyncHandler(async (req, res) => {
     const { user_id, map_id, amount, isNeutral } = req.body
-    console.log('Changing likes',amount)
+    console.log('Changing likes', amount)
     var map
-    if(isNeutral)//Resetting back 
+    if (isNeutral)//Resetting back 
     {
-        if(amount > 0)
-            map = await Map.findByIdAndUpdate(map_id, {$inc:{ likes: amount }, $pull: {userDislikes: user_id }}, { new: true } )
+        if (amount > 0)
+            map = await Map.findByIdAndUpdate(map_id, { $inc: { likes: amount }, $pull: { userDislikes: user_id } }, { new: true })
         else
-            map = await Map.findByIdAndUpdate(map_id, {$inc:{ likes: amount }, $pull:{userLikes: user_id } }, { new: true } )
+            map = await Map.findByIdAndUpdate(map_id, { $inc: { likes: amount }, $pull: { userLikes: user_id } }, { new: true })
     }
-    else
-    {
-        if(amount > 0)
-            map = await Map.findByIdAndUpdate(map_id, {$inc:{ likes: amount }, $push: {userLikes: user_id } ,$pull: {userDislikes: user_id}} , { new: true } )
+    else {
+        if (amount > 0)
+            map = await Map.findByIdAndUpdate(map_id, { $inc: { likes: amount }, $push: { userLikes: user_id }, $pull: { userDislikes: user_id } }, { new: true })
         else
-            map = await Map.findByIdAndUpdate(map_id, {$inc:{ likes: amount }, $push: {userDislikes: user_id } ,$pull: {userLikes: user_id}} , { new: true } )
+            map = await Map.findByIdAndUpdate(map_id, { $inc: { likes: amount }, $push: { userDislikes: user_id }, $pull: { userLikes: user_id } }, { new: true })
     }
 
     if (!map) {
@@ -137,7 +127,7 @@ const changeLikesMap = asyncHandler(async (req, res) => {
             message: "Failed to find map"
         })
     }
-    return res.status(200).json({map})
+    return res.status(200).json({ map })
 
 
 })
