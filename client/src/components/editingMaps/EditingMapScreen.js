@@ -47,7 +47,7 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
     const [saveStatus, setSaveStatus] = useState('idle'); // 'idle', 'saving', 'completed' , 'error'
 
     const handleSaveMap = async (e) => {
-        e.preventDefault();
+        e.preventDefault()
         if(title === '')
         {
             setValidTitle(false)
@@ -86,9 +86,9 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
                     break
             }
             mapInfo.original_map = {...map}
+            const response = await saveUserMap(user._id, title, publicStatus, map_type, description, mapInfo) // testing
             try {
-                const response = await saveUserMap(user._id, title, publicStatus, map_type, description, mapInfo) // testing
-                
+
                 if (response.status === 200) {
                     // Assuming 'response.ok' is true when the request is successful
                     console.log("Save successful:", response);
@@ -105,6 +105,7 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
                 setSaveStatus('error');
                 setTimeout(() => setSaveStatus('idle'), 2000);
             }
+            // console.log(response)
         }
     };
     return (
