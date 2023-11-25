@@ -23,30 +23,30 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">28.84% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>15/52</span>
+                <span class='fraction'>39/52</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">50% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>1/2</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
-                <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
-            </div>
-        
-            
-            <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/1</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">28.84% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>15/52</span>
+                <span class='fraction'>39/52</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line medium'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -127,30 +127,24 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
@@ -165,6 +159,12 @@
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-no">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">/**
  * Base code for creating the server
  * @author Kahui Wong
@@ -177,25 +177,25 @@ const userRoutes = require("../routes/user_routes")
 const mapRoutes = require("../routes/map_routes")
 const commentRoutes = require("../routes/comments_routes")
 const bodyParser = require("body-parser")
-const createServer = <span class="fstat-no" title="function not covered" >() =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    require('dotenv').config();</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    const app = express();</span>
-<span class="cstat-no" title="statement not covered" >    </span>
-<span class="cstat-no" title="statement not covered" >    app.use(cors({</span>
-<span class="cstat-no" title="statement not covered" >        origin: "*",</span>
-<span class="cstat-no" title="statement not covered" >        methods: ['GET', 'POST', 'PUT'], // Add the necessary HTTP methods</span>
-<span class="cstat-no" title="statement not covered" >        credentials: true, // Allow sending cookies with the request</span>
-<span class="cstat-no" title="statement not covered" >        optionsSuccessStatus: 200</span>
-<span class="cstat-no" title="statement not covered" >    }));</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    app.use(bodyParser.json({ limit: '10mb' }));</span>
-<span class="cstat-no" title="statement not covered" >    app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));</span>
-<span class="cstat-no" title="statement not covered" >    app.use(cookieParser());</span>
-<span class="cstat-no" title="statement not covered" >    app.use("/users", userRoutes);</span>
-<span class="cstat-no" title="statement not covered" >    app.use("/maps", mapRoutes)</span>
-<span class="cstat-no" title="statement not covered" >    app.use("/comments", commentRoutes);</span>
-<span class="cstat-no" title="statement not covered" >    if (process.env.NODE_ENV === 'production') {</span>
+const createServer = () =&gt; {
+    require('dotenv').config();
+&nbsp;
+    const app = express();
+    
+    app.use(cors({
+        origin: "*",
+        methods: ['GET', 'POST', 'PUT'], // Add the necessary HTTP methods
+        credentials: true, // Allow sending cookies with the request
+        optionsSuccessStatus: 200
+    }));
+&nbsp;
+    app.use(bodyParser.json({ limit: '10mb' }));
+    app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+    app.use(cookieParser());
+    app.use("/users", userRoutes);
+    app.use("/maps", mapRoutes)
+    app.use("/comments", commentRoutes);
+    if (process.env.NODE_ENV === 'production') <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
 <span class="cstat-no" title="statement not covered" >        const buildPath = path.join(__dirname, "../../client/build");</span>
 <span class="cstat-no" title="statement not covered" >        app.use(express.static(buildPath));</span>
 <span class="cstat-no" title="statement not covered" ></span>
@@ -209,12 +209,12 @@ const createServer = <span class="fstat-no" title="function not covered" >() =&g
 <span class="cstat-no" title="statement not covered" >                }</span>
 <span class="cstat-no" title="statement not covered" >            );</span>
 <span class="cstat-no" title="statement not covered" >        });</span>
-<span class="cstat-no" title="statement not covered" >    } else {</span>
-<span class="cstat-no" title="statement not covered" >        console.log(`Running in ${process.env.NODE_ENV} mode`);</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
-<span class="cstat-no" title="statement not covered" ></span>
-<span class="cstat-no" title="statement not covered" >    return app;</span>
-<span class="cstat-no" title="statement not covered" >}</span>
+    } else {
+        console.log(`Running in ${process.env.NODE_ENV} mode`);
+    }
+&nbsp;
+    return app;
+}
 &nbsp;
 module.exports = createServer</pre></td></tr></table></pre>
 
@@ -223,7 +223,7 @@ module.exports = createServer</pre></td></tr></table></pre>
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2023-11-24T22:29:56.032Z
+                at 2023-11-25T01:24:03.728Z
             </div>
         <script src="../../prettify.js"></script>
         <script>
