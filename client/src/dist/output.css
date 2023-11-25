@@ -618,10 +618,6 @@ video {
   }
 }
 
-.pointer-events-none {
-  pointer-events: none;
-}
-
 .invisible {
   visibility: hidden;
 }
@@ -846,6 +842,10 @@ video {
   height: 80%;
 }
 
+.h-4\/6 {
+  height: 66.666667%;
+}
+
 .h-5 {
   height: 1.25rem;
 }
@@ -888,10 +888,6 @@ video {
 
 .max-h-screen {
   max-height: 100vh;
-}
-
-.min-h-\[10rem\] {
-  min-height: 10rem;
 }
 
 .min-h-full {
@@ -1643,6 +1639,11 @@ video {
   color: rgb(107 33 168 / var(--tw-text-opacity));
 }
 
+.text-red-300 {
+  --tw-text-opacity: 1;
+  color: rgb(252 165 165 / var(--tw-text-opacity));
+}
+
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
@@ -1825,6 +1826,10 @@ button:focus-visible {
   }
 } */
 
+.hover\:cursor-pointer:hover {
+  cursor: pointer;
+}
+
 .hover\:border-primary-GeoPurple:hover {
   --tw-border-opacity: 1;
   border-color: rgb(147 112 219 / var(--tw-border-opacity));
@@ -1863,8 +1868,16 @@ button:focus-visible {
   color: rgb(147 112 219 / var(--tw-text-opacity));
 }
 
+.hover\:opacity-50:hover {
+  opacity: 0.5;
+}
+
 .hover\:opacity-70:hover {
   opacity: 0.7;
+}
+
+.hover\:opacity-90:hover {
+  opacity: 0.9;
 }
 
 .focus\:border-primary-GeoPurple:focus {
@@ -1879,18 +1892,6 @@ button:focus-visible {
 
 .disabled\:opacity-30:disabled {
   opacity: 0.3;
-}
-
-.disabled\:opacity-100:disabled {
-  opacity: 1;
-}
-
-.disabled\:opacity-0:disabled {
-  opacity: 0;
-}
-
-.disabled\:opacity-10:disabled {
-  opacity: 0.1;
 }
 
 @media (prefers-color-scheme: dark) {

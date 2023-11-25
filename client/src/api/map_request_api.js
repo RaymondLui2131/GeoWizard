@@ -32,6 +32,18 @@ export const saveUserMap = async (token, title, isPublic, mapType, description, 
     }
 }
 
+export const getUserMaps = async (userData) => {
+    try {
+        const response = await axios.post(`${API_URL}getUserMaps`, {
+            userData: userData
+        })
+
+        return response.data
+    } catch (err) {
+        return err.response
+    }
+}
+
 export const getMap = async (mapID) => {
     try {
         const response = await axios.get(`${API_URL}getMap`, {

@@ -39,7 +39,7 @@ function App() {
                 <Route path="/createAccount" element={<CreateAccountScreen />} />
                 <Route path="/" element={<HomeScreen />} />
                 <Route path="/createAccountSuccess" element={<AccountCreationSuccessScreen />} />
-                <Route path="/profile" element={<ProfileScreen />} />
+                <Route path="/profile/:id" element={<ProfileScreen />} />
                 <Route path="/mapView" element={<MapView />} />
                 <Route path="/about" element={<AboutScreen />} />
                 <Route path="/search" element={<SearchScreen />} />
