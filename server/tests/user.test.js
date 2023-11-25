@@ -322,107 +322,21 @@ describe("testing checkUniqueEmail", () => {
 })
 
 
-// describe("testing Maps Likes", () => {
-//     let user_id
-//     let mapID
-//     beforeAll(async () => {
-//         const testServer = await MongoMemoryServer.create()
-//         await mongoose.connect(testServer.getUri())
-//         creatingUser = await supertest(app)
-//         .post("/users/register")
-//         .send(user_data1)
-//         .set("Content-type", "application/json")
-//         user_id = creatingUser.body._id
-//         const newMap = {user_id: user_id,
-//             title: "test title",
-//             isPublic: true,
-//             mapType: "NONE",
-//             description: "testing",
-//             mapData: Buffer.alloc(1024)
-//         }//MapData is irrelevant
-//         const mapCreationResponse = await supertest(app)
-//             .put("/maps/save")
-//             .send(newMap)
-//             .set("Content-type", "application/json")
-//         mapID = mapCreationResponse.body.map_id
-//     })
-//     afterAll(async () => {
-//         await mongoose.disconnect()
-//         await mongoose.connection.close()
-//     })
+describe("testing getUserById", () => {
+    it("should return user with correct id", async () => {
+        const user = { _id: '123', username: 'testUser', email: 'test@example.com' }
+        User.findById.mockResolvedValueOnce(user)
+        const res = await request(app).get(`/users/${user._id}`)
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual(user);
+    })
 
-//     it("should be able to increment likes by 1", async () => {
-//         const likeReq = {
-//             user_id: user_id,
-//             map_id: mapID,
-//             amount: 1,
-//             isNeutral: false
-//         }
-//         const likeResponse = await supertest(app)
-//         .put("/maps/changeLikesMap")
-//         .send(likeReq)
-//         .set("Content-type", "application/json")
-//         expect(likeResponse.status).toBe(200)
-//         expect(likeResponse.body.map.likes).toBe(1)
-//         expect(likeResponse.body.map.userLikes.length).toBe(1)
-//         expect(likeResponse.body.map.userDislikes.length).toBe(0)
-
-//     })
-//     it("should be able to decrement likes by 1", async () => {
-//         const likeReq = {
-//             user_id: user_id,
-//             map_id: mapID,
-//             amount: -1,
-//             isNeutral: false
-//         }
-//         const likeResponse = await supertest(app)
-//         .put("/maps/changeLikesMap")
-//         .send(likeReq)
-//         .set("Content-type", "application/json")
-//         console.log(likeResponse.body.map)
-//         expect(likeResponse.status).toBe(200)
-//         expect(likeResponse.body.map.likes).toBe(0)
-//         expect(likeResponse.body.map.userLikes.length).toBe(0)
-//         expect(likeResponse.body.map.userDislikes.length).toBe(1)
-//     })
-// })
-
-// describe("test POST /comments/addComment", () => {
-//     let user_id
-//     let mapID
-
-//     beforeAll(async () => {
-//         const testServer = await MongoMemoryServer.create()
-//         await mongoose.connect(testServer.getUri())
-//         creatingUser = await supertest(app)
-//         .post("/users/register")
-//         .send(user_data1)
-//         .set("Content-type", "application/json")
-//         user_id = creatingUser.body._id
-//         const newMap = {user_id: user_id,
-//             title: "test title",
-//             isPublic: true,
-//             mapType: "NONE",
-//             description: "testing",
-//             mapData: Buffer.alloc(1024)
-//         }//MapData is irrelevant
-//         const mapCreationResponse = await supertest(app)
-//             .put("/maps/save")
-//             .send(newMap)
-//             .set("Content-type", "application/json")
-//         mapID = mapCreationResponse.body.map_id
-//     })
-
-//     afterAll(async () => {
-//         await mongoose.disconnect()
-//         await mongoose.connection.close()
-//     })
-
-//     it("should add a new comment", async () => {
-//         const response = await supertest(app)
-//             .post("/comments/addComment")
-//             .send({ text: "This is example text", user_id: user_id, map_id: mapID })
-//             .set("Content-type", "application/json")
-//         expect(response.status).toBe(200)
-//     })
-// })
+    it("should fail if user not found", async () => {
+        User.findById.mockResolvedValueOnce(null)
+        const res = await request(app).get(`/users/123`)
+        expect(res.status).toBe(404);
+        expect(res.body).toEqual({
+            message: "User not found"
+        });
+    })
+})

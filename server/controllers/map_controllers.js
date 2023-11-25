@@ -20,9 +20,16 @@ const User = require("../models/user_model")
  */
 const saveUserMap = asyncHandler(async (req, res) => {
     const user = req.user // GET THE USER FROM JWT_MIDDLEWARE IF TOKEN VERIFICATION IS SUCCESSFUL
-    console.log(user)
+    // console.log(user)
+
+    if (!user) {
+        return res.status(401).json({
+            message: "User is not authenticated"
+        });
+    }
+    
     const map_id = await createMap(req, user)
-    if (!map_id) {
+    if (typeof map_id === "object") {
         return res.status(400).json({
             message: "Save user map failed"
         })
@@ -44,21 +51,36 @@ const getUserMaps = asyncHandler(async (req, res) => {
     const maps = await Map.find({ _id: { $in: mapIds } })
     if (maps) {
         return res.status(200).json(maps)
+    } else {
+        return res.status(500).json({
+            message: "getUserMaps failed"
+        })
     }
-
 })
 
 const createMap = async (req, user) => { // used within saveUserMap
     const { title, isPublic, mapType, description, mapInfo } = req.body
-    if (!(title && user && mapInfo)) {
-        return res.status(400).json({
+    if (!user) {
+        return {
+            message: "User is not authenticated"
+        }
+    }
+
+    if (!(title && mapInfo)) {
+        return {
             message: "Missing required fields for map creation"
-        })
+        }
     }
     const map_data = await MapData.create({ // create the map data and store it in the database
         original_map: mapInfo.original_map,
         edits: mapInfo.edits
     })
+
+    if (!map_data) {
+        return { //Internal Server Error
+            message: "Map Data creation failed"
+        }
+    }
 
     const map = await Map.create({ // create the map and add the reference to the corresponding map data
         user_id: user._id,
@@ -70,9 +92,9 @@ const createMap = async (req, user) => { // used within saveUserMap
     })
 
     if (!map) {
-        return res.status(500).json({ //Internal Server Error
+        return { //Internal Server Error
             message: "Map creation failed"
-        })
+        }
     }
 
     return map._id // return only the id so it can be stored by the user
