@@ -93,6 +93,10 @@ const HomeScreenMapCard = ({mapObject}) => {
         dispatchMapData();
     }
 
+    const handleProfile = () => {
+        navigate(`/profile/${mapObject.user_id._id}`)
+    }
+
     if (!mapObject) {
         return <div className='max-w-xl text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>Loading...</div>; // Or any other placeholder for loading
     }
@@ -107,7 +111,7 @@ const HomeScreenMapCard = ({mapObject}) => {
                     </p>
                 </div>
                 <div className="px-6 pt-4 pb-0 flex flex-row justify-between items-center">
-                    <span className="font-NanumSquareNeoOTF-Lt inline-block bg-primary-GeoOrange text-white rounded-full px-3 py-1  font-semibold  mr-2 mb-2">Author  : {mapObject.user_id.username}</span>
+                    <span onClick={handleProfile} className="font-NanumSquareNeoOTF-Lt inline-block bg-primary-GeoOrange text-white rounded-full px-3 py-1  font-semibold  mr-2 mb-2 hover:opacity-70 hover:cursor-pointer">Author  : {mapObject.user_id.username}</span>
                     <span className="font-NanumSquareNeoOTF-Lt inline-block text-black rounded-full px-3 py-1  font-semibold  mr-2 mb-2">Created On : {formattedDate}</span>
                 </div>
                 <div className="px-6 font-NanumSquareNeoOTF-Lt pt-0 pb-2 flex flex-row justify-between items-center">

@@ -1,14 +1,44 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLocationDot, faCakeCandles, faCircleArrowLeft, faCircleExclamation, faFire } from '@fortawesome/free-solid-svg-icons'
 import ProfileMapCard from './ProfileMapCard'
 import ProfileCommentCard from './ProfileCommentCard'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import { authgetUserById } from "../../api/auth_request_api"
+import { getUserMaps } from '../../api/map_request_api'
+
 const ProfileScreen = () => {
     const navigate = useNavigate()
+    const [userData, setUserData] = useState(null)
+    const [userMaps, setUserMaps] = useState(null)
     const [display, setDisplay] = useState("posts")
     const user_maps = [1, 2, 3] // list of maps 
     const user_comments = [1, 2, 3] // list of comments
+    const { id } = useParams()
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const userResponse = await authgetUserById(id);
+                if (userResponse) {
+                    setUserData(userResponse);
+
+                    // Check if userData is available before fetching maps
+                    if (userResponse && userResponse.maps && userResponse.maps.length) {
+                        const mapsResponse = await getUserMaps(userResponse);
+                        if (mapsResponse) {
+                            setUserMaps(mapsResponse);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchData();
+    }, [id]);
+
 
     const generateMapCards = () => {
         return user_maps.map((map_id) => <ProfileMapCard key={map_id} id={map_id} />)
@@ -22,6 +52,30 @@ const ProfileScreen = () => {
         navigate("/")
     }
 
+    const getDaysActive = () => {
+        if (userData) {
+            const createdDate = new Date(userData.createdAt);
+            const updatedDate = new Date(userData.updatedAt);
+
+            // Calculate the difference in milliseconds
+            const differenceInMs = updatedDate - createdDate;
+
+            // Convert milliseconds to days
+            const daysActive = differenceInMs / (1000 * 60 * 60 * 24);
+
+            return Math.floor(daysActive); // Return the number of whole days
+        }
+    }
+
+    const getHighestUpvotes = () => {
+        if (userMaps && userMaps.length > 0) {
+            return userMaps.reduce((prev, current) => {
+                return prev.likes > current.likes ? prev.likes : current.likes;
+            });
+        }
+        return 0; // Return a default value or handle the case when userMaps is null or empty
+    };
+
     return (
         <>
             <div className='min-h-screen  bg-primary-GeoPurple flex pb-6 m-5 rounded-2xl shadow-nimble'>
@@ -33,11 +87,11 @@ const ProfileScreen = () => {
                     </div>
                     <div className='shadow-aesthetic absolute w-4/5 h-1/2 top-20 left-1/2 transform -translate-x-1/2 rounded-2xl bg-white flex flex-col justify-between'>
                         <div className='shadow-aesthetic absolute left-1/2 transform -translate-x-1/2 -top-16 rounded-full w-32 h-32  bg-primary-GeoBlue z-10 flex items-center justify-center'>
-                            <span className='text-black text-7xl font-PyeongChangPeace-Light'>B</span>
+                            <span className='text-black text-7xl font-PyeongChangPeace-Light'>{userData && userData.username[0]}</span>
                         </div>
 
                         <div className='flex flex-col justify-evenly mt-20 text-center items-center gap-2.5'>
-                            <p className='text-black text-4xl font-PyeongChangPeace-Light'>@Bob123</p>
+                            <p className='text-black text-4xl font-PyeongChangPeace-Light'>@{userData && userData.username}</p>
                             <div className='flex items-center gap-1'>
                                 <FontAwesomeIcon icon={faLocationDot} />
                                 <p className='text-black text-base font-PyeongChangPeace-Light'>Stony Brook, NY</p>
@@ -50,15 +104,15 @@ const ProfileScreen = () => {
 
                         <div className='bg-gray-50 h-1/3 flex justify-evenly items-center rounded-b-2xl'>
                             <p className='text-center'>
-                                <span className='block font-PyeongChangPeace-Bold text-lg '>53</span>
+                                <span className='block font-PyeongChangPeace-Bold text-lg '>{userData && userData.maps.length}</span>
                                 <span className='block font-PyeongChangPeace-Light'>Posts</span>
                             </p>
                             <p className='text-center'>
-                                <span className='block font-PyeongChangPeace-Bold text-lg'>1,253</span>
+                                <span className='block font-PyeongChangPeace-Bold text-lg'>{getHighestUpvotes()}</span>
                                 <span className='block font-PyeongChangPeace-Light'>Highest Upvotes</span>
                             </p>
                             <p className='text-center'>
-                                <span className='block font-PyeongChangPeace-Bold text-lg'>13</span>
+                                <span className='block font-PyeongChangPeace-Bold text-lg'>{getDaysActive()}</span>
                                 <span className='block font-PyeongChangPeace-Light'>Days Active</span>
                             </p>
                         </div>
