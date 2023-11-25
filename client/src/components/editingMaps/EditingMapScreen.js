@@ -47,32 +47,7 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
     const [saveStatus, setSaveStatus] = useState('idle'); // 'idle', 'saving', 'completed' , 'error'
 
     const handleSaveMap = async (e) => {
-<<<<<<< HEAD:client/src/components/EditingMapScreen.js
         e.preventDefault();
-        if (user && map) {
-            setSaveStatus('saving');
-            try {
-                const map_type = Object.keys(MAP_TYPES).find(key => MAP_TYPES[key] === mapType);
-                const response = await saveUserMap(user._id, title, publicStatus, map_type, description, map);
-                
-                if (response.ok) {
-                    // Assuming 'response.ok' is true when the request is successful
-                    console.log("Save successful:", response);
-                    setSaveStatus('completed');
-                    setTimeout(() => setSaveStatus('idle'), 2000);
-                } else {
-                    // Handle non-successful responses
-                    console.error("Server responded with an error:", response);
-                    setSaveStatus('error');
-                    setTimeout(() => setSaveStatus('idle'), 2000);
-                }
-            } catch (error) {
-                console.error("Error saving map:", error);
-                setSaveStatus('error');
-                setTimeout(() => setSaveStatus('idle'), 2000);
-            }
-=======
-        e.preventDefault()
         if(title === '')
         {
             setValidTitle(false)
@@ -111,9 +86,25 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
                     break
             }
             mapInfo.original_map = {...map}
-            const response = await saveUserMap(user._id, title, publicStatus, map_type, description, mapInfo) // testing
-            // console.log(response)
->>>>>>> dev:client/src/components/editingMaps/EditingMapScreen.js
+            try {
+                const response = await saveUserMap(user._id, title, publicStatus, map_type, description, mapInfo) // testing
+                
+                if (response.status === 200) {
+                    // Assuming 'response.ok' is true when the request is successful
+                    console.log("Save successful:", response);
+                    setSaveStatus('completed');
+                    setTimeout(() => setSaveStatus('idle'), 2000);
+                } else {
+                    // Handle non-successful responses
+                    console.error("Server responded with an error:", response);
+                    setSaveStatus('error');
+                    setTimeout(() => setSaveStatus('idle'), 2000);
+                }
+            } catch (error) {
+                console.error("Error saving map:", error);
+                setSaveStatus('error');
+                setTimeout(() => setSaveStatus('idle'), 2000);
+            }
         }
     };
     return (
