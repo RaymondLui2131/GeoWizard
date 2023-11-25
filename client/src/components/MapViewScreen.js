@@ -11,11 +11,13 @@ import { UserContext } from "../api/UserContext.js"
 import { MapContext } from "../api/MapContext"
 import { changeLikesMap } from '../api/map_request_api';  //for now requesting, will change to context later
 import { changeLikesComment,postComment } from '../api/comment_request_api.js';
+import tinycolor from 'tinycolor2';
 const fakeView = {
     title:'The Title of the Map',
     author: 'anon123',
     numLikes: 300
 }
+const possibleNames = ['name', 'nom', 'nombre','title', 'label', 'id']
 
 const fakeKeyData1 = {
     key: 'red',
@@ -54,7 +56,14 @@ const fakeComment3 = {
 
 const fakeComments = [fakeComment1,fakeComment2,fakeComment3]
 const fakeKeyAll = [fakeKeyData1,fakeKeyData2,fakeKeyData3]
-
+const hlsaToRGBA = (hlsa) => {
+    const color = tinycolor(hlsa)
+    const rgba = color.toRgb()
+    const rgbaString = `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
+    // console.log("Input", hlsa)
+    // console.log("COnversion",rgbaString)
+    return rgbaString
+}
 const TitleDisplay = (props) =>{
     const [currentLike, setLike] = useState(null)
     const { user } = useContext(UserContext)
@@ -178,7 +187,8 @@ const TitleDisplay = (props) =>{
 
 const MapDisplay = (props) =>{
     const mapData = props.MapData
-
+    const edits = mapData.edits
+    const mapType = props.mapType
     var center = [0,0]
     var padded_NE = [0,0]
     var padded_SW = [0,0]
@@ -200,7 +210,29 @@ const MapDisplay = (props) =>{
 
     if(!mapData)
     {
-        return (<div>placeholder</div>)
+        return (<div>Loading</div>)
+    }
+    const styleMapping = {}
+    edits.editsList.forEach((edit) => {
+        switch (MAP_TYPES[mapType]) {
+        
+            case MAP_TYPES['HEATMAP']: {
+                console.log("Adding", edit.featureName)
+                styleMapping[edit.featureName] = { fillColor: hlsaToRGBA(edit.colorHLSA), fillOpacity: 1 };
+                break;
+            }
+            default:
+                break;
+        }
+    })
+    console.log(styleMapping)
+    const getFeatureStyleView = (feature) => {
+        const foundName = possibleNames.find(propertyName => propertyName in feature.properties)
+        if (foundName) 
+        {
+            return styleMapping[feature.properties[foundName]] || {fillColor:'#ffffff'}
+        }
+        return {}
     }
     return(
         <>
@@ -216,7 +248,12 @@ const MapDisplay = (props) =>{
                     attribution='Tiles © Esri &mdash; Esri, DeLorme, NAVTEQ'
                 />
                 {Object.keys(mapData).length    
-                    ?<GeoJSON data={mapData.original_map.features}/>
+                    ?<GeoJSON 
+                        data={mapData.original_map.features}
+                        onEachFeature={(feature, layer) => {
+                            const featureStyle = getFeatureStyleView(feature)
+                            layer.setStyle(featureStyle); 
+                        }}/>
                     :null
                 }
                 
@@ -226,10 +263,15 @@ const MapDisplay = (props) =>{
 }
 
 const Key = (props) =>{//Note this key layout only works for color
+    
     const mapType = props.type
+    const header = props.header
+    console.log("header",header.upper)
+    const [heatColor,setHeatColor] = useState(header.basecolorHLSA)
     const hlsaColor = {h:0, s:.73, l:.51, a:1}  //TESTING
+
     console.log("Map type",mapType)
-    if(mapType === MAP_TYPES['CHOROPLETH'])
+    if(MAP_TYPES[mapType] === MAP_TYPES['CHOROPLETH'])
         return(
             <>
             <table className='w-1/12 border-4 border-black bg-gray-50'>
@@ -255,16 +297,24 @@ const Key = (props) =>{//Note this key layout only works for color
             </table>
             </>
         )
-    if(mapType === MAP_TYPES['HEATMAP'])
+    if(MAP_TYPES[mapType] === MAP_TYPES['HEATMAP'])
+        
         return(
             <>
-            <div className='w-1/12 border-4 border-black bg-gray-50 flex flex-col justify-around font-NanumSquareNeoOTF-Lt items-center '>
-                <div className = 'flex justify-center'>
-                    9999                {/*Should get from map data/prop */}
+            <div className='w-1/12 border-4 border-black bg-gray-50 flex flex-col justify-around font-NanumSquareNeoOTF-Lt items-center'>
+                <div className='flex flex-col justify-between h-4/6 items-center'>
+                    <div className='pb-2'>
+                        {header.upper}
+                    </div>
+                    <div className='rotate-[-90deg] w-96 pt-2'>
+                        <SaturationSlider color={heatColor} handleChangeColor={(newcolor)=>setHeatColor(newcolor)}/>
+                    </div>
+                    <div className='pt-2'>
+                        {header.lower}
+                    </div>
                 </div>
-                <div className='rotate-[-90deg] w-96 pointer-events-none'> <SaturationSlider color={hlsaColor} /></div>
-                <div className = 'flex justify-center'>
-                    50
+                <div className='flex justify-center'>
+                    <div className='flex w-10 h-10 border-4 border-black' style={{ backgroundColor: hlsaToRGBA(heatColor) }}></div>
                 </div>
             </div>
             </>
@@ -386,7 +436,6 @@ const MapView = () => {
 
     console.log(newComment)    
     console.log("Map Type",mapType)
-
     const postNewComment = async () =>{
         if(!user)       //case where user not signed in
             return
@@ -410,8 +459,8 @@ const MapView = () => {
                 }
                 <div className='flex flex-row justify-between h-[650px]'>
                     {mapView
-                            ?<><MapDisplay {...{MapData: map.MapData}}/>
-                                <Key {...{type: mapType}}/>  
+                            ?<><MapDisplay {...{MapData: map.MapData, mapType:mapType}}/>
+                                <Key {...{type: mapType, header:map.MapData.edits.header}}/>  
                              </>
                         :null
                     }  

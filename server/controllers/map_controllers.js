@@ -45,10 +45,9 @@ const createMap = async (req, user) => { // used within saveUserMap
             message: "Missing required fields for map creation"
         })
     }
-
     const map_data = await MapData.create({ // create the map data and store it in the database
-        original_map: mapData,
-        edits: []
+        original_map: mapData.original_map,
+        edits: mapData.edits
     })
 
     const map = await Map.create({ // create the map and add the reference to the corresponding map data
@@ -94,11 +93,10 @@ const getMap = asyncHandler(async (req, res) => {
                 }
             ]
         })
-        
+
     if (!mapWithDetails) {
         return res.status(404).json({ message: "Could not find map or related data" });
     }
-    console.log(mapWithDetails)
 
     return res.json(mapWithDetails);
 })

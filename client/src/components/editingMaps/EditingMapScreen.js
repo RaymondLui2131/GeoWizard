@@ -17,6 +17,7 @@ import { saveUserMap, createMap } from "../../api/map_request_api.js"
 import { /**UserActionType, */ UserContext } from "../../api/UserContext.js"
 import { /**MapActionType，*/ MapContext } from "../../api/MapContext.js"
 import HeatUi from './HeatMapUI.js';
+import { HeatMapHeader } from '../../editMapDataStructures/HeatMapData.js';
 
 //Note assigns saturation of 100 for satslider
 const hexToHlsa = (hexString) => {
@@ -39,21 +40,74 @@ const hlsaToRGBA = (hlsa) => {
 }
 
 
-const BottomRow = ({ title, mapType, description }) => {
+const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound,setValidHeatRange,baseColor, setValidTitle }) => {
     const [publicStatus, setPublic] = useState(false)
     const { user } = useContext(UserContext)
     const { map } = useContext(MapContext)
+    const [saveStatus, setSaveStatus] = useState('idle'); // 'idle', 'saving', 'completed' , 'error'
 
     const handleSaveMap = async (e) => {
         e.preventDefault()
+        if(title === '')
+        {
+            setValidTitle(false)
+            return
+        }
+        else
+            setValidTitle(true)
         if (user) {
             // const mapData = geobuf_api.geojson_compress(map)
             const map_type = Object.keys(MAP_TYPES).find(key => MAP_TYPES[key] === mapType)
-            const response = await saveUserMap(user._id, title, publicStatus, map_type, description, map) // testing
+            const mapInfo = {
+                original_map: {},
+                edits:{
+                    header:{},
+                    editsList:[]
+                }
+            }
+            switch(mapType){
+                case MAP_TYPES['HEATMAP']:
+                {
+                    const lower = parseFloat(lowerBound)
+                    const upper = parseFloat(upperBound)
+                    if(upper < lower) //handle invalid upper
+                    {
+                        setValidHeatRange(false)
+                        return
+                    }
+                    else
+                        setValidHeatRange(true)
+                    const newHeatHeader = new HeatMapHeader(lower,upper,baseColor)
+                    mapInfo.edits.header = newHeatHeader
+                    mapInfo.edits.editsList = editsList
+                    break
+                }
+                default:
+                    break
+            }
+            mapInfo.original_map = {...map}
+            const response = await saveUserMap(user._id, title, publicStatus, map_type, description, mapInfo) // testing
+            try {
+
+                if (response.status === 200) {
+                    // Assuming 'response.ok' is true when the request is successful
+                    console.log("Save successful:", response);
+                    setSaveStatus('completed');
+                    setTimeout(() => setSaveStatus('idle'), 2000);
+                } else {
+                    // Handle non-successful responses
+                    console.error("Server responded with an error:", response);
+                    setSaveStatus('error');
+                    setTimeout(() => setSaveStatus('idle'), 2000);
+                }
+            } catch (error) {
+                console.error("Error saving map:", error);
+                setSaveStatus('error');
+                setTimeout(() => setSaveStatus('idle'), 2000);
+            }
             // console.log(response)
         }
-    }
-
+    };
     return (
         <div className='w-4/5 flex  flex-row justify-between mt-4'>
             <div className='flex flex-row'>
@@ -69,9 +123,12 @@ const BottomRow = ({ title, mapType, description }) => {
                                                 font-NanumSquareNeoOTF-Lt px-14 rounded-full py-2'>
                         Export</button>
                     </div>
-                    <div className='pl-12 inline-block pr-16'><button className='bg-primary-GeoOrange text-3xl
-                                                font-NanumSquareNeoOTF-Lt px-14 rounded-full py-2 disabled:opacity-30' onClick={handleSaveMap} disabled={!(map && user)}>
-                        Save</button>
+                    <div className='pl-12 inline-block pr-16'>
+                        <button className='bg-primary-GeoOrange text-3xl font-NanumSquareNeoOTF-Lt px-14 rounded-full py-2 disabled:opacity-30' 
+                                onClick={handleSaveMap} 
+                                disabled={!(map && user)}>
+                            {saveStatus === 'idle' ? 'Save' : saveStatus === 'error' ? 'Error' :  saveStatus === 'saving' ? 'Saving Map...' : 'Completed'}
+                        </button>
                     </div>
                 </div>
                 <div>
@@ -97,13 +154,17 @@ const MapEditOptions = (props) => {
     const setAreaClicked = props.setAreaClicked
     const editsList = props.editsList
     const setEditsList = props.setEditsList
-
+    const setLower = props.setLower
+    const setUpper = props.setUpper
+    const lowerBound = props.lowerBound
+    const upperBound = props.upperBound
     const selectedColor = '#3b82f6' //used for heatmap
-
+    const validHeatRange = props.validHeatRange
+    const setValidHeatRange = props.setValidHeatRange
+    const setBaseColor = props.setBaseColor
     const [selected, setSelected] = useState('') //used to control current item can for any
     const [heatColor, setHlsa] = useState(hexToHlsa('#000000')) //Used for heat map, in hlsa format
-    const [lowerBound, setLower] = useState('')
-    const [upperBound, setUpper] = useState('')
+    
   
 
     const [choroColor, setColor] = useState("#aabbcc");  //Used for choro map, hex format
@@ -138,7 +199,12 @@ const MapEditOptions = (props) => {
                 setEditsList : setEditsList,
                 setUpper: setUpper,
                 setLower:setLower,
-                hexToHlsa: hexToHlsa
+                hexToHlsa: hexToHlsa,
+                lowerBound: lowerBound,
+                upperBound: upperBound,
+                validHeatRange: validHeatRange,
+                setValidHeatRange: setValidHeatRange,
+                setBaseColor:setBaseColor
             }
             return (
                 <>
@@ -307,15 +373,20 @@ const MapView = () => {
     const { map, /** dispatch */ } = useContext(MapContext)
     // const [map, setMap] = useState(null)
     const [title, setTitle] = useState('')
+    const [validTitle, setValidTitle] = useState(true)
     const [description, setDescription] = useState('')
     // console.log(title)
     // const [map,] = useState(franceMap) //For testing
     const [typeSelected, setType] = useState(MAP_TYPES['NONE'])
     const [mapTypeClicked, isClicked] = useState(false)
-    const [editsList, setEditsList] = useState([])//Holds the data object(depends on type) of changes
+    const [editsList, setEditsList] = useState([]) //Holds the data object(depends on type) of changes
     const [styleMapping, setStyleMapping] = useState({});
 
     const [areaClicked, setAreaClicked] = useState(null) //In heat/choro should be feature, coordinates for other
+    const [lowerBound, setLower] = useState('0')
+    const [upperBound, setUpper] = useState('1')
+    const [validHeatRange, setValidHeatRange] = useState(true)
+    const [baseColor,setBaseColor] = useState(hexToHlsa('#ffffff'))
 
     const possibleNames = ['name', 'nom', 'nombre','title', 'label', 'id']
     // console.log(map)
@@ -405,6 +476,10 @@ const MapView = () => {
             <div className='w-4/5 flex justify-center flex-row'>
                 <div className='w-1/2 flex justify-center flex-col pt-32 items-center'>
                     <div>
+                        {!validTitle
+                            ?<div className='text-red-300 text-center'>Need Title</div>
+                            :null
+                        }
                         <input type='text' name='title' className='bg-primary-GeoPurple text-white placeholder-white text-2xl w-[35rem]
                         text-center'
                             placeholder='Enter Title...' maxLength={48} onChange={(e) => setTitle(e.target.value)} >
@@ -452,7 +527,8 @@ const MapView = () => {
                                     <>
                                         <button className='w-3/5 bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked)}>{mapString}</button>
                                         <MapEditOptions mapType={typeSelected} setType={setType} areaClicked = {areaClicked} setAreaClicked={setAreaClicked}
-                                            editsList = {editsList} setEditsList={setEditsList}
+                                            editsList = {editsList} setEditsList={setEditsList} setLower={setLower} setUpper = {setUpper} validHeatRange = {validHeatRange}
+                                            setValidHeatRange={setValidHeatRange} setBaseColor= {setBaseColor}
                                         />
                                     </>
                                 }
@@ -472,7 +548,9 @@ const MapView = () => {
 
                 </div>
             </div>
-            <BottomRow title={title} mapType={typeSelected} description={description}></BottomRow>
+            <BottomRow title={title} mapType={typeSelected} description={description} editsList={editsList} setValidTitle = {setValidTitle}
+                        lowerBound={lowerBound} upperBound={upperBound} setValidHeatRange={setValidHeatRange} baseColor={baseColor}
+            ></BottomRow>
         </>)
     )
 }
