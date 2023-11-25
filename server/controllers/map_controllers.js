@@ -39,15 +39,15 @@ const saveUserMap = asyncHandler(async (req, res) => {
 })
 
 const createMap = async (req, user) => { // used within saveUserMap
-    const { title, isPublic, mapType, description, mapData } = req.body
-    if (!(title && user && mapData)) {
+    const { title, isPublic, mapType, description, mapInfo } = req.body
+    if (!(title && user && mapInfo)) {
         return res.status(400).json({
             message: "Missing required fields for map creation"
         })
     }
     const map_data = await MapData.create({ // create the map data and store it in the database
-        original_map: mapData.original_map,
-        edits: mapData.edits
+        original_map: mapInfo.original_map,
+        edits: mapInfo.edits
     })
 
     const map = await Map.create({ // create the map and add the reference to the corresponding map data

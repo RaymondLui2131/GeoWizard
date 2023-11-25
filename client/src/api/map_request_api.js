@@ -11,16 +11,16 @@ const baseURL = isLocal
 const API_URL = `${baseURL}${endpoint}`;
 
 
-export const saveUserMap = async (token, title, isPublic, mapType, description, mapData) => {
+export const saveUserMap = async (token, title, isPublic, mapType, description, mapInfo) => {
     try {
-        const compressedMapData = geobuf_api.geojson_compress(mapData.original_map)
-        mapData.original_map = compressedMapData
+        const compressedMapData = geobuf_api.geojson_compress(mapInfo.original_map)
+        mapInfo.original_map = compressedMapData
         const response = await axios.put(`${API_URL}save`, {
             title: title,
             isPublic: isPublic,
             mapType: mapType,
             description: description,
-            mapData: compressedMapData
+            mapInfo: mapInfo
         }, {
             headers: {
                 Authorization: `Bearer ${token}`
