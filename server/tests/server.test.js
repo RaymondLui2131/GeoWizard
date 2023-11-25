@@ -268,6 +268,60 @@ describe('Testing getUser function', () => {
 });
 
 
+describe("testing checkUniqueUser", () => {
+    it('should return "User already exists" for existing username', async () => {
+        // Mocking an existing username in the database
+        User.findOne.mockResolvedValueOnce({ username: 'existingUser' });
+
+        const res = await request(app)
+            .get('/users/checkUniqueUser')
+            .query({ username: 'existingUser' });
+
+        expect(res.status).toBe(409);
+        expect(res.body).toEqual({ message: 'User already exists' });
+    });
+
+    it('should return "User is unique" for non-existing username', async () => {
+        // Mocking a non-existing username in the database
+        User.findOne.mockResolvedValueOnce(null);
+
+        const res = await request(app)
+            .get('/users/checkUniqueUser')
+            .query({ username: 'newUser' });
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ message: 'User is unique' });
+    });
+})
+
+
+describe("testing checkUniqueEmail", () => {
+    it('should return "Email already exists" for existing email', async () => {
+        // Mocking an existing username in the database
+        User.findOne.mockResolvedValueOnce({ email: 'existingEmail' });
+
+        const res = await request(app)
+            .get('/users/checkUniqueEmail')
+            .query({ email: 'existingEmail' });
+
+        expect(res.status).toBe(409);
+        expect(res.body).toEqual({ message: 'Email already exists' });
+    });
+
+    it('should return "Email is unique" for non-existing email', async () => {
+        // Mocking a non-existing username in the database
+        User.findOne.mockResolvedValueOnce(null);
+
+        const res = await request(app)
+            .get('/users/checkUniqueEmail')
+            .query({ email: 'newEmail' });
+
+        expect(res.status).toBe(200);
+        expect(res.body).toEqual({ message: 'Email is unique' });
+    });
+})
+
+
 // describe("testing Maps Likes", () => {
 //     let user_id
 //     let mapID

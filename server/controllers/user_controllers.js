@@ -152,12 +152,12 @@ const checkUniqueEmail = asyncHandler(async (req, res) => {
 
     if (userExists) {
         return res.status(409).json({ // Use status 409 for conflict
-            message: "User already exists"
+            message: "Email already exists"
         })
     }
 
     return res.status(200).json({
-        message: "User is unique"
+        message: "Email is unique"
     })
 })
 
