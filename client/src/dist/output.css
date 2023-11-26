@@ -878,6 +878,10 @@ video {
   height: 100vh;
 }
 
+.h-44 {
+  height: 11rem;
+}
+
 .max-h-\[100\%\] {
   max-height: 100%;
 }
@@ -1110,6 +1114,10 @@ video {
 
 .gap-3 {
   gap: 0.75rem;
+}
+
+.gap-5 {
+  gap: 1.25rem;
 }
 
 .gap-6 {
@@ -1868,16 +1876,20 @@ button:focus-visible {
   color: rgb(147 112 219 / var(--tw-text-opacity));
 }
 
-.hover\:opacity-50:hover {
-  opacity: 0.5;
+.hover\:underline:hover {
+  text-decoration-line: underline;
+}
+
+.hover\:underline-offset-4:hover {
+  text-underline-offset: 4px;
+}
+
+.hover\:underline-offset-8:hover {
+  text-underline-offset: 8px;
 }
 
 .hover\:opacity-70:hover {
   opacity: 0.7;
-}
-
-.hover\:opacity-90:hover {
-  opacity: 0.9;
 }
 
 .focus\:border-primary-GeoPurple:focus {
