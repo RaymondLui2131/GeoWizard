@@ -38,3 +38,14 @@ export const changeLikesComment = async (user_id, comment_id, amount) => {
         return err.response
     }
 }
+
+export const getUserComments = async (user_id) => {
+    try {
+        const response = await axios.post(`${API_URL}getUserComments`, {
+            user_id: user_id,
+        })
+        return response.data
+    } catch (err) {
+        return err.response
+    }
+}

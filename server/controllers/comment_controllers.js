@@ -111,8 +111,22 @@ const changeLikesComment = asyncHandler(async (req, res) => {
     }
     return res.status(200).json({comment})
 })
+
+const getUserComments = asyncHandler(async (req, res) => {
+    const { user_id } = req.body
+    const response = await Comment.find({ user_id })
+    if (!response) {
+        return res.status(404).json({
+            message: "Comment not found"
+        })
+    }
+
+    return res.status(200).json(response)
+})
+
 module.exports = {
     postComment,
     getComment,
-    changeLikesComment
+    changeLikesComment,
+    getUserComments
 }

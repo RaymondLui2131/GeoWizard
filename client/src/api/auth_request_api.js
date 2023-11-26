@@ -70,6 +70,16 @@ export const authgetUser = async (token) => {
 }
 
 
+export const authgetUserById = async (id) => {
+    try {
+        const response = await axios.get(`${API_URL}${id}`)
+        return response.data
+    } catch (err) {
+        return err.response
+    }
+}
+
+
 export const authgetMaps = async (token) => {
     try {
         return await axios.get(`${API_URL}me`, {
@@ -153,7 +163,8 @@ const api = {
     googleLoginUser,
     postUser,
     checkEmail, 
-    checkUser
+    checkUser,
+    authgetUserById
 }
 
 export default api

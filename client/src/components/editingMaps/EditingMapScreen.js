@@ -86,7 +86,7 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
                     break
             }
             mapInfo.original_map = {...map}
-            const response = await saveUserMap(user._id, title, publicStatus, map_type, description, mapInfo) // testing
+            const response = await saveUserMap(user.token, title, publicStatus, map_type, description, mapInfo) // testing
             try {
 
                 if (response.status === 200) {
