@@ -12,7 +12,7 @@ const ProfileScreen = () => {
     const [userData, setUserData] = useState(null)
     const [userMaps, setUserMaps] = useState(null)
     const [display, setDisplay] = useState("posts")
-    const user_maps = [1, 2, 3] // list of maps 
+
     const user_comments = [1, 2, 3] // list of comments
     const { id } = useParams()
 
@@ -22,12 +22,11 @@ const ProfileScreen = () => {
                 const userResponse = await authgetUserById(id);
                 if (userResponse) {
                     setUserData(userResponse);
-
                     // Check if userData is available before fetching maps
                     if (userResponse && userResponse.maps && userResponse.maps.length) {
                         const mapsResponse = await getUserMaps(userResponse);
                         if (mapsResponse) {
-                            setUserMaps(mapsResponse);
+                            setUserMaps(mapsResponse.filter(map => { return map.isPublic }));
                         }
                     }
                 }
@@ -41,11 +40,11 @@ const ProfileScreen = () => {
 
 
     const generateMapCards = () => {
-        return user_maps.map((map_id) => <ProfileMapCard key={map_id} id={map_id} />)
+        return userMaps?.map((map_data) => <ProfileMapCard key={map_data._id} map_data={map_data} />)
     }
 
     const generateCommentCards = () => {
-        return user_comments.map((comment_id) => <ProfileCommentCard key={comment_id} id={comment_id} />)
+        return user_comments?.map((comment_id) => <ProfileCommentCard key={comment_id} id={comment_id} />)
     }
 
     const handleBackButton = () => {
@@ -108,11 +107,11 @@ const ProfileScreen = () => {
                                 <span className='block font-PyeongChangPeace-Light'>Posts</span>
                             </p>
                             <p className='text-center'>
-                                <span className='block font-PyeongChangPeace-Bold text-lg'>{getHighestUpvotes()}</span>
+                                <span className='block font-PyeongChangPeace-Bold text-lg'>{userMaps && getHighestUpvotes()}</span>
                                 <span className='block font-PyeongChangPeace-Light'>Highest Upvotes</span>
                             </p>
                             <p className='text-center'>
-                                <span className='block font-PyeongChangPeace-Bold text-lg'>{getDaysActive()}</span>
+                                <span className='block font-PyeongChangPeace-Bold text-lg'>{userData && getDaysActive()}</span>
                                 <span className='block font-PyeongChangPeace-Light'>Days Active</span>
                             </p>
                         </div>
@@ -133,9 +132,9 @@ const ProfileScreen = () => {
                             <button className='flex items-center text-2xl px-5 bg-primary-GeoBackGround hover:bg-opacity-30 bg-opacity-20 rounded-2xl'><FontAwesomeIcon icon={faFire} className='mr-1' />Top</button>
                         </div>
                     </div>
-                    <ul className='grow h-3/4 flex flex-col justify-between'>
-                        {display === "posts" && generateMapCards()}
-                        {display === "comments" && generateCommentCards()}
+                    <ul className='grow h-3/4 flex flex-col justify-start overflow-scroll gap-5'>
+                        {display === "posts" && userMaps && generateMapCards()}
+                        {display === "comments" && userMaps && generateCommentCards()}
                     </ul>
                 </div>
             </div>
