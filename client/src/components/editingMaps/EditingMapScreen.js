@@ -18,7 +18,8 @@ import { /**UserActionType, */ UserContext } from "../../api/UserContext.js"
 import { /**MapActionType，*/ MapContext } from "../../api/MapContext.js"
 import HeatUi from './HeatMapUI.js';
 import { HeatMapHeader } from '../../editMapDataStructures/HeatMapData.js';
-
+import { ChoroHeader } from '../../editMapDataStructures/ChoroplethMapData.js';
+import ChoroUi from './ChoroUi.js';
 //Note assigns saturation of 100 for satslider
 const hexToHlsa = (hexString) => {
 
@@ -40,7 +41,8 @@ const hlsaToRGBA = (hlsa) => {
 }
 
 
-const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound,setValidHeatRange,baseColor, setValidTitle }) => {
+const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound,setValidHeatRange,
+        baseColor, setValidTitle, keyTable}) => {
     const [publicStatus, setPublic] = useState(false)
     const { user } = useContext(UserContext)
     const { map } = useContext(MapContext)
@@ -79,6 +81,13 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
                         setValidHeatRange(true)
                     const newHeatHeader = new HeatMapHeader(lower,upper,baseColor)
                     mapInfo.edits.header = newHeatHeader
+                    mapInfo.edits.editsList = editsList
+                    break
+                }
+                case MAP_TYPES['CHOROPLETH']:
+                {
+                    const newChoroHeader = new ChoroHeader(keyTable)
+                    mapInfo.edits.header = newChoroHeader
                     mapInfo.edits.editsList = editsList
                     break
                 }
@@ -162,15 +171,19 @@ const MapEditOptions = (props) => {
     const validHeatRange = props.validHeatRange
     const setValidHeatRange = props.setValidHeatRange
     const setBaseColor = props.setBaseColor
+
+    const keyTable = props.keyTable //holds list of key labels mappings in form {color: hexColor, label:label}
+    const setKeyTable = props.setKeyTable
+
     const [selected, setSelected] = useState('') //used to control current item can for any
     const [heatColor, setHlsa] = useState(hexToHlsa('#000000')) //Used for heat map, in hlsa format
     
   
 
-    const [choroColor, setColor] = useState("#aabbcc");  //Used for choro map, hex format
-    const choroColorFormat = choroColor.toUpperCase()
+    const [choroColor, setColor] = useState("#ffffff");  //Used for choro map, hex format
     const [key, setKey] = useState('')
     const [label, setLabel] = useState('')
+  
     // console.log(key)
     // console.log(label)
 
@@ -260,37 +273,28 @@ const MapEditOptions = (props) => {
                 </>
             )
         case MAP_TYPES['CHOROPLETH']:
+        {
+            const props = {
+                setType : setType,
+                choroColor : choroColor,
+                setColor : setColor,
+                key : key,
+                setKey :setKey,
+                label : label,
+                setLabel : setLabel,
+                keyTable : keyTable,
+                setKeyTable : setKeyTable,
+                areaClicked : areaClicked,
+                setAreaClicked: setAreaClicked,
+                editsList: editsList,
+                setEditsList: setEditsList
+            }
             return (
                 <>
-                    <div className='invisible'>gap space</div>
-                    <div className='h-full w-3/5 bg-gray-50 rounded-3xl font-NanumSquareNeoOTF-Lt flex flex-col'>
-                        <div className='bg-primary-GeoOrange rounded-t-3xl ' onClick={() => setType(MAP_TYPES['NONE'])}><div>Color Selector</div>
-                        </div>
-                        <div className='flex flex-col items-center pt-10 w-full mx-auto'>
-                            <HexColorPicker color={choroColor} onChange={setColor} style={{ width: '80%', height: '300px' }} />
-                        </div>
-                        <div>Hex Color: {choroColorFormat}</div>
-                        <div className='grid grid-cols-2 gap-2 pt-2 text-sm'> {/*TEMP FILLER WILL HAVE TO BUILD DYNAMICALLY LATER*/}
-                            <div>Key</div>
-                            <div>Label</div>
-                            <div>#C20000</div>
-                            <div>Warm</div>
-                            <div>#0004B7</div>
-                            <div>Cold</div>
-                        </div>
-
-                        <div className='flex items-end text-sm flex-row'>
-                            <div className='w-1/2 '>
-                                <input className='w-4/12 border-2 border-black' onChange={(e) => { setKey(e.target.value) }} />
-                            </div>
-                            <div className='w-1/2'>
-                                <input className='w-4/12 border-2 border-black' onChange={(e) => { setLabel(e.target.value) }} />
-                            </div>
-                        </div>
-                        <div className='justify justify-center'><button className='text-sm border-2 border-black w-2/12 bg-primary-GeoBlue'>Add New</button></div>
-                    </div>
+                    <ChoroUi {...props}/>
                 </>
-            )
+                )
+        }
         case MAP_TYPES['SYMBOL']:
             return (
                 <>
@@ -388,6 +392,9 @@ const MapView = () => {
     const [validHeatRange, setValidHeatRange] = useState(true)
     const [baseColor,setBaseColor] = useState(hexToHlsa('#ffffff'))
 
+    
+    const [keyTable, setKeyTable] = useState([])//holds list of key labels mappings in form {color: hexColor, label:label}
+
     const possibleNames = ['name', 'nom', 'nombre','title', 'label', 'id']
     // console.log(map)
     // const zoomLevel = 2
@@ -466,6 +473,18 @@ const MapView = () => {
                 }  
                 break
             }
+            case MAP_TYPES['CHOROPLETH']:
+            {
+                const foundName = possibleNames.find(propertyName => propertyName in clickedFeature.properties)
+                // console.log("found Name",foundName)
+                if (foundName) {
+                    // console.log('Clicked feature ' + clickedFeature.properties[foundName])
+                    setAreaClicked(clickedFeature.properties[foundName])
+                } else {
+                    // console.log('No known name property found in clicked feature', clickedFeature)
+                }  
+                break
+            }
             default:
                 break
         }
@@ -529,6 +548,7 @@ const MapView = () => {
                                         <MapEditOptions mapType={typeSelected} setType={setType} areaClicked = {areaClicked} setAreaClicked={setAreaClicked}
                                             editsList = {editsList} setEditsList={setEditsList} setLower={setLower} setUpper = {setUpper} validHeatRange = {validHeatRange}
                                             setValidHeatRange={setValidHeatRange} setBaseColor= {setBaseColor}
+                                            keyTable={keyTable} setKeyTable={setKeyTable}
                                         />
                                     </>
                                 }
@@ -550,6 +570,7 @@ const MapView = () => {
             </div>
             <BottomRow title={title} mapType={typeSelected} description={description} editsList={editsList} setValidTitle = {setValidTitle}
                         lowerBound={lowerBound} upperBound={upperBound} setValidHeatRange={setValidHeatRange} baseColor={baseColor}
+                        keyTable={keyTable}
             ></BottomRow>
         </>)
     )
