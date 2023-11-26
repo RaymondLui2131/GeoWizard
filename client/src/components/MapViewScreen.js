@@ -336,6 +336,7 @@ const Key = (props) =>{//Note this key layout only works for color
 const Comment = (props) => {
     const comment = props.comment
     console.log("This is comment",comment)
+    const navigate = useNavigate()
     const [currentLike,setLike] = useState(false)
     const [votes,setVotes] = useState(comment.votes)
     const {user} = useContext(UserContext)
@@ -386,6 +387,10 @@ const Comment = (props) => {
     if(!comment)
         return null
     
+    const handleProfile = () => {
+        navigate(`/profile/${comment?.user_id?._id}`)
+    }
+
     return(
         <>
         <div className='flex flex-row justify-between border-2 rounded-full bg-gray-50 mb-1 mt-2'>
@@ -398,7 +403,7 @@ const Comment = (props) => {
             </div>
 
             <div className='w-10/12 h-24 flex flex-col pt-2 overflow-auto whitespace-normal'>
-                <div className='font-NanumSquareNeoOTF-Lt underline'>{comment.user_id.username}</div>
+                <div className='font-NanumSquareNeoOTF-Lt hover:cursor-pointer hover:underline' onClick={handleProfile}>{comment.user_id.username}</div>
                 <div className='font-NanumSquareNeoOTF-Lt'>{comment.text}</div>
             </div>
             <div className='w-1/12 h-24 flex flex-col justify-center items-center text-2x1'>
