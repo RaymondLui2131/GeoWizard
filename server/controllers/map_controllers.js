@@ -2,22 +2,24 @@ const asyncHandler = require('express-async-handler')
 const Map = require("../models/map_model")
 const MapData = require("../models/map_data_model")
 const User = require("../models/user_model")
-/**
- * find the corresponding user by the token
- * compress the geojson file using geobuf
- * create the map object and save the geobuf file to mapData
- * add the id of the map to the user's array
- * 
- */
 
-/**
- *  user_id: user_id,
-    title: title,
-    isPublic: isPublic,
-    mapType: mapType,
-    description: description,
-    mapData: mapData
- */
+const getMapById = asyncHandler(async (req, res) => {
+    const id = req.params.id
+    
+    // check if username exists in the database
+    const map = await Map.findById(id).populate('user_id', 'username')
+
+    if (!map) {
+        return res.status(404).json({
+            message: "Map not found"
+        })
+    }
+
+    return res.status(200).json({
+        map, username: map.user_id.username
+    })
+})
+
 const saveUserMap = asyncHandler(async (req, res) => {
     const user = req.user // GET THE USER FROM JWT_MIDDLEWARE IF TOKEN VERIFICATION IS SUCCESSFUL
     // console.log(user)
@@ -272,5 +274,6 @@ module.exports = {
     getMap,
     queryMaps,
     changeLikesMap,
-    getUserMaps
+    getUserMaps,
+    getMapById
 }
