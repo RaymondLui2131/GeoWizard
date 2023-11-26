@@ -6,13 +6,15 @@ import ProfileCommentCard from './ProfileCommentCard'
 import { useNavigate, useParams } from 'react-router-dom'
 import { authgetUserById } from "../../api/auth_request_api"
 import { getUserMaps } from '../../api/map_request_api'
-
+import { getUserComments } from '../../api/comment_request_api'
+import { getMapById } from '../../api/map_request_api'
 const ProfileScreen = () => {
     const navigate = useNavigate()
-    const [userData, setUserData] = useState(null)
-    const [userMaps, setUserMaps] = useState(null)
-    const [display, setDisplay] = useState("posts")
-
+    const [userData, setUserData] = useState(null) // user for current profile
+    const [userMaps, setUserMaps] = useState([]) // list of maps owned by the user
+    const [userComments, setUserComments] = useState([]) // list of comments owned by the user
+    const [display, setDisplay] = useState("posts") 
+    const [commentMap, setCommentMap] = useState({}) // maps referenced by the comments
     const user_comments = [1, 2, 3] // list of comments
     const { id } = useParams()
 
@@ -44,7 +46,31 @@ const ProfileScreen = () => {
     }
 
     const generateCommentCards = () => {
-        return user_comments?.map((comment_id) => <ProfileCommentCard key={comment_id} id={comment_id} />)
+        if (userComments) {
+            const fetchComments = async () => {
+                const data = {}
+                try {
+                    const comments = await getUserComments(id) // get user's comments
+                    if (comments) {
+                        setUserComments(comments)
+                        for (const comment of comments) {
+                            const res = await getMapById(comment.map_id)
+                            if (res) {
+                                data[comment._id] = res
+                            }
+                        }
+
+                        setCommentMap(data)
+                    }
+                }
+                catch (err) {
+                    console.log(err)
+                }
+            }
+
+            fetchComments()
+        }
+        return userComments?.map((comment) => <ProfileCommentCard key={comment._id} comment_data={comment} mapData={commentMap[comment._id]} />)
     }
 
     const handleBackButton = () => {

@@ -79,3 +79,12 @@ export const changeLikesMap = async (user_id, map_id, amount, isNeutral) => {
     }
 }
 
+export const getMapById = async (id) => {
+    try {
+        const response = await axios.get(`${API_URL}${id}`)
+        return response.data
+    } catch (err) {
+        return err.response
+    }
+}
+

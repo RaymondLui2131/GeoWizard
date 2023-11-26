@@ -6,7 +6,7 @@ import { MAP_TYPES, STRING_MAPPING } from '../../constants/MapTypes'
 import { getMap } from '../../api/map_request_api'
 import { MapContext, MapActionType } from '../../api/MapContext'
 import { useNavigate } from "react-router-dom";
-const ProfileMapCard = ({ map_data }) => {
+const ProfileMapCard = React.memo(({ map_data }) => {
     const { map, dispatch } = useContext(MapContext)
     const navigate = useNavigate()
     const getDatePosted = () => {
@@ -27,7 +27,6 @@ const ProfileMapCard = ({ map_data }) => {
             try {
                 const res = await getMap(map_data?._id)
                 if (res) {
-                    console.log("test")
                     dispatch({ type: MapActionType.VIEW, payload: res });
                     navigate('/mapView')
                 }
@@ -53,14 +52,14 @@ const ProfileMapCard = ({ map_data }) => {
                     {`${map_data?.comments.length} Comment${map_data?.comments.length ? 's' : ''}`}
                 </div>
             </div>
-            <div className='flex flex-col justify-evenly font-PyeongChangPeace-Light mr-4 text-lg'>
+            <div className='flex justify-center items-center font-PyeongChangPeace-Light mr-4 text-lg gap-2'>
                 <FontAwesomeIcon icon={faThumbsUp} />
                 <p>{map_data?.likes}</p>
-                <FontAwesomeIcon icon={faThumbsDown} />
+                {/* <FontAwesomeIcon icon={faThumbsDown} /> */}
             </div>
 
         </li>
     )
-}
+})
 
 export default ProfileMapCard
