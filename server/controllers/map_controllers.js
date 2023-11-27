@@ -31,7 +31,7 @@ const saveUserMap = asyncHandler(async (req, res) => {
     }
     
     const map_id = await createMap(req, user)
-    if (typeof map_id === "object") {
+    if (map_id.error) {
         return res.status(400).json({
             message: "Save user map failed"
         })
@@ -64,12 +64,14 @@ const createMap = async (req, user) => { // used within saveUserMap
     const { title, isPublic, mapType, description, mapInfo } = req.body
     if (!user) {
         return {
+            error: true,
             message: "User is not authenticated"
         }
     }
 
     if (!(title && mapInfo)) {
         return {
+            error: true,
             message: "Missing required fields for map creation"
         }
     }
@@ -80,6 +82,7 @@ const createMap = async (req, user) => { // used within saveUserMap
 
     if (!map_data) {
         return { //Internal Server Error
+            error: true,
             message: "Map Data creation failed"
         }
     }
@@ -95,6 +98,7 @@ const createMap = async (req, user) => { // used within saveUserMap
 
     if (!map) {
         return { //Internal Server Error
+            error: true,
             message: "Map creation failed"
         }
     }
