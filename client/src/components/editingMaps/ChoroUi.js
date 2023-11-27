@@ -16,7 +16,7 @@ const KeyRow = (props) =>{
 
     const handleRemove = (color) =>{
         const filtered  = keyTable.filter((row)=> row.color !== color)
-        const filterEdits = editsList.filter((edit) => edit.colorHex !== color) //remove coloring of features after removing key
+        const filterEdits = editsList.filter((edit) => edit.colorHEX !== color) //remove coloring of features after removing key
         // console.log("filtered list",filtered)
         setKeyTable(filtered)
         setEditsList(filterEdits)
@@ -70,7 +70,7 @@ export const ChoroUi = (props) =>{
             console.log('something clicked', areaClicked)
 
             let newColor = [...editsList]
-            newColor = newColor.filter((edit) => edit.colorHex === choroColor)
+            newColor = newColor.filter((edit) => edit.colorHEX === choroColor)
             // console.log("newColor",newColor)
             if (newColor.length === 0) {  //New Color
                 const newKeyLabel = {

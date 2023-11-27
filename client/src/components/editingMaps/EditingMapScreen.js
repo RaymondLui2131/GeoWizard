@@ -435,6 +435,12 @@ const MapView = () => {
                     newMappings[edit.featureName] = {fillColor: hlsaToRGBA(edit.colorHLSA), fillOpacity: 1}
                     break
                 }
+                case MAP_TYPES['CHOROPLETH']:
+                {
+                    // console.log("Adding", edit.featureName)
+                    newMappings[edit.featureName] = {fillColor: edit.colorHEX , fillOpacity: 1}
+                    break
+                }
                 default:
                     break
             }
