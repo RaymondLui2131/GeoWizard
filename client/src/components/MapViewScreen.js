@@ -231,6 +231,12 @@ const MapDisplay = (props) =>{
                 styleMapping[edit.featureName] = { fillColor: hlsaToRGBA(edit.colorHLSA), fillOpacity: 1 };
                 break;
             }
+            case MAP_TYPES['CHOROPLETH']:
+            {
+                // console.log("Adding", edit.featureName)
+                styleMapping[edit.featureName] = {fillColor: edit.colorHEX , fillOpacity: 1}
+                break
+            }
             default:
                 break;
         }
@@ -288,13 +294,13 @@ const Key = (props) =>{//Note this key layout only works for color
                 <caption className='font-PyeongChangPeace-Bold'>
                     Key
                 </caption>
-                <tbody className='font-NanumSquareNeoOTF-Lt border-4 border-black'>
+                <tbody className='font-NanumSquareNeoOTF-Lt border-4 border-black overflow-y-auto'>
                     {
-                        fakeKeyAll.map((dataRow) => (
-                                <tr key={dataRow.key} className='border-4 border-black'>
+                        header.keyTable.map((dataRow) => (
+                                <tr key={dataRow.color} className='border-4 border-black'>
                                     <td className='border-4 border-black w-1/3 '>
                                         <div  className='flex justify-center'>
-                                            <div className='flex w-10 h-10 border-4 border-black' style={{ backgroundColor:dataRow.key }}>
+                                            <div className='flex w-5 h-5 border-4 border-black' style={{ backgroundColor:dataRow.color }}>
                                             </div>
                                         </div>
                                         </td>
