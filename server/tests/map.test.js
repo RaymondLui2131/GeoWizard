@@ -108,6 +108,7 @@ describe("testing createMap", () => {
 
         const res = await MapController.createMap(req, null)
         expect(res).toEqual({
+            error: true,
             message: "User is not authenticated"
         })
     })
@@ -132,6 +133,7 @@ describe("testing createMap", () => {
 
         const res = await MapController.createMap(req, { _id: "123" })
         expect(res).toEqual({
+            error: true,
             message: "Missing required fields for map creation"
         })
     })
@@ -153,6 +155,7 @@ describe("testing createMap", () => {
 
         const res = await MapController.createMap(req, { _id: "123" })
         expect(res).toEqual({
+            error: true,
             message: "Missing required fields for map creation"
         })
     })
@@ -174,6 +177,7 @@ describe("testing createMap", () => {
 
         const res = await MapController.createMap(req, { _id: "123" })
         expect(res).toEqual({
+            error: true,
             message: "Map Data creation failed"
         })
     })
@@ -197,6 +201,7 @@ describe("testing createMap", () => {
 
         const res = await MapController.createMap(req, { _id: "123" })
         expect(res).toEqual({
+            error: true,
             message: "Map creation failed"
         })
     })
@@ -233,12 +238,13 @@ describe("testing saveUserMap", () => {
 
         const res = mockResponse()
         jest.spyOn(MapController, 'createMap').mockResolvedValue({
+            error: true,
             message: "Map Data creation failed"
         })
         await MapController.saveUserMap(req, res)
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({
-            message: "Save user map failed"
+            message: "Map creation failed"
         });
     })
 
