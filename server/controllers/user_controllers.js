@@ -217,11 +217,11 @@ const updateUserInfo = asyncHandler(async (req, res) => {
         })
     }
 
-    if (typeof value !== typeof user[field]) {
-        return res.status(400).json({
-            message: `type mismatch for value ${value} and field ${field}`
-        })
-    }
+    // if (typeof value !== typeof user[field]) {
+    //     return res.status(400).json({
+    //         message: `type mismatch for value ${value} and field ${field}`
+    //     })
+    // }
 
     user[field] = value
     const savedUser = await user.save()
