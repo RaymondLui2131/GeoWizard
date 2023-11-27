@@ -4,11 +4,13 @@
  */
 const express = require("express")
 const router = express.Router()
-const { registerUser, loginUser, getUser, googleLoginUser, checkEmail } = require("../controllers/user_controllers")
+const { registerUser, loginUser, getUser, googleLoginUser, checkUniqueEmail, checkUniqueUser, getUserById } = require("../controllers/user_controllers")
 const { verifyToken } = require("../jwt_middleware")
 router.post("/register", registerUser)
 router.post("/google/login", googleLoginUser)
 router.post("/login", loginUser)
-router.post("/emailCheck", checkEmail)
+router.get("/checkUniqueEmail", checkUniqueEmail)
+router.get("/checkUniqueUser", checkUniqueUser)
 router.get("/me", verifyToken, getUser)
+router.get("/:id", getUserById)
 module.exports = router

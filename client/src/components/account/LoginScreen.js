@@ -20,7 +20,10 @@ const LoginScreen = () => {
                 const response = await googleLoginUser(codeResponse)
                 if (response.status == 200) {
                     dispatch({ type: UserActionType.LOGIN, payload: response.data })
-                    navigate("/dashboard")
+                    navigate("/")
+                }
+                else {
+                    dispatch({ type: UserActionType.ERROR, payload: response.data.message }) // login failed
                 }
             }
         },
@@ -46,6 +49,7 @@ const LoginScreen = () => {
         })
         validateInputs()
         const response = await authloginUser(userEmail, password)
+        console.log(response.status)
         if (response.status == 200) {
             dispatch({ type: UserActionType.LOGIN, payload: response.data })
             navigate("/dashboard") // login successful
@@ -95,6 +99,7 @@ const LoginScreen = () => {
 
                 <div className="pl-4 pt-4 flex flex-col justify-center items-center">
                     <input
+                        type="password"
                         className="text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
                         style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
                         value={password}
@@ -122,9 +127,6 @@ const LoginScreen = () => {
                     </button>
                     <button onClick={() => googleLogin()} className="text-yellow-200 font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300">Sign In With Google</button>
                 </div>
-                {errorMessage && <p>
-                    {errorMessage}
-                </p>}
             </div>
         </div>
     );

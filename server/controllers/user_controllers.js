@@ -9,7 +9,7 @@
 const bcrypt = require("bcryptjs")
 const asyncHandler = require('express-async-handler')
 const User = require("../models/user_model")
-const { signToken } = require("../jwt_middleware")
+const { signToken } = require("../jwt_middleware") 
 
 /**
  * if the user does not exist yet, register the user in the database,
@@ -36,7 +36,7 @@ const googleLoginUser = asyncHandler(async (req, res) => {
             token: signToken(user._id),
         })
     } else {
-        return res.status(400).json({
+        return res.status(401).json({ // 401 Unauthorized
             message: "Invalid credentials"
         })
     }
@@ -68,7 +68,7 @@ const loginUser = asyncHandler(async (req, res) => {
             token: signToken(user._id),
         })
     } else {
-        return res.status(400).json({
+        return res.status(401).json({ // 401 Unauthorized
             message: "Invalid credentials"
         })
     }
@@ -84,16 +84,25 @@ const registerUser = asyncHandler(async (req, res) => {
 
     // checks if the request contains all required fields
     if (!email || !username || !password) {
-        return res.status(400).json({
+        return res.status(400).json({   // 400 for missing required fields
             message: "Missing required fields for register"
         })
     }
 
+    // checks if email exists in the database
+    const emailExists = await User.findOne({ username })
+
     // checks if users exists in the database
     const userExists = await User.findOne({ email })
 
+    if (emailExists) {
+        return res.status(409).json({
+            message: "Email already exists"
+        })
+    }
+
     if (userExists) {
-        return res.status(400).json({
+        return res.status(409).json({
             message: "User already exists"
         })
     }
@@ -132,22 +141,64 @@ const getUser = asyncHandler(async (req, res) => {
 /**
  * 
  * @desc Checks if email is already in the db
- * @route GET /users/emailCheck
+ * @route GET /users/checkUniqueEmail
  */
-const checkEmail = asyncHandler(async (req, res) => {
-    const { email } = req.body
+const checkUniqueEmail = asyncHandler(async (req, res) => {
+
+    const { email } = req.query
 
     // checks if users exists in the database
     const userExists = await User.findOne({ email })
 
     if (userExists) {
-        return res.status(400).json({
+        return res.status(409).json({ // Use status 409 for conflict
+            message: "Email already exists"
+        })
+    }
+
+    return res.status(200).json({
+        message: "Email is unique"
+    })
+})
+
+/**
+ * 
+ * @desc Checks if email is already in the db
+ * @route GET /users/checkUniqueUser
+ */
+const checkUniqueUser = asyncHandler(async (req, res) => {
+
+    const { username } = req.query
+
+    // check if username exists in the database
+    const userNameExists = await User.findOne({ username })
+
+    if (userNameExists) {
+        return res.status(409).json({ // Use status 409 for conflict
             message: "User already exists"
         })
     }
+
     return res.status(200).json({
         message: "User is unique"
     })
+})
+
+
+const getUserById = asyncHandler(async (req, res) => {
+
+    const id = req.params.id
+
+    // check if username exists in the database
+    const user = await User.findById(id)
+
+    if (!user) {
+        return res.status(404).json({
+            message: "User not found"
+        })
+    }
+
+    return res.status(200).json(user)
 })
 
 
@@ -156,5 +207,7 @@ module.exports = {
     loginUser,
     getUser,
     googleLoginUser,
-    checkEmail
+    checkUniqueEmail,
+    checkUniqueUser,
+    getUserById
 }

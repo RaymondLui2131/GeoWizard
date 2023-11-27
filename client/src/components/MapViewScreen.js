@@ -5,17 +5,21 @@ import {ReactComponent as ThumbsIcon} from '../assets/MapViewAssets/thumpsUp.svg
 import {ReactComponent as ThumbsGreen} from '../assets/MapViewAssets/thumpsUpGreen.svg'
 import {ReactComponent as ThumbsRed} from '../assets/MapViewAssets/thumpsUpRed.svg'
 import {MAP_TYPES} from '../constants/MapTypes'
-import {AlphaSlider} from 'react-slider-color-picker'
+import {SaturationSlider} from 'react-slider-color-picker'
 import franceMap from '../assets/EditMapAssets/france-r.geo.json'  //To be removed
 import { UserContext } from "../api/UserContext.js"
 import { MapContext } from "../api/MapContext"
 import { changeLikesMap } from '../api/map_request_api';  //for now requesting, will change to context later
 import { changeLikesComment,postComment } from '../api/comment_request_api.js';
+import tinycolor from 'tinycolor2';
+import { useNavigate } from "react-router-dom";
+
 const fakeView = {
     title:'The Title of the Map',
     author: 'anon123',
     numLikes: 300
 }
+const possibleNames = ['name', 'nom', 'nombre','title', 'label', 'id']
 
 const fakeKeyData1 = {
     key: 'red',
@@ -54,10 +58,19 @@ const fakeComment3 = {
 
 const fakeComments = [fakeComment1,fakeComment2,fakeComment3]
 const fakeKeyAll = [fakeKeyData1,fakeKeyData2,fakeKeyData3]
-
+const hlsaToRGBA = (hlsa) => {
+    const color = tinycolor(hlsa)
+    const rgba = color.toRgb()
+    const rgbaString = `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
+    // console.log("Input", hlsa)
+    // console.log("COnversion",rgbaString)
+    return rgbaString
+}
 const TitleDisplay = (props) =>{
+    const navigate = useNavigate()
     const [currentLike, setLike] = useState(null)
     const { user } = useContext(UserContext)
+    const { map } = useContext(MapContext)
     const currentCounter = props.likes
     const setCounter = props.setLikes
     const map_id = props.map_id
@@ -65,6 +78,7 @@ const TitleDisplay = (props) =>{
     const author = props.author
     const userLikes = props.userLikes
     const userDislikes = props.userDislikes
+
     useEffect(() => {
         if(user)
         {
@@ -134,6 +148,11 @@ const TitleDisplay = (props) =>{
                 console.log(response)
             }
     }
+
+    const handleProfile = () => {
+        navigate(`/profile/${map?.user_id?._id}`)
+    }
+    
     return(
         <>
         <div className='flex flex-row justify-between'>
@@ -158,7 +177,7 @@ const TitleDisplay = (props) =>{
                         ?title
                         :""}
                 </div>
-                <div className='font-PyeongChangPeace-Light text-3xl'>
+                <div className='font-PyeongChangPeace-Light text-3xl hover:underline hover:underline-offset-4 hover:cursor-pointer' onClick={handleProfile}>
                     {author
                         ?'by ' + author
                         :'by'}
@@ -178,7 +197,8 @@ const TitleDisplay = (props) =>{
 
 const MapDisplay = (props) =>{
     const mapData = props.MapData
-
+    const edits = mapData.edits
+    const mapType = props.mapType
     var center = [0,0]
     var padded_NE = [0,0]
     var padded_SW = [0,0]
@@ -200,7 +220,35 @@ const MapDisplay = (props) =>{
 
     if(!mapData)
     {
-        return (<div>placeholder</div>)
+        return (<div>Loading</div>)
+    }
+    const styleMapping = {}
+    edits.editsList.forEach((edit) => {
+        switch (MAP_TYPES[mapType]) {
+        
+            case MAP_TYPES['HEATMAP']: {
+                console.log("Adding", edit.featureName)
+                styleMapping[edit.featureName] = { fillColor: hlsaToRGBA(edit.colorHLSA), fillOpacity: 1 };
+                break;
+            }
+            case MAP_TYPES['CHOROPLETH']:
+            {
+                // console.log("Adding", edit.featureName)
+                styleMapping[edit.featureName] = {fillColor: edit.colorHEX , fillOpacity: 1}
+                break
+            }
+            default:
+                break;
+        }
+    })
+    console.log(styleMapping)
+    const getFeatureStyleView = (feature) => {
+        const foundName = possibleNames.find(propertyName => propertyName in feature.properties)
+        if (foundName) 
+        {
+            return styleMapping[feature.properties[foundName]] || {fillColor:'#ffffff'}
+        }
+        return {}
     }
     return(
         <>
@@ -216,7 +264,12 @@ const MapDisplay = (props) =>{
                     attribution='Tiles © Esri &mdash; Esri, DeLorme, NAVTEQ'
                 />
                 {Object.keys(mapData).length    
-                    ?<GeoJSON data={mapData.original_map.features}/>
+                    ?<GeoJSON 
+                        data={mapData.original_map.features}
+                        onEachFeature={(feature, layer) => {
+                            const featureStyle = getFeatureStyleView(feature)
+                            layer.setStyle(featureStyle); 
+                        }}/>
                     :null
                 }
                 
@@ -226,23 +279,28 @@ const MapDisplay = (props) =>{
 }
 
 const Key = (props) =>{//Note this key layout only works for color
+    
     const mapType = props.type
+    const header = props.header
+    console.log("header",header.upper)
+    const [heatColor,setHeatColor] = useState(header.basecolorHLSA)
     const hlsaColor = {h:0, s:.73, l:.51, a:1}  //TESTING
+
     console.log("Map type",mapType)
-    if(mapType === MAP_TYPES['CHOROPLETH'])
+    if(MAP_TYPES[mapType] === MAP_TYPES['CHOROPLETH'])
         return(
             <>
             <table className='w-1/12 border-4 border-black bg-gray-50'>
                 <caption className='font-PyeongChangPeace-Bold'>
                     Key
                 </caption>
-                <tbody className='font-NanumSquareNeoOTF-Lt border-4 border-black'>
+                <tbody className='font-NanumSquareNeoOTF-Lt border-4 border-black overflow-y-auto'>
                     {
-                        fakeKeyAll.map((dataRow) => (
-                                <tr key={dataRow.key} className='border-4 border-black'>
+                        header.keyTable.map((dataRow) => (
+                                <tr key={dataRow.color} className='border-4 border-black'>
                                     <td className='border-4 border-black w-1/3 '>
                                         <div  className='flex justify-center'>
-                                            <div className='flex w-10 h-10 border-4 border-black' style={{ backgroundColor:dataRow.key }}>
+                                            <div className='flex w-5 h-5 border-4 border-black' style={{ backgroundColor:dataRow.color }}>
                                             </div>
                                         </div>
                                         </td>
@@ -255,16 +313,24 @@ const Key = (props) =>{//Note this key layout only works for color
             </table>
             </>
         )
-    if(mapType === MAP_TYPES['HEATMAP'])
+    if(MAP_TYPES[mapType] === MAP_TYPES['HEATMAP'])
+        
         return(
             <>
-            <div className='w-1/12 border-4 border-black bg-gray-50 flex flex-col justify-around font-NanumSquareNeoOTF-Lt items-center '>
-                <div className = 'flex justify-center'>
-                    9999                {/*Should get from map data/prop */}
+            <div className='w-1/12 border-4 border-black bg-gray-50 flex flex-col justify-around font-NanumSquareNeoOTF-Lt items-center'>
+                <div className='flex flex-col justify-between h-4/6 items-center'>
+                    <div className='pb-2'>
+                        {header.upper}
+                    </div>
+                    <div className='rotate-[-90deg] w-96 pt-2'>
+                        <SaturationSlider color={heatColor} handleChangeColor={(newcolor)=>setHeatColor(newcolor)}/>
+                    </div>
+                    <div className='pt-2'>
+                        {header.lower}
+                    </div>
                 </div>
-                <div className='rotate-[-90deg] w-96 pointer-events-none'> <AlphaSlider color={hlsaColor} /></div>
-                <div className = 'flex justify-center'>
-                    50
+                <div className='flex justify-center'>
+                    <div className='flex w-10 h-10 border-4 border-black' style={{ backgroundColor: hlsaToRGBA(heatColor) }}></div>
                 </div>
             </div>
             </>
@@ -276,6 +342,7 @@ const Key = (props) =>{//Note this key layout only works for color
 const Comment = (props) => {
     const comment = props.comment
     console.log("This is comment",comment)
+    const navigate = useNavigate()
     const [currentLike,setLike] = useState(false)
     const [votes,setVotes] = useState(comment.votes)
     const {user} = useContext(UserContext)
@@ -301,7 +368,7 @@ const Comment = (props) => {
         if(user)
         {
             const foundLikedUser = (comment.usersVoted).filter((id) => id === user._id)
-            if(foundLikedUser > 0)
+            if(foundLikedUser.length > 0)
                 setLike(true)
         }
     },[])
@@ -326,6 +393,10 @@ const Comment = (props) => {
     if(!comment)
         return null
     
+    const handleProfile = () => {
+        navigate(`/profile/${comment?.user_id?._id}`)
+    }
+
     return(
         <>
         <div className='flex flex-row justify-between border-2 rounded-full bg-gray-50 mb-1 mt-2'>
@@ -338,7 +409,7 @@ const Comment = (props) => {
             </div>
 
             <div className='w-10/12 h-24 flex flex-col pt-2 overflow-auto whitespace-normal'>
-                <div className='font-NanumSquareNeoOTF-Lt underline'>{comment.user_id.username}</div>
+                <div className='font-NanumSquareNeoOTF-Lt hover:cursor-pointer hover:underline' onClick={handleProfile}>{comment.user_id.username}</div>
                 <div className='font-NanumSquareNeoOTF-Lt'>{comment.text}</div>
             </div>
             <div className='w-1/12 h-24 flex flex-col justify-center items-center text-2x1'>
@@ -368,7 +439,7 @@ const MapView = () => {
 
     const { map } = useContext(MapContext) 
     const { user } = useContext(UserContext) 
-    console.log(map)
+    //console.log(map)
     const [mapView,] = useState(map||null); //REPLACE WITH MAP CONTEXT
     const [likeCount, setLikes] = useState(mapView?.likes || 0)
     const [map_id,] = useState(mapView?._id || '')
@@ -386,7 +457,6 @@ const MapView = () => {
 
     console.log(newComment)    
     console.log("Map Type",mapType)
-
     const postNewComment = async () =>{
         if(!user)       //case where user not signed in
             return
@@ -410,8 +480,8 @@ const MapView = () => {
                 }
                 <div className='flex flex-row justify-between h-[650px]'>
                     {mapView
-                            ?<><MapDisplay {...{MapData: map.MapData}}/>
-                                <Key {...{type: mapType}}/>  
+                            ?<><MapDisplay {...{MapData: map.MapData, mapType:mapType}}/>
+                                <Key {...{type: mapType, header:map.MapData.edits.header}}/>  
                              </>
                         :null
                     }  

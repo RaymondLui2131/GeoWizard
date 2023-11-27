@@ -1,26 +1,105 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLocationDot, faCakeCandles, faCircleArrowLeft, faCircleExclamation, faFire } from '@fortawesome/free-solid-svg-icons'
 import ProfileMapCard from './ProfileMapCard'
 import ProfileCommentCard from './ProfileCommentCard'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
+import { authgetUserById } from "../../api/auth_request_api"
+import { getUserMaps } from '../../api/map_request_api'
+import { getUserComments } from '../../api/comment_request_api'
+import { getMapById } from '../../api/map_request_api'
 const ProfileScreen = () => {
     const navigate = useNavigate()
-    const [display, setDisplay] = useState("posts")
-    const user_maps = [1, 2, 3] // list of maps 
+    const [userData, setUserData] = useState(null) // user for current profile
+    const [userMaps, setUserMaps] = useState([]) // list of maps owned by the user
+    const [userComments, setUserComments] = useState([]) // list of comments owned by the user
+    const [display, setDisplay] = useState("posts") 
+    const [commentMap, setCommentMap] = useState({}) // maps referenced by the comments
     const user_comments = [1, 2, 3] // list of comments
+    const { id } = useParams()
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const userResponse = await authgetUserById(id);
+                if (userResponse) {
+                    setUserData(userResponse);
+                    // Check if userData is available before fetching maps
+                    if (userResponse && userResponse.maps && userResponse.maps.length) {
+                        const mapsResponse = await getUserMaps(userResponse);
+                        if (mapsResponse) {
+                            setUserMaps(mapsResponse.filter(map => { return map.isPublic }));
+                        }
+                    }
+                }
+            } catch (error) {
+                console.log(error);
+            }
+        };
+
+        fetchData();
+    }, [id]);
+
 
     const generateMapCards = () => {
-        return user_maps.map((map_id) => <ProfileMapCard key={map_id} id={map_id} />)
+        return userMaps?.map((map_data) => <ProfileMapCard key={map_data._id} map_data={map_data} />)
     }
 
     const generateCommentCards = () => {
-        return user_comments.map((comment_id) => <ProfileCommentCard key={comment_id} id={comment_id} />)
+        if (userComments) {
+            const fetchComments = async () => {
+                const data = {}
+                try {
+                    const comments = await getUserComments(id) // get user's comments
+                    if (comments) {
+                        setUserComments(comments)
+                        for (const comment of comments) {
+                            const res = await getMapById(comment.map_id)
+                            if (res) {
+                                data[comment._id] = res
+                            }
+                        }
+
+                        setCommentMap(data)
+                    }
+                }
+                catch (err) {
+                    console.log(err)
+                }
+            }
+
+            fetchComments()
+        }
+        return userComments?.map((comment) => <ProfileCommentCard key={comment._id} comment_data={comment} mapData={commentMap[comment._id]} />)
     }
 
     const handleBackButton = () => {
         navigate("/")
     }
+
+    const getDaysActive = () => {
+        if (userData) {
+            const createdDate = new Date(userData.createdAt);
+            const updatedDate = new Date(userData.updatedAt);
+
+            // Calculate the difference in milliseconds
+            const differenceInMs = updatedDate - createdDate;
+
+            // Convert milliseconds to days
+            const daysActive = differenceInMs / (1000 * 60 * 60 * 24);
+
+            return Math.floor(daysActive); // Return the number of whole days
+        }
+    }
+
+    const getHighestUpvotes = () => {
+        if (userMaps && userMaps.length > 0) {
+            return userMaps.reduce((prev, current) => {
+                return prev.likes > current.likes ? prev.likes : current.likes;
+            });
+        }
+        return 0; // Return a default value or handle the case when userMaps is null or empty
+    };
 
     return (
         <>
@@ -33,11 +112,11 @@ const ProfileScreen = () => {
                     </div>
                     <div className='shadow-aesthetic absolute w-4/5 h-1/2 top-20 left-1/2 transform -translate-x-1/2 rounded-2xl bg-white flex flex-col justify-between'>
                         <div className='shadow-aesthetic absolute left-1/2 transform -translate-x-1/2 -top-16 rounded-full w-32 h-32  bg-primary-GeoBlue z-10 flex items-center justify-center'>
-                            <span className='text-black text-7xl font-PyeongChangPeace-Light'>B</span>
+                            <span className='text-black text-7xl font-PyeongChangPeace-Light'>{userData && userData.username[0]}</span>
                         </div>
 
                         <div className='flex flex-col justify-evenly mt-20 text-center items-center gap-2.5'>
-                            <p className='text-black text-4xl font-PyeongChangPeace-Light'>@Bob123</p>
+                            <p className='text-black text-4xl font-PyeongChangPeace-Light'>@{userData && userData.username}</p>
                             <div className='flex items-center gap-1'>
                                 <FontAwesomeIcon icon={faLocationDot} />
                                 <p className='text-black text-base font-PyeongChangPeace-Light'>Stony Brook, NY</p>
@@ -50,15 +129,15 @@ const ProfileScreen = () => {
 
                         <div className='bg-gray-50 h-1/3 flex justify-evenly items-center rounded-b-2xl'>
                             <p className='text-center'>
-                                <span className='block font-PyeongChangPeace-Bold text-lg '>53</span>
+                                <span className='block font-PyeongChangPeace-Bold text-lg '>{userData && userData.maps.length}</span>
                                 <span className='block font-PyeongChangPeace-Light'>Posts</span>
                             </p>
                             <p className='text-center'>
-                                <span className='block font-PyeongChangPeace-Bold text-lg'>1,253</span>
+                                <span className='block font-PyeongChangPeace-Bold text-lg'>{userMaps && getHighestUpvotes()}</span>
                                 <span className='block font-PyeongChangPeace-Light'>Highest Upvotes</span>
                             </p>
                             <p className='text-center'>
-                                <span className='block font-PyeongChangPeace-Bold text-lg'>13</span>
+                                <span className='block font-PyeongChangPeace-Bold text-lg'>{userData && getDaysActive()}</span>
                                 <span className='block font-PyeongChangPeace-Light'>Days Active</span>
                             </p>
                         </div>
@@ -79,9 +158,9 @@ const ProfileScreen = () => {
                             <button className='flex items-center text-2xl px-5 bg-primary-GeoBackGround hover:bg-opacity-30 bg-opacity-20 rounded-2xl'><FontAwesomeIcon icon={faFire} className='mr-1' />Top</button>
                         </div>
                     </div>
-                    <ul className='grow h-3/4 flex flex-col justify-between'>
-                        {display === "posts" && generateMapCards()}
-                        {display === "comments" && generateCommentCards()}
+                    <ul className='grow h-3/4 flex flex-col justify-start overflow-scroll gap-5'>
+                        {display === "posts" && userMaps && generateMapCards()}
+                        {display === "comments" && userMaps && generateCommentCards()}
                     </ul>
                 </div>
             </div>

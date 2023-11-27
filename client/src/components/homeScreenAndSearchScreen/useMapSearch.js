@@ -9,6 +9,7 @@ const baseURL = isLocal
     ? `http://${host}:${port}`
     : `${window.location.protocol}//${host}:${port}`;
 const API_URL = `${baseURL}${endpoint}`;
+import geobuf_api from '../../api/geobuf_api';
 
 
 export default function useMapSearch(query, pageNumber) {
@@ -17,7 +18,7 @@ export default function useMapSearch(query, pageNumber) {
     const[error, setError] = useState(false)
     const[maps, setMaps] = useState([])
     const[hasMore, setHasMore] = useState(false)
-    //const isInitialMount = useRef(true);
+    const isInitialMount = useRef(true);
 
     //reset maps if query changes
     useEffect(() => {
@@ -27,10 +28,10 @@ export default function useMapSearch(query, pageNumber) {
 
 
     useEffect(() => {
-        // if (isInitialMount.current) {
-        //     isInitialMount.current = false
-        //     return
-        // }
+        if (isInitialMount.current) {
+            isInitialMount.current = false
+            return
+        }
         console.log('Effect running:', { query, pageNumber })
         setLoading(true)
         setError(false)
@@ -43,7 +44,14 @@ export default function useMapSearch(query, pageNumber) {
         }).then(res => {
             //console.log(res)
             setMaps(prevMaps => {
-                return [...new Set([...prevMaps, ...res.data.map(m => <HomeScreenMapCard key={m._id} mapObject={m}> </HomeScreenMapCard>)])] // concatenates more maps, change b.title to the map geojson file. 
+                return [...new Set([...prevMaps, ...res.data.map(m => {
+                    // Check if mapObject has MapData and original_map before decompression
+                    //console.log(m)
+                    if (m.MapData && m.MapData.original_map) {
+                        m.MapData.original_map = geobuf_api.geojson_decompress(m.MapData.original_map);
+                    }
+                    return <HomeScreenMapCard key={m._id} mapObject={m} />;
+                })])]
             })
             setHasMore(res.data.length > 0) // true if there are more maps, false if not
             setLoading(false)

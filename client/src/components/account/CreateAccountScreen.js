@@ -1,7 +1,7 @@
 
 import logo from "../../assets/geowizlogo.png";
 import { useState, useContext } from 'react'
-import { postUser, checkUserEmail, authloginUser } from '../../api/auth_request_api.js';
+import { postUser, authloginUser, checkEmail, checkUser } from '../../api/auth_request_api.js';
 import { useNavigate } from 'react-router-dom'
 import { UserContext, UserActionType } from "../../api/UserContext.js"
 
@@ -14,6 +14,7 @@ const LoginScreen = () => {
     const [confirmPassword, setConfirmPassword] = useState(''); // state for confirm password
     const [passwordMismatch, setPasswordMismatch] = useState(false); // check if passwords match
     const [emailInDb, setEmailInDb] = useState(false); // check if email is unqiue
+    const [userInDb, setUserInDb] = useState(false); // check if user is unqiue
     const [validEmail, setValidEmail] = useState(false); // check if email is valid
     const [blankErrors, setBlankErrors] = useState({    // check if input slots are empty
         userName: false,
@@ -52,9 +53,12 @@ const LoginScreen = () => {
         })
         setPasswordMismatch(false)
         setEmailInDb(false)
+        setUserInDb(false)
         setValidEmail(false)
 
-        validateInputs()
+        if (validateInputs() === false){
+            return;
+        }
 
         if (isValidEmail(userEmail) === false){
             setValidEmail(true)
@@ -91,22 +95,38 @@ const LoginScreen = () => {
             }
         }
 
-        const checkUniqueEmail = async () =>{
+        const checkUniqueEmail = async () => {
             try {
-                const uniqueEmailresponse = await checkUserEmail(userData);
-                if (uniqueEmailresponse.status === 400) {
-                    setEmailInDb(true)
-                    return
+                const uniqueEmailresponse = await checkEmail(userData.email);
+                if (uniqueEmailresponse.status === 409) {
+                    setEmailInDb(true);
+                    return;
                 }
-                else if (uniqueEmailresponse.status === 200){
+                else if (uniqueEmailresponse.status === 200) {
                     postCreatedAccount();
                 }
             } catch (error) {
-                console.error('Error registering user:', error);
+                console.error('Error finding an email:', error);
             }
-        }
+        };
+
+        const checkUniqueUser = async () =>{
+            try {
+                const uniqueUserresponse = await checkUser(userData.username);
+                if (uniqueUserresponse.status === 409) {
+                    setUserInDb(true);
+                    return;
+                }
+                else if (uniqueUserresponse.status === 200) {
+                    postCreatedAccount();
+                }
+            } catch (error) {
+                console.error('Error finding an username:', error);
+            }
+        };
 
         checkUniqueEmail()
+        checkUniqueUser()
     };
 
     return (
@@ -165,6 +185,10 @@ const LoginScreen = () => {
                     <div style={{ color: '#8B0000', textAlign: 'center' }}>
                         Please input an username!
                     </div>
+                ) : userInDb ? (
+                    <div style={{ color: '#8B0000', textAlign: 'center' }}>
+                        Username is already used!
+                    </div>
                 ) : null}
 
                 <div className="font-bold pt-4 pr-72 flex flex-col justify-center items-center">
@@ -173,6 +197,7 @@ const LoginScreen = () => {
 
                 <div className="pl-4 pt-4 flex flex-col justify-center items-center">
                 <input
+                    type="password"
                     className="caPassword text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
                     style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
                     value={password}
@@ -194,6 +219,7 @@ const LoginScreen = () => {
                 
                 <div className="pl-4 pt-4 flex flex-col justify-center items-center">
                 <input
+                    type="password"
                     className="caComfirmPassword text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
                     style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
                     value={confirmPassword}
@@ -217,9 +243,6 @@ const LoginScreen = () => {
                         Create Account
                     </button>
                 </div>
-                {errorMessage && <p>
-                    {errorMessage}
-                </p>}
             </div>
         </div>
     );

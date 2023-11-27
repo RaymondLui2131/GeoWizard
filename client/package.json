@@ -19,6 +19,8 @@
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@react-oauth/google": "^0.11.1",
+    "@turf/simplify": "^6.5.0",
+    "@turf/turf": "^6.5.0",
     "axios": "^1.6.0",
     "buffer": "^6.0.3",
     "eslint-plugin-react": "^7.33.2",
@@ -27,6 +29,8 @@
     "eslint-scope": "^7.2.2",
     "eslint-visitor-keys": "^3.4.3",
     "geobuf": "^3.0.2",
+    "geojson-precision": "^1.0.0",
+    "js-cookie": "^3.0.5",
     "leaflet": "^1.9.4",
     "react": "^18.2.0",
     "react-colorful": "^5.6.1",
@@ -35,6 +39,7 @@
     "react-router-dom": "^6.18.0",
     "react-scripts": "^5.0.1",
     "react-slider-color-picker": "^2.0.0",
+    "simplify-geojson": "^1.0.5",
     "tinycolor2": "^1.6.0"
   },
   "browserslist": {

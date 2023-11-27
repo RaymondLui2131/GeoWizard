@@ -2,16 +2,16 @@ import './App.css'
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import Build1LoginScreen from './components/old/Build1LoginScreen.js'
 import RegisterScreen from './components/old/RegisterScreen.js'
-import HomeScreen from './components/HomeScreen'
+import HomeScreen from './components/homeScreenAndSearchScreen/HomeScreen.js'
 import EditUpload from './components/EditUploadScreen'
-import EditingMap from './components/EditingMapScreen'
+import EditingMap from './components/editingMaps/EditingMapScreen'
 import LoginScreen from './components/account/LoginScreen.js'
 import CreateAccountScreen from './components/account/CreateAccountScreen.js'
 import AccountCreationSuccessScreen from './components/account/AccountCreationSuccessScreen.js'
 import ProfileScreen from "./components/profile/ProfileScreen.js"
 import MapView from './components/MapViewScreen'
 import AboutScreen from './components/AboutScreen'
-import SearchScreen from './components/SearchScreen'
+import SearchScreen from './components/homeScreenAndSearchScreen/SearchScreen'
 import FindEmailScreen from './components/password_reset/FindEmailScreen.js'
 import ResetEmailMessageScreen from './components/password_reset/ResetEmailMessageScreen.js'
 import ChangePasswordScreen from './components/password_reset/ChangePasswordScreen.js'
@@ -39,7 +39,7 @@ function App() {
                 <Route path="/createAccount" element={<CreateAccountScreen />} />
                 <Route path="/" element={<HomeScreen />} />
                 <Route path="/createAccountSuccess" element={<AccountCreationSuccessScreen />} />
-                <Route path="/profile" element={<ProfileScreen />} />
+                <Route path="/profile/:id" element={<ProfileScreen />} />
                 <Route path="/mapView" element={<MapView />} />
                 <Route path="/about" element={<AboutScreen />} />
                 <Route path="/search" element={<SearchScreen />} />

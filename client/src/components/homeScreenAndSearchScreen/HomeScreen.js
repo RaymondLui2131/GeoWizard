@@ -1,18 +1,34 @@
 import React, { useState, useRef, useCallback, useContext, useEffect} from 'react'
 import useMapSearch from './useMapSearch.js'
-import { SearchContext, SearchActionType } from "../api/SearchContext";
+import { SearchContext } from "../../api/SearchContext.js";
 
 const HomeScreen = () => {
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const [dropdownTimeOpen, setDropdownTimeOpen] = useState(false);
-    //const isInitialMount = useRef(true);
-    
-    const [Sort, setSort] = useState()
 
+    const [activeMetricButton, setActiveMetricButton] = useState('');
+    const [activeTimeButton, setActiveTimeButton] = useState('');
+
+    const buttonMetricKeys = ['Recents', 'Oldest', 'Most Comments', 'Most Likes', 'Most Views'];
+    const buttonTimeKeys = ['Today', 'This Week', 'This Month', 'This Year', 'All The Time'];
 
     const [query, setQuery] = useState('')
     const [pageNumber, setPageNumber] = useState(1)
-    const {searchQuery, searchDispatch} = useContext(SearchContext)
+    const {searchQuery} = useContext(SearchContext)
+
+
+    const toggleMetricButton = (buttonKey) => {
+        // If the clicked button is already active, deactivate it, otherwise activate it
+        setActiveMetricButton(activeMetricButton === buttonKey ? '' : buttonKey);
+        //console.log(activeMetricButton)
+    };
+
+    const toggleTimeButton = (buttonKey) => {
+        // If the clicked button is already active, deactivate it, otherwise activate it
+        setActiveTimeButton(activeTimeButton === buttonKey ? '' : buttonKey);
+        //console.log(activeTimeButton)
+    };
+
 
     const {
         maps,
@@ -36,75 +52,39 @@ const HomeScreen = () => {
     },[loading, hasMore])
     
     useEffect(() => {
-        console.log('search', searchQuery)
-        // if (isInitialMount.current) {
-        //     isInitialMount.current = false
-        //     return
-        // }
-        if(searchQuery == '') return
-        console.log(searchQuery)
+        //console.log('search', searchQuery)
+
+        //if(searchQuery == '') return
+        //console.log(searchQuery)
+        setActiveMetricButton('')
+        setActiveTimeButton('')
         setQuery({
-            query: searchQuery
+            query: '',
+            metric: activeMetricButton,
+            time: activeTimeButton
         })
         setPageNumber(1)
-        console.log("searched button clicked")
+        //console.log("searched button clicked")
     }, [searchQuery])
 
+    useEffect(() => {
+        //console.log('search', searchQuery)
+        //console.log(searchQuery)
+        setQuery({
+            query: '',
+            metric: activeMetricButton,
+            time: activeTimeButton
+        })
+        setPageNumber(1)
+        //console.log("searched button clicked")
+    }, [activeMetricButton, activeTimeButton])
 
-    // function handleSearch(e) {
-    //     setQuery({
-    //         query: e.target.value
-    //     })
-    //     setPageNumber(1)
-    //   }
-
-
-    function handleRecents(){
-        console.log("recents")
-    }
-
-    function handleMostComments(){
-        console.log("comments")
-    }
-
-    function handleOldest(){
-        console.log("tredning")
-    }
-
-    function handleMostLikes(){
-        console.log("Popular")
-    }
-
-    function handleMostViews(){
-        console.log("Popular")
-    }
-
-    function handleToday(){
-
-    }
-
-    function handleWeek(){
-
-    }
-    function handleMonth(){
-
-    }
-    function handleYear(){
-
-    }
-    function handleAllTheTime(){
-
-    }
-    // let test = true
-    // if(test){
-    //     return null  
-    // }
     return(
         <div className="min-h-screen max-h-[100%] bg-primary-GeoPurple">
             <div className='flex flex-wrap justify-between items-center mx-auto pt-5 px-28 z-10 '>
-            
                 <div className= 'text-5xl font-PyeongChangPeace-Light text-primary-GeoBlue'>Welcome to GeoWizard!</div>
 
+                {/*Metric DropDown*/}
                 <div> 
                     <div className="relative inline-block z-[80]">
                         <button
@@ -126,16 +106,21 @@ const HomeScreen = () => {
                         </button>
                         {dropdownOpen && (
                         <div className="absolute w-52 bg-primary-GeoOrange rounded-md shadow-lg ">
-                            <a onClick={handleRecents} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-b-none ">Recents</a>
-                            <a onClick={handleOldest} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-b-none ">Oldest</a>
-                            <a onClick={handleMostComments} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md" >Most Comments</a>
-                            <a onClick={handleMostLikes} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">Trending</a>
-                            <a onClick={handleMostViews} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">Popular</a>
-
+                            {buttonMetricKeys.map((key, index) => (
+                                <a
+                                    key={key}
+                                    className={`block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white 
+                                                ${activeMetricButton === key ? 'bg-primary-GeoBlue' : 'bg-primary-GeoOrange hover:bg-primary-GeoBlue'}
+                                                ${index == 0 ? 'rounded-b-none': 'rounded-md'}`}
+                                    onClick={() => toggleMetricButton(key)}
+                                >
+                                    {key}
+                                </a>
+                            ))}
                         </div>)}
                     </div>
 
-
+                    {/*Time DropDown*/}
                     <div className="relative inline-block z-[80] ml-5">
                         <button
                         onClick={() => setDropdownTimeOpen(!dropdownTimeOpen)}
@@ -156,11 +141,17 @@ const HomeScreen = () => {
                         </button>
                         {dropdownTimeOpen && (
                         <div className="absolute w-52 bg-primary-GeoOrange rounded-md shadow-lg ">
-                            <a onClick={handleToday} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-b-none ">Today</a>
-                            <a onClick={handleWeek} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md" >This Week</a>
-                            <a onClick={handleMonth} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">This Month</a>
-                            <a onClick={handleYear} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">This Year</a>
-                            <a onClick={handleAllTheTime} className="block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white bg-primary-GeoOrange hover:bg-primary-GeoBlue rounded-md">All The Time</a>
+                            {buttonTimeKeys.map((key, index) => (
+                                <a
+                                    key={key}
+                                    className={`block px-4 py-2 w-52 font-NanumSquareNeoOTF-Lt text-white
+                                                ${activeTimeButton === key ? 'bg-primary-GeoBlue' : 'bg-primary-GeoOrange hover:bg-primary-GeoBlue'}
+                                                ${index == 0 ? 'rounded-b-none': 'rounded-md'}`}
+                                    onClick={() => toggleTimeButton(key)}
+                                >
+                                    {key}
+                                </a>
+                            ))}
                         </div>)}
 
                     </div>
@@ -168,8 +159,7 @@ const HomeScreen = () => {
 
             </div>
 
-
-
+            {/* Infinite Loading */}
             <div>
                 <div className="grid grid-cols-3 mx-24 py-5 z-0">
                     {maps.map((map, index) => {
@@ -180,27 +170,13 @@ const HomeScreen = () => {
                     }
                     })}
                 </div>
-                <div className='text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>{loading && 'Loading...'}</div>
+                <div className=' mx-24 py-5 text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>{loading && 'Loading...'}</div>
                 <div className='text-2xl font-PyeongChangPeace-Light text-primary-GeoBlue'>{error && 'Error'}</div>
             </div>
             
         </div>
 
-
     );
 }
 
 export default HomeScreen
-
-//<HomeScreenMapCard key={index} file={map} />
-
-// {maps && (
-//     <div className="grid grid-cols-3 mx-24 py-5 z-0">
-//         {/* You can map through the data if there are multiple items */}
-//         {maps.map((mapItem, index) => (
-//             <div key={index}>{mapItem.title}</div>
-//         ))}
-//     </div>
-//     )}
-
- {/* <input type="text" value={query} className=' invisible'></input> */}

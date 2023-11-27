@@ -70,6 +70,16 @@ export const authgetUser = async (token) => {
 }
 
 
+export const authgetUserById = async (id) => {
+    try {
+        const response = await axios.get(`${API_URL}${id}`)
+        return response.data
+    } catch (err) {
+        return err.response
+    }
+}
+
+
 export const authgetMaps = async (token) => {
     try {
         return await axios.get(`${API_URL}me`, {
@@ -99,20 +109,49 @@ export const postUser = async (userData) => {
     }
 }
 
-export const checkUserEmail = async (userData) => {
-    let checkEmailLink;
-    if (process.env.NODE_ENV == 'development'){
-        checkEmailLink = 'http://localhost:4000/users/emailCheck'
+export const checkEmail = async (email) => {
+    let apiBaseUrl = process.env.NODE_ENV
+    if (apiBaseUrl === 'development'){
+        apiBaseUrl = "http://localhost:4000"
     }
-    else if (process.env.NODE_ENV == 'production'){
-        checkEmailLink = 'https://geowizard-app-b802ae01ce7f.herokuapp.com/users/emailCheck'
+    else if (apiBaseUrl === 'production'){
+        apiBaseUrl = "https://geowizard-app-b802ae01ce7f.herokuapp.com"
+    }
+    else {
+        console.log("NODE_ENV ERROR")
+        return
     }
     try {
-        const response = await axios.post(checkEmailLink, userData);
-        return response
+        const response = await axios.get(`${apiBaseUrl}/users/checkUniqueEmail`, {
+            params: { email }
+        });
+        return response;
     } catch (err) {
-        console.log('checkEmailLink: %s', checkEmailLink);
-        return err.response
+        console.error('Error finding an email:', err);
+        return err.response;
+    }
+}
+
+export const checkUser = async (username) => {
+    let apiBaseUrl = process.env.NODE_ENV
+    if (apiBaseUrl === 'development'){
+        apiBaseUrl = "http://localhost:4000"
+    }
+    else if (apiBaseUrl === 'production'){
+        apiBaseUrl = "https://geowizard-app-b802ae01ce7f.herokuapp.com"
+    }
+    else {
+        console.log("NODE_ENV ERROR")
+        return
+    }
+    try {
+        const response = await axios.get(`${apiBaseUrl}/users/checkUniqueUser`, {
+            params: { username }
+        });
+        return response;
+    } catch (err) {
+        console.error('Error finding an username:', err);
+        return err.response;
     }
 }
 
@@ -123,7 +162,9 @@ const api = {
     authgetMaps,
     googleLoginUser,
     postUser,
-    checkUserEmail
+    checkEmail, 
+    checkUser,
+    authgetUserById
 }
 
 export default api

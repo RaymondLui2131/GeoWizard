@@ -14,9 +14,9 @@
  * @author Jaden Wong
  */
 
-import React, { createContext, useReducer, useMemo } from 'react'
-
-
+import React, { createContext, useReducer, useMemo, useEffect } from 'react'
+import Cookies from "js-cookie"
+import { authgetUser } from './auth_request_api'
 /**
  * to use:
  * import { UserContext, UserActionType } from "../auth/UserContext.js"
@@ -45,9 +45,11 @@ export const authReducer = (state, action) => {
     const { type, payload } = action
     switch (type) {
         case UserActionType.LOGIN: {
+            Cookies.set("token", payload.token, { expires: 7 })
             return { ...state, user: payload }
         }
         case UserActionType.LOGOUT: {
+            Cookies.remove("token")
             return { ...state, user: null }
         }
 
@@ -71,6 +73,29 @@ export const UserContextProvider = ({ children }) => {
     })
 
     console.log("User State: " + state)
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const token = Cookies.get("token") // check if token is stored in the cookies
+            if (token) {
+                try {
+                    const user1 = await authgetUser(token) // get user by token
+                    const user_data = {
+                        _id: user1._id,
+                        username: user1.username,
+                        email: user1.email,
+                        token: token
+                    }
+                    dispatch({ type: UserActionType.LOGIN, payload: user_data })
+                } catch (error) {
+                    console.log(error)
+                }
+            }
+        }
+
+        fetchUser()
+    }, [])
+
     const contextValue = useMemo(() => ({ ...state, dispatch }), [state, dispatch])
     return (
         <UserContext.Provider value={contextValue}>
