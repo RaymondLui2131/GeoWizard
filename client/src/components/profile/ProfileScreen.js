@@ -13,9 +13,9 @@ const ProfileScreen = () => {
     const [userData, setUserData] = useState(null) // user for current profile
     const [userMaps, setUserMaps] = useState([]) // list of maps owned by the user
     const [userComments, setUserComments] = useState([]) // list of comments owned by the user
-    const [display, setDisplay] = useState("posts") 
+    const [display, setDisplay] = useState("posts")
     const [commentMap, setCommentMap] = useState({}) // maps referenced by the comments
-    const user_comments = [1, 2, 3] // list of comments
+    const [sortType, setSortType] = useState("new")
     const { id } = useParams()
 
     useEffect(() => {
@@ -40,12 +40,7 @@ const ProfileScreen = () => {
         fetchData();
     }, [id]);
 
-
-    const generateMapCards = () => {
-        return userMaps?.map((map_data) => <ProfileMapCard key={map_data._id} map_data={map_data} />)
-    }
-
-    const generateCommentCards = () => {
+    useEffect(() => {
         if (userComments) {
             const fetchComments = async () => {
                 const data = {}
@@ -70,7 +65,35 @@ const ProfileScreen = () => {
 
             fetchComments()
         }
-        return userComments?.map((comment) => <ProfileCommentCard key={comment._id} comment_data={comment} mapData={commentMap[comment._id]} />)
+    }, [userComments])
+
+
+    const generateMapCards = (sortType) => {
+        let sortedMaps
+        if (sortType === 'top') {
+            sortedMaps = userMaps?.slice().sort((a, b) => b.likes - a.likes)
+        } else {
+            sortedMaps = userMaps?.slice().sort((a, b) => {
+                const dateA = new Date(a.createdAt)
+                const dateB = new Date(b.createdAt)
+                return dateB - dateA
+            })
+        }
+        return sortedMaps?.map((map_data) => <ProfileMapCard key={map_data._id} map_data={map_data} />)
+    }
+
+    const generateCommentCards = () => {
+        let sortedComments
+        if (sortType === 'top') {
+            sortedComments = userComments?.slice().sort((a, b) => b.votes - a.votes)
+        } else {
+            sortedComments = userComments?.slice().sort((a, b) => {
+                const dateA = new Date(a.createdAt)
+                const dateB = new Date(b.createdAt)
+                return dateB - dateA
+            })
+        }
+        return sortedComments?.map((comment) => <ProfileCommentCard key={comment._id} comment_data={comment} mapData={commentMap[comment._id]} />)
     }
 
     const handleBackButton = () => {
@@ -154,13 +177,13 @@ const ProfileScreen = () => {
                             <button className={`hover:text-primary-GeoBackGround text-2xl font-PyeongChangPeace-Light ${display === "comments" && 'border-b-2  border-primary-GeoBlue'}`} onClick={() => setDisplay("comments")}>Comments</button>
                         </div>
                         <div className='flex justify-center gap-10 align-middle '>
-                            <button className='flex items-center text-2xl px-5 bg-primary-GeoBackGround hover:bg-opacity-30 bg-opacity-20 rounded-2xl'><FontAwesomeIcon icon={faCircleExclamation} className='mr-1' />New</button>
-                            <button className='flex items-center text-2xl px-5 bg-primary-GeoBackGround hover:bg-opacity-30 bg-opacity-20 rounded-2xl'><FontAwesomeIcon icon={faFire} className='mr-1' />Top</button>
+                            <button className={`flex items-center text-2xl px-5 bg-primary-GeoBackGround rounded-2xl ${sortType === 'new' ? 'bg-opacity-70 hover:bg-opacity-80' : 'bg-opacity-20 hover:bg-opacity-30'}`} onClick={() => setSortType('new')}><FontAwesomeIcon icon={faCircleExclamation} className='mr-1' />New</button>
+                            <button className={`flex items-center text-2xl px-5 bg-primary-GeoBackGround rounded-2xl ${sortType === 'top' ? 'bg-opacity-70 hover:bg-opacity-80' : 'bg-opacity-20 hover:bg-opacity-30'}`} onClick={() => setSortType('top')}><FontAwesomeIcon icon={faFire} className='mr-1' />Top</button>
                         </div>
                     </div>
                     <ul className='grow h-3/4 flex flex-col justify-start overflow-scroll gap-5'>
-                        {display === "posts" && userMaps && generateMapCards()}
-                        {display === "comments" && userMaps && generateCommentCards()}
+                        {display === "posts" && userMaps && generateMapCards(sortType)}
+                        {display === "comments" && userMaps && generateCommentCards(sortType)}
                     </ul>
                 </div>
             </div>
