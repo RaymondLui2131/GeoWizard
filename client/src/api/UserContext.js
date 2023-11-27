@@ -45,7 +45,7 @@ export const authReducer = (state, action) => {
     const { type, payload } = action
     switch (type) {
         case UserActionType.LOGIN: {
-            Cookies.set("token", payload.token)
+            Cookies.set("token", payload.token, { expires: 7 })
             return { ...state, user: payload }
         }
         case UserActionType.LOGOUT: {

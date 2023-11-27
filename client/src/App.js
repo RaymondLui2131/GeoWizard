@@ -4,7 +4,7 @@ import Build1LoginScreen from './components/old/Build1LoginScreen.js'
 import RegisterScreen from './components/old/RegisterScreen.js'
 import HomeScreen from './components/homeScreenAndSearchScreen/HomeScreen.js'
 import EditUpload from './components/EditUploadScreen'
-import EditingMap from './components/EditingMapScreen'
+import EditingMap from './components/editingMaps/EditingMapScreen'
 import LoginScreen from './components/account/LoginScreen.js'
 import CreateAccountScreen from './components/account/CreateAccountScreen.js'
 import AccountCreationSuccessScreen from './components/account/AccountCreationSuccessScreen.js'
@@ -39,7 +39,7 @@ function App() {
                 <Route path="/createAccount" element={<CreateAccountScreen />} />
                 <Route path="/" element={<HomeScreen />} />
                 <Route path="/createAccountSuccess" element={<AccountCreationSuccessScreen />} />
-                <Route path="/profile" element={<ProfileScreen />} />
+                <Route path="/profile/:id" element={<ProfileScreen />} />
                 <Route path="/mapView" element={<MapView />} />
                 <Route path="/about" element={<AboutScreen />} />
                 <Route path="/search" element={<SearchScreen />} />

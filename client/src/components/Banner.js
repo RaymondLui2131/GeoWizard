@@ -25,8 +25,8 @@ const Banner = () => {
     const menuItems = [
         ['Home', '/'],
         ['Create Map/Edit Map', '/editUpload'],
-        user ? ['Profile', '/profile'] : null,
-        user ? ['Dashboard', '/dashboard'] : null,
+        user ? ['Profile', `/profile/${user._id}`] : null,
+        // user ? ['Dashboard', '/dashboard'] : null,
         ['About', '/about']
     ]
 

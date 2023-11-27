@@ -1,8 +1,11 @@
 const express = require("express")
 const router = express.Router()
-const { saveUserMap, createMap, getMap, queryMaps, changeLikesMap } = require("../controllers/map_controllers")
-router.put("/save", saveUserMap)
+const { saveUserMap, getMap, queryMaps, changeLikesMap, getUserMaps, getMapById } = require("../controllers/map_controllers")
+const { verifyToken } = require("../jwt_middleware")
+router.put("/save", verifyToken, saveUserMap)
 router.get("/getMap", getMap)
 router.get("/queryMaps", queryMaps)
 router.put("/changeLikesMap", changeLikesMap)
+router.post("/getUserMaps", getUserMaps)
+router.get("/:id", getMapById)
 module.exports = router
