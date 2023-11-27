@@ -498,7 +498,7 @@ const MapView = () => {
     // console.log("type", typeSelected)
     return (
         map && (<>
-            <div className='w-4/5 flex justify-center flex-row'>
+            <div className='w-full flex justify-center gap-20 flex-row relative'>
                 <div className='w-1/2 flex justify-center flex-col pt-32 items-center'>
                     <div>
                         {!validTitle
