@@ -33,7 +33,7 @@ const saveUserMap = asyncHandler(async (req, res) => {
     const map_id = await createMap(req, user)
     if (map_id.error) {
         return res.status(400).json({
-            message: "Save user map failed"
+            message: map_id.message
         })
     }
 

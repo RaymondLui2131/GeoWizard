@@ -244,7 +244,7 @@ describe("testing saveUserMap", () => {
         await MapController.saveUserMap(req, res)
         expect(res.status).toHaveBeenCalledWith(400);
         expect(res.json).toHaveBeenCalledWith({
-            message: "Save user map failed"
+            message: "Map creation failed"
         });
     })
 
