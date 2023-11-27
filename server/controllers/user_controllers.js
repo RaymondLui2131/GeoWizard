@@ -9,7 +9,7 @@
 const bcrypt = require("bcryptjs")
 const asyncHandler = require('express-async-handler')
 const User = require("../models/user_model")
-const { signToken } = require("../jwt_middleware") 
+const { signToken } = require("../jwt_middleware")
 
 /**
  * if the user does not exist yet, register the user in the database,
@@ -202,6 +202,45 @@ const getUserById = asyncHandler(async (req, res) => {
 })
 
 
+const updateUserInfo = asyncHandler(async (req, res) => {
+    const { field, value } = req.body
+    const user = req.user
+    if (!user) {
+        return res.status(401).json({
+            message: "Invalid user credentials"
+        })
+    }
+
+    if (!(field in user)) {
+        return res.status(400).json({
+            message: `field ${field} does not exist`
+        })
+    }
+
+    if (typeof value !== typeof user[field]) {
+        return res.status(400).json({
+            message: `type mismatch for value ${value} and field ${field}`
+        })
+    }
+
+    user[field] = value
+    const savedUser = await user.save()
+
+    if (savedUser) {
+        return res.status(400).json({
+            user: user,
+            value: user[field]
+        })
+    }
+
+    else {
+        return res.status(500).json({
+            message: "updateUserInfo failed"
+        })
+    }
+})
+
+
 module.exports = {
     registerUser,
     loginUser,
@@ -209,5 +248,6 @@ module.exports = {
     googleLoginUser,
     checkUniqueEmail,
     checkUniqueUser,
-    getUserById
+    getUserById,
+    updateUserInfo
 }

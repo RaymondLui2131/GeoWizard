@@ -8,6 +8,8 @@ import { authgetUserById } from "../../api/auth_request_api"
 import { getUserMaps } from '../../api/map_request_api'
 import { getUserComments } from '../../api/comment_request_api'
 import { getMapById } from '../../api/map_request_api'
+import { EditText, EditTextarea } from 'react-edit-text'
+import 'react-edit-text/dist/index.css'
 const ProfileScreen = () => {
     const navigate = useNavigate()
     const [userData, setUserData] = useState(null) // user for current profile
@@ -17,6 +19,15 @@ const ProfileScreen = () => {
     const [commentMap, setCommentMap] = useState({}) // maps referenced by the comments
     const [sortType, setSortType] = useState("new")
     const { id } = useParams()
+
+    const [userInfo, setUserInfo] = useState({
+        about: userData?.about
+    })
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target
+        setUserInfo({ ...userInfo, [name]: value })
+      }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -152,7 +163,7 @@ const ProfileScreen = () => {
 
                         <div className='bg-gray-50 h-1/3 flex justify-evenly items-center rounded-b-2xl'>
                             <p className='text-center'>
-                                <span className='block font-PyeongChangPeace-Bold text-lg '>{userData && userData.maps.length}</span>
+                                <span className='block font-PyeongChangPeace-Bold text-lg '>{userMaps && (userMaps.filter(map => map.isPublic)).length}</span>
                                 <span className='block font-PyeongChangPeace-Light'>Posts</span>
                             </p>
                             <p className='text-center'>
@@ -165,8 +176,14 @@ const ProfileScreen = () => {
                             </p>
                         </div>
                     </div>
-                    <div className='h-1/2 flex items-center justify-center px-12'>
-                        <p className='shadow-warm font-PyeongChangPeace-Light text-center mt-20 text-sm rounded-2xl px-5 py-3 overflow-scroll bg-gray-50'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris non tortor nec justo vestibulum lobortis quis ut est. Curabitur nec ex non augue ullamcorper venenatis a mattis nisi. Vestibulum tincidunt bibendum libero. In eu neque feugiat, bibendum libero nec, tristique neque. Nulla facilisi. Quisque quis tortor egestas, viverra nisl et, semper eros. Praesent sit amet hendrerit arcu. Donec tristique elit erat, vel suscipit massa pharetra ut. Suspendisse facilisis sed arcu vel laoreet. Sed vel pharetra metus.</p>
+                    <div className='h-1/2 flex flex-col justify-end px-12'>
+                        <p className='h-[65%] text-sm rounded-2xl px-5 py-3 mb-4 overflow-scroll bg-gray-50 shadow-warm font-PyeongChangPeace-Light'>
+                            <EditTextarea
+                                value={userInfo.about}
+                                placeholder="No Description."
+                                onChange={handleInputChange}
+                            />
+                        </p>
                     </div>
                 </div>
 
