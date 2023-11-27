@@ -110,7 +110,7 @@ export const ChoroUi = (props) =>{
                     <HexColorPicker color={choroColor} onChange={setColor} style={{ width: '80%', height: '300px' }} />
                 </div>
                 <div>Hex Color: {choroColorFormat}</div>
-                <div className='grid grid-cols-2 gap-2 pt-2 text-sm'> {/*TEMP FILLER WILL HAVE TO BUILD DYNAMICALLY LATER*/}
+                <div className='grid grid-cols-2 gap-2 pt-2 text-sm overflow-y-auto'> 
                     <div>Key</div>
                     <div>Label</div>
                     {renderKeyTable}
