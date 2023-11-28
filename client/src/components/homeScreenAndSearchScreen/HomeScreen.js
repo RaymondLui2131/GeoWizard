@@ -81,7 +81,7 @@ const HomeScreen = () => {
 
     return(
         <div className="min-h-screen max-h-[100%] bg-primary-GeoPurple">
-            <div className='flex flex-wrap justify-between items-center mx-auto pt-5 px-28 z-10 '>
+            <div className='flex flex-wrap justify-between items-center mx-auto pt-5 px-28 z-10'>
                 <div className= 'text-5xl font-PyeongChangPeace-Light text-primary-GeoBlue'>Welcome to GeoWizard!</div>
 
                 {/*Metric DropDown*/}

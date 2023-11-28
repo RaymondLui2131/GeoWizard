@@ -1,22 +1,38 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faLocationDot, faCakeCandles, faCircleArrowLeft, faCircleExclamation, faFire } from '@fortawesome/free-solid-svg-icons'
 import ProfileMapCard from './ProfileMapCard'
 import ProfileCommentCard from './ProfileCommentCard'
 import { useNavigate, useParams } from 'react-router-dom'
-import { authgetUserById } from "../../api/auth_request_api"
+import { authgetUserById, updateUserInfo } from "../../api/auth_request_api"
 import { getUserMaps } from '../../api/map_request_api'
 import { getUserComments } from '../../api/comment_request_api'
 import { getMapById } from '../../api/map_request_api'
+import { EditText, EditTextarea } from 'react-edit-text'
+import { UserContext, UserActionType } from '../../api/UserContext'
+import DatePicker from 'react-datepicker'
+import "react-datepicker/dist/react-datepicker.css";
 const ProfileScreen = () => {
+    const { user, dispatch } = useContext(UserContext)
     const navigate = useNavigate()
     const [userData, setUserData] = useState(null) // user for current profile
     const [userMaps, setUserMaps] = useState([]) // list of maps owned by the user
     const [userComments, setUserComments] = useState([]) // list of comments owned by the user
-    const [display, setDisplay] = useState("posts") 
+    const [display, setDisplay] = useState("posts")
     const [commentMap, setCommentMap] = useState({}) // maps referenced by the comments
-    const user_comments = [1, 2, 3] // list of comments
+    const [sortType, setSortType] = useState("new")
     const { id } = useParams()
+
+    const [userInfo, setUserInfo] = useState({
+        about: "",
+        birthday: "",
+        location: ""
+    })
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target
+        setUserInfo({ ...userInfo, [name]: value })
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -24,13 +40,6 @@ const ProfileScreen = () => {
                 const userResponse = await authgetUserById(id);
                 if (userResponse) {
                     setUserData(userResponse);
-                    // Check if userData is available before fetching maps
-                    if (userResponse && userResponse.maps && userResponse.maps.length) {
-                        const mapsResponse = await getUserMaps(userResponse);
-                        if (mapsResponse) {
-                            setUserMaps(mapsResponse.filter(map => { return map.isPublic }));
-                        }
-                    }
                 }
             } catch (error) {
                 console.log(error);
@@ -40,37 +49,92 @@ const ProfileScreen = () => {
         fetchData();
     }, [id]);
 
+    useEffect(() => {
+        const fetchAdditionalData = async () => {
+            if (userData) {
+                setUserInfo({
+                    about: userData.about,
+                    birthday: userData.birthday,
+                    location: userData.location
+                });
 
-    const generateMapCards = () => {
-        return userMaps?.map((map_data) => <ProfileMapCard key={map_data._id} map_data={map_data} />)
+                // Check if userData is available before fetching maps
+                if (userData.maps && userData.maps.length) {
+                    const mapsResponse = await getUserMaps(userData);
+                    if (mapsResponse) {
+                        if (user?._id === id) {
+                            setUserMaps(mapsResponse);
+                        } else {
+                            setUserMaps(mapsResponse.filter(map => map.isPublic));
+                        }
+                    }
+                } else {
+                    setUserMaps([])
+                }
+            }
+        };
+
+        fetchAdditionalData();
+    }, [userData]);
+
+    useEffect(() => {
+        const fetchComments = async () => {
+            const data = {}
+            try {
+                const comments = await getUserComments(id) // get user's comments
+                if (comments) {
+                    setUserComments(comments)
+                    for (const comment of comments) {
+                        const res = await getMapById(comment.map_id)
+                        if (res) {
+                            data[comment._id] = res
+                        }
+                    }
+
+                    setCommentMap(data)
+                }
+            }
+            catch (err) {
+                console.log(err)
+            }
+        }
+
+        fetchComments()
+    }, [userData])
+
+
+    const generateMapCards = (sortType) => {
+        if (!userMaps.length) {
+            return <p className='text-center text-3xl font-PyeongChangPeace-Light'>No Posts</p>
+        }
+        let sortedMaps
+        if (sortType === 'top') {
+            sortedMaps = userMaps?.slice().sort((a, b) => b.likes - a.likes)
+        } else {
+            sortedMaps = userMaps?.slice().sort((a, b) => {
+                const dateA = new Date(a.createdAt)
+                const dateB = new Date(b.createdAt)
+                return dateB - dateA
+            })
+        }
+        return sortedMaps?.map((map_data) => <ProfileMapCard key={map_data._id} map_data={map_data} />)
     }
 
     const generateCommentCards = () => {
-        if (userComments) {
-            const fetchComments = async () => {
-                const data = {}
-                try {
-                    const comments = await getUserComments(id) // get user's comments
-                    if (comments) {
-                        setUserComments(comments)
-                        for (const comment of comments) {
-                            const res = await getMapById(comment.map_id)
-                            if (res) {
-                                data[comment._id] = res
-                            }
-                        }
-
-                        setCommentMap(data)
-                    }
-                }
-                catch (err) {
-                    console.log(err)
-                }
-            }
-
-            fetchComments()
+        if (!userComments.length) {
+            return <p className='text-center text-3xl font-PyeongChangPeace-Light'>No Comments</p>
         }
-        return userComments?.map((comment) => <ProfileCommentCard key={comment._id} comment_data={comment} mapData={commentMap[comment._id]} />)
+        let sortedComments
+        if (sortType === 'top') {
+            sortedComments = userComments?.slice().sort((a, b) => b.votes - a.votes)
+        } else {
+            sortedComments = userComments?.slice().sort((a, b) => {
+                const dateA = new Date(a.createdAt)
+                const dateB = new Date(b.createdAt)
+                return dateB - dateA
+            })
+        }
+        return sortedComments?.map((comment) => <ProfileCommentCard key={comment._id} comment_data={comment} mapData={commentMap[comment._id]} />)
     }
 
     const handleBackButton = () => {
@@ -99,6 +163,20 @@ const ProfileScreen = () => {
             });
         }
         return 0; // Return a default value or handle the case when userMaps is null or empty
+    }
+
+    const handleSaveInfo = async (e) => {
+        const { name } = e;
+        if (user) {
+            let value = userInfo[name];
+            if (value === 'birthday' && typeof value !== Date) {
+                value = new Date(value)
+            }
+            const response = await updateUserInfo(user.token, name, value);
+            if (response) {
+                console.log(response.data);
+            }
+        }
     };
 
     return (
@@ -117,19 +195,37 @@ const ProfileScreen = () => {
 
                         <div className='flex flex-col justify-evenly mt-20 text-center items-center gap-2.5'>
                             <p className='text-black text-4xl font-PyeongChangPeace-Light'>@{userData && userData.username}</p>
-                            <div className='flex items-center gap-1'>
+                            <div className='flex items-center gap-1 justify-start'>
                                 <FontAwesomeIcon icon={faLocationDot} />
-                                <p className='text-black text-base font-PyeongChangPeace-Light'>Stony Brook, NY</p>
+                                {/* <p className='text-black text-base font-PyeongChangPeace-Light'>Stony Brook, NY</p> */}
+                                <EditText
+                                    className={`text-black text-base font-PyeongChangPeace-Light ${user?._id !== id ? 'hover:bg-none' : 'hover:bg-gray-100 hover:cursor-pointer'}`}
+                                    name='location'
+                                    value={userInfo?.location}
+                                    placeholder="No Location."
+                                    onSave={(e) => handleSaveInfo(e)}
+                                    onChange={handleInputChange}
+                                    readonly={user?._id !== id}
+                                />
                             </div>
-                            <div className='flex items-center gap-1'>
+                            <div className='flex items-center  gap-1 justify-start  text-black text-base font-PyeongChangPeace-Light'>
                                 <FontAwesomeIcon icon={faCakeCandles} />
-                                <p className='text-black text-base font-PyeongChangPeace-Light ml-1'>October 10, 2002</p>
+                                <DatePicker className={`w-24 ${user?._id !== id ? 'hover:bg-none' : 'hover:bg-gray-100 hover:cursor-pointer'}`}
+                                    selected={userInfo?.birthday ? new Date(userInfo.birthday) : null}
+                                    onChange={(date) => handleInputChange({ target: { name: 'birthday', value: new Date(date) } })}
+                                    dateFormat='MM/dd/yyyy'
+                                    showYearDropdown
+                                    scrollableMonthYearDropdown
+                                    disabled={user?._id !== id}
+                                    placeholderText='None'
+                                    onBlur={() => handleSaveInfo({ name: 'birthday' })}
+                                />
                             </div>
                         </div>
 
                         <div className='bg-gray-50 h-1/3 flex justify-evenly items-center rounded-b-2xl'>
                             <p className='text-center'>
-                                <span className='block font-PyeongChangPeace-Bold text-lg '>{userData && userData.maps.length}</span>
+                                <span className='block font-PyeongChangPeace-Bold text-lg '>{userMaps && (userMaps.filter(map => map.isPublic)).length}</span>
                                 <span className='block font-PyeongChangPeace-Light'>Posts</span>
                             </p>
                             <p className='text-center'>
@@ -142,8 +238,19 @@ const ProfileScreen = () => {
                             </p>
                         </div>
                     </div>
-                    <div className='h-1/2 flex items-center justify-center px-12'>
-                        <p className='shadow-warm font-PyeongChangPeace-Light text-center mt-20 text-sm rounded-2xl px-5 py-3 overflow-scroll bg-gray-50'>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris non tortor nec justo vestibulum lobortis quis ut est. Curabitur nec ex non augue ullamcorper venenatis a mattis nisi. Vestibulum tincidunt bibendum libero. In eu neque feugiat, bibendum libero nec, tristique neque. Nulla facilisi. Quisque quis tortor egestas, viverra nisl et, semper eros. Praesent sit amet hendrerit arcu. Donec tristique elit erat, vel suscipit massa pharetra ut. Suspendisse facilisis sed arcu vel laoreet. Sed vel pharetra metus.</p>
+                    <div className='h-1/2 flex flex-col justify-end px-12'>
+                        <div className='h-[65%] text-sm rounded-2xl px-5 py-3 mb-4 overflow-scroll bg-gray-50 shadow-warm font-PyeongChangPeace-Light'>
+                            <EditTextarea
+                                className={`${user?._id !== id ? 'hover:none' : 'hover:bg-gray-100 hover:cursor-pointer'}`}
+                                name='about'
+                                value={userInfo?.about}
+                                placeholder="No Description."
+                                onSave={(e) => handleSaveInfo(e)}
+                                onChange={handleInputChange}
+                                readonly={user?._id !== id}
+                                style={{ height: '100%', width: '100%' }}
+                            />
+                        </div>
                     </div>
                 </div>
 
@@ -153,14 +260,14 @@ const ProfileScreen = () => {
                             <button className={`hover:text-primary-GeoBackGround text-2xl font-PyeongChangPeace-Light ${display === "posts" && 'border-b-2  border-primary-GeoBlue'}`} onClick={() => setDisplay("posts")}>Posts</button>
                             <button className={`hover:text-primary-GeoBackGround text-2xl font-PyeongChangPeace-Light ${display === "comments" && 'border-b-2  border-primary-GeoBlue'}`} onClick={() => setDisplay("comments")}>Comments</button>
                         </div>
-                        <div className='flex justify-center gap-10 align-middle '>
-                            <button className='flex items-center text-2xl px-5 bg-primary-GeoBackGround hover:bg-opacity-30 bg-opacity-20 rounded-2xl'><FontAwesomeIcon icon={faCircleExclamation} className='mr-1' />New</button>
-                            <button className='flex items-center text-2xl px-5 bg-primary-GeoBackGround hover:bg-opacity-30 bg-opacity-20 rounded-2xl'><FontAwesomeIcon icon={faFire} className='mr-1' />Top</button>
+                        <div className={`flex justify-center gap-10 align-middle ${(display === 'posts' && !userMaps.length) || (display === 'comments' && !userComments.length) ? 'opacity-0' : 'opacity-100'}`}>
+                            <button className={`flex items-center text-2xl px-5 bg-primary-GeoBackGround rounded-2xl ${sortType === 'new' ? 'bg-opacity-70 hover:bg-opacity-80' : 'bg-opacity-20 hover:bg-opacity-30'}`} onClick={() => setSortType('new')}><FontAwesomeIcon icon={faCircleExclamation} className='mr-1' />New</button>
+                            <button className={`flex items-center text-2xl px-5 bg-primary-GeoBackGround rounded-2xl ${sortType === 'top' ? 'bg-opacity-70 hover:bg-opacity-80' : 'bg-opacity-20 hover:bg-opacity-30'}`} onClick={() => setSortType('top')}><FontAwesomeIcon icon={faFire} className='mr-1' />Top</button>
                         </div>
                     </div>
                     <ul className='grow h-3/4 flex flex-col justify-start overflow-scroll gap-5'>
-                        {display === "posts" && userMaps && generateMapCards()}
-                        {display === "comments" && userMaps && generateCommentCards()}
+                        {display === "posts" && userMaps && generateMapCards(sortType)}
+                        {display === "comments" && userComments && generateCommentCards(sortType)}
                     </ul>
                 </div>
             </div>

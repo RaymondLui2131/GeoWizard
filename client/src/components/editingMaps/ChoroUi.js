@@ -103,7 +103,7 @@ export const ChoroUi = (props) =>{
     return (
         <>
             <div className='invisible'>gap space</div>
-            <div className='h-full w-3/5 bg-gray-50 rounded-3xl font-NanumSquareNeoOTF-Lt flex flex-col'>
+            <div className='h-full w-96 bg-gray-50 rounded-3xl font-NanumSquareNeoOTF-Lt flex flex-col'>
                 <div className='bg-primary-GeoOrange rounded-t-3xl ' onClick={() => setType(MAP_TYPES['NONE'])}><div>Color Selector</div>
                 </div>
                 <div className='flex flex-col items-center pt-10 w-full mx-auto'>

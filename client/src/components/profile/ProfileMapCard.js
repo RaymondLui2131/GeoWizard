@@ -43,10 +43,10 @@ const ProfileMapCard = React.memo(({ map_data }) => {
             <div className='w-1/3'>
                 <img src={finland} className='w-full h-full object-cover'></img>
             </div>
-            <div className='flex flex-col justify-evenly text-center'>
-                <p className='font-PyeongChangPeace-Bold text-lg'>{map_data?.title}</p>
+            <div className='flex flex-col justify-evenly text-center items-center'>
+                <p className='font-PyeongChangPeace-Bold text-lg'>{map_data?.title} {!map_data?.isPublic && <span className='text-sm font-NanumSquareNeoOTF-Lt ml-2 px-1 bg-gray-100'>Private</span>}</p>
                 <p className='font-PyeongChangPeace-Light'>{`Published: ${map_data && getDatePosted()}`}</p>
-                <p className='font-PyeongChangPeace-Light rounded-3xl bg-primary-GeoOrange'>{STRING_MAPPING[MAP_TYPES[map_data?.mapType]]}</p>
+                <p className='w-fit font-PyeongChangPeace-Light px-8 rounded-3xl bg-primary-GeoOrange'>{STRING_MAPPING[MAP_TYPES[map_data?.mapType]]}</p>
                 <div className='flex justify-center items-center font-PyeongChangPeace-Light gap-1'>
                     <FontAwesomeIcon icon={faChartBar} />
                     {`${map_data?.comments.length} Comment${map_data?.comments.length ? 's' : ''}`}

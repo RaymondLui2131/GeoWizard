@@ -18,9 +18,9 @@ export const googleLoginUser = async (googleUser) => {
                 Accept: 'application/json'
             }
         })
-        
+
         if (response) {
-            const {email, name, id} = response.data
+            const { email, name, id } = response.data
             return await axios.post(`${API_URL}google/login`, {
                 email: email,
                 username: name,
@@ -92,12 +92,27 @@ export const authgetMaps = async (token) => {
     }
 }
 
+export const updateUserInfo = async (token, field, value) => {
+    try {
+        return await axios.put(`${API_URL}updateUserInfo`,{
+            field: field,
+            value: value
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+    } catch (err) {
+        return err.response
+    }
+}
+
 export const postUser = async (userData) => {
     let link;
-    if (process.env.NODE_ENV == 'development'){
+    if (process.env.NODE_ENV == 'development') {
         link = 'http://localhost:4000/users/register'
     }
-    else if (process.env.NODE_ENV == 'production'){
+    else if (process.env.NODE_ENV == 'production') {
         link = 'https://geowizard-app-b802ae01ce7f.herokuapp.com/users/register'
     }
     try {
@@ -111,10 +126,10 @@ export const postUser = async (userData) => {
 
 export const checkEmail = async (email) => {
     let apiBaseUrl = process.env.NODE_ENV
-    if (apiBaseUrl === 'development'){
+    if (apiBaseUrl === 'development') {
         apiBaseUrl = "http://localhost:4000"
     }
-    else if (apiBaseUrl === 'production'){
+    else if (apiBaseUrl === 'production') {
         apiBaseUrl = "https://geowizard-app-b802ae01ce7f.herokuapp.com"
     }
     else {
@@ -134,10 +149,10 @@ export const checkEmail = async (email) => {
 
 export const checkUser = async (username) => {
     let apiBaseUrl = process.env.NODE_ENV
-    if (apiBaseUrl === 'development'){
+    if (apiBaseUrl === 'development') {
         apiBaseUrl = "http://localhost:4000"
     }
-    else if (apiBaseUrl === 'production'){
+    else if (apiBaseUrl === 'production') {
         apiBaseUrl = "https://geowizard-app-b802ae01ce7f.herokuapp.com"
     }
     else {
@@ -162,7 +177,7 @@ const api = {
     authgetMaps,
     googleLoginUser,
     postUser,
-    checkEmail, 
+    checkEmail,
     checkUser,
     authgetUserById
 }
