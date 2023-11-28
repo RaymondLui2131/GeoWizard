@@ -340,7 +340,7 @@
   "engines": {
     "node": "20.x",
     "npm": "8.x"
-  },  
+  },
   "keywords": [],
   "author": "",
   "license": "ISC"
