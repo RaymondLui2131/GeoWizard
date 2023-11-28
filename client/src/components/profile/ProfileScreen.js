@@ -157,12 +157,18 @@ const ProfileScreen = () => {
     }
 
     const getHighestUpvotes = () => {
-        if (userMaps && userMaps.length > 0) {
-            return userMaps.reduce((prev, current) => {
-                return prev.likes > current.likes ? prev.likes : current.likes;
-            });
+        if (!userMaps || userMaps.length === 0) {
+            return 0
         }
-        return 0; // Return a default value or handle the case when userMaps is null or empty
+
+        let max_like = 0
+        userMaps.map(map => {
+            const like = map.likes
+            max_like = Math.max(max_like, like)
+
+        })
+        console.log(max_like)
+        return max_like
     }
 
     const handleSaveInfo = async (e) => {
@@ -225,15 +231,15 @@ const ProfileScreen = () => {
 
                         <div className='bg-gray-50 h-1/3 flex justify-evenly items-center rounded-b-2xl'>
                             <p className='text-center'>
-                                <span className='block font-PyeongChangPeace-Bold text-lg '>{userMaps && (userMaps.filter(map => map.isPublic)).length}</span>
+                                <span className='block font-PyeongChangPeace-Bold text-lg '>{(userMaps.filter(map => map.isPublic)).length}</span>
                                 <span className='block font-PyeongChangPeace-Light'>Posts</span>
                             </p>
                             <p className='text-center'>
-                                <span className='block font-PyeongChangPeace-Bold text-lg'>{userMaps && getHighestUpvotes()}</span>
+                                <span className='block font-PyeongChangPeace-Bold text-lg'>{getHighestUpvotes()}</span>
                                 <span className='block font-PyeongChangPeace-Light'>Highest Upvotes</span>
                             </p>
                             <p className='text-center'>
-                                <span className='block font-PyeongChangPeace-Bold text-lg'>{userData && getDaysActive()}</span>
+                                <span className='block font-PyeongChangPeace-Bold text-lg'>{getDaysActive()}</span>
                                 <span className='block font-PyeongChangPeace-Light'>Days Active</span>
                             </p>
                         </div>
