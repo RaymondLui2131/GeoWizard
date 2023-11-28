@@ -40,15 +40,6 @@ const ProfileScreen = () => {
                 const userResponse = await authgetUserById(id);
                 if (userResponse) {
                     setUserData(userResponse);
-                    console.log(userResponse)
-                    setUserInfo({ about: userResponse.about, birthday: userResponse.birthday, location: userResponse.location })
-                    // Check if userData is available before fetching maps
-                    if (userResponse && userResponse.maps && userResponse.maps.length) {
-                        const mapsResponse = await getUserMaps(userResponse);
-                        if (mapsResponse) {
-                            setUserMaps(mapsResponse.filter(map => { return map.isPublic }));
-                        }
-                    }
                 }
             } catch (error) {
                 console.log(error);
@@ -56,7 +47,35 @@ const ProfileScreen = () => {
         };
 
         fetchData();
-    }, []);
+    }, [id]);
+
+    useEffect(() => {
+        const fetchAdditionalData = async () => {
+            if (userData) {
+                setUserInfo({
+                    about: userData.about,
+                    birthday: userData.birthday,
+                    location: userData.location
+                });
+
+                // Check if userData is available before fetching maps
+                if (userData.maps && userData.maps.length) {
+                    const mapsResponse = await getUserMaps(userData);
+                    if (mapsResponse) {
+                        if (user?._id === id) {
+                            setUserMaps(mapsResponse);
+                        } else {
+                            setUserMaps(mapsResponse.filter(map => map.isPublic));
+                        }
+                    }
+                } else {
+                    setUserMaps([])
+                }
+            }
+        };
+
+        fetchAdditionalData();
+    }, [userData]);
 
     useEffect(() => {
         const fetchComments = async () => {
@@ -81,7 +100,7 @@ const ProfileScreen = () => {
         }
 
         fetchComments()
-    }, [])
+    }, [userData])
 
 
     const generateMapCards = (sortType) => {
@@ -248,7 +267,7 @@ const ProfileScreen = () => {
                     </div>
                     <ul className='grow h-3/4 flex flex-col justify-start overflow-scroll gap-5'>
                         {display === "posts" && userMaps && generateMapCards(sortType)}
-                        {display === "comments" && userMaps && generateCommentCards(sortType)}
+                        {display === "comments" && userComments && generateCommentCards(sortType)}
                     </ul>
                 </div>
             </div>
