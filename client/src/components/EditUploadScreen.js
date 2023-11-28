@@ -10,21 +10,50 @@ import ireland from "../assets/EditMapAssets/ireland.png"
 import finland from "../assets/EditMapAssets/finland.png"
 import poland from "../assets/EditMapAssets/poland.png"
 
+import franceGeoJson from '../assets/EditMapAssets/france-compress.geo.json';
+import irelandGeoJson from '../assets/EditMapAssets/ireland-compress.geo.json';
+import polandGeoJson from '../assets/EditMapAssets/poland-compress.geo.json';
+import finlandGeoJson from '../assets/EditMapAssets/finland-compress.geo.json';
+
 const DisplayMap = (props) => {
+    const { dispatch } = useContext(MapContext)
     const navigate = useNavigate();
     const index = props.index
     const mapArr = props.arr
     const countryNames = ["France", "Ireland", "Finland", "Poland"]//To be changed
     const editClassName = countryNames[index]
-    const handleEditClick = () => {
-        navigate('/editingmap')   //For now brings you back to / change later
+    // const handleEditClick = () => {
+    //     navigate('/editingmap')   //For now brings you back to / change later
+    // }
+    const handleExistingMapsClick = (countryName) => {
+        dispatch({ type: MapActionType.RESET })
+        let selected_file = null
+        switch(countryName){
+            case 'France':
+                selected_file = franceGeoJson
+                break;
+            case 'Ireland':
+                selected_file = irelandGeoJson
+                break;
+            case 'Finland':
+                selected_file = finlandGeoJson
+                break; 
+            case 'Poland':
+                selected_file = polandGeoJson
+                break; 
+            default:
+                console.log("No map found")
+                break;
+        }
+        dispatch({ type: MapActionType.VIEW, payload: selected_file })
+        navigate('/editingMap')   //For now brings you back to / change later
     }
     return (
         <>
             <div className="h-full">
                 <div className="bg-primary-GeoOrange text-center rounded-lg ">
                     <img src={mapArr[index]} className="h-64 w-[28rem] rounded-lg" />
-                    <div className={editClassName} onClick={() => handleEditClick()}>Edit {" " + countryNames[index]}</div>
+                    <div className={editClassName} onClick={() => handleExistingMapsClick(countryNames[index])}>Edit {" " + countryNames[index]}</div>
                 </div>
             </div>
         </>
