@@ -137,7 +137,7 @@ describe('testing editing map page', () => {
 
   it('should move to heatmap', () => {
     cy.contains('Select Map Type ▼').click()
-    cy.contains('Heatmap').should('have.text', 'Heatmap ')
+    cy.contains('Heatmap').should('have.text', 'Heatmap')
   })
 
   it('should move to pointmap', () => {
@@ -147,17 +147,17 @@ describe('testing editing map page', () => {
 
   it('should move to symbol', () => {
     cy.contains('Select Map Type ▼').click()
-    cy.contains('Symbol').should('have.text', ' Symbol ')
+    cy.contains('Symbol').should('have.text', 'Symbol')
   })
 
   it('should move to choropleth', () => {
     cy.contains('Select Map Type ▼').click()
-    cy.contains('Choropleth').should('have.text', 'Choropleth ')
+    cy.contains('Choropleth').should('have.text', 'Choropleth')
   })
 
   it('should move to flow', () => {
     cy.contains('Select Map Type ▼').click()
-    cy.contains('Flow').should('have.text', 'Flow ')
+    cy.contains('Flow').should('have.text', 'Flow')
   })
 })
 

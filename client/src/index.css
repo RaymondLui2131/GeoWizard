@@ -78,6 +78,13 @@
   
 }
 
+.mapContainer {
+  width: 56.25rem; /* Your original width */
+  height: 46.875rem; /* Your original height */
+  max-width: 80vw; /* maximum width relative to the viewport */
+  max-height: 80vh; /* maximum height relative to the viewport */
+  /* Add more styling properties as needed */
+}
 
 /* :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;

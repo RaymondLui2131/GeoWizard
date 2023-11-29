@@ -565,7 +565,7 @@ const MapView = () => {
     return (
         map && (<>
             <div className='flex space-around px-28 pt-5'>
-                <div className='flex justify-center flex-col items-center w-8/12'>
+                <div className='flex justify-center flex-col items-center'>
                     <div>
                         {!validTitle
                             ?<div className='text-red-300 text-center'>Need Title</div>
@@ -580,7 +580,7 @@ const MapView = () => {
                         <MapContainer
                             center={center}
                             zoom={5}
-                            style={{ height: '750px', width: '900px' }}
+                            className='mapContainer'
                             scrollWheelZoom={true}
                             maxBounds={[padded_NE, padded_SW]}
                             doubleClickZoom={ false}
@@ -606,14 +606,14 @@ const MapView = () => {
                         placeholder='Enter Description...' maxLength={48} onChange={(e) => setDescription(e.target.value)} >
                     </input>
                 </div>
-                <div className='px-32 w-4/12'>
+                <div className='px-32'>
                     <div className='text-2xl font-NanumSquareNeoOTF-Lt flex flex-col items-center text-center '>
 
-                        {!mapTypeClicked
+                        {!mapTypeClicked && !changingMapTypeIsClicked 
                             ?
                             <>
                                 {typeSelected == MAP_TYPES['NONE']
-                                    ? <button className='w-full bg-primary-GeoOrange font-PyeongChangPeace-Light' onClick={() => isClicked(!mapTypeClicked)}>Select Map Type ▼ </button>
+                                    ? <button className='w-full bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked)}>Select Map Type ▼ </button>
                                     :
                                     <>
                                         <button className=' bg-primary-GeoOrange block w-96 px-4' onClick={() => isClicked(!mapTypeClicked)}>{mapString}</button>
@@ -625,16 +625,15 @@ const MapView = () => {
                                     </>
                                 }
                             </>
-                            : !changingMapTypeIsClicked ?
+                            : 
                             <>
                                 <button onClick={() => isClicked(!mapTypeClicked)} className='w-full bg-primary-GeoOrange'>Select Map Type ▼</button>
-                                <button className='w-full bg-primary-GeoOrange' onClick={() => { handleHeatMapClick() }}>Heatmap</button>
-                                <button className='w-full bg-primary-GeoOrange' onClick={() => { handlePointMapClick() }}>Point/Locator</button>
-                                <button className='w-full bg-primary-GeoOrange' onClick={() => { handleSymbolMapClick() }}>Symbol</button>
-                                <button className='w-full bg-primary-GeoOrange' onClick={() => { handleChoroplethMapClick() }}>Choropleth</button>
-                                <button className='w-full bg-primary-GeoOrange' onClick={() => { handleFlowMapClick() }}>Flow</button>
+                                <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handleHeatMapClick() }}>Heatmap</button>
+                                <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handlePointMapClick() }}>Point/Locator</button>
+                                <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handleSymbolMapClick() }}>Symbol</button>
+                                <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handleChoroplethMapClick() }}>Choropleth</button>
+                                <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handleFlowMapClick() }}>Flow</button>
                             </>
-                            : null
                         }
                         
                         {typeSelected === 0 &&
@@ -647,8 +646,8 @@ const MapView = () => {
                             <div className='w-full text-xl pt-4 font-PyeongChangPeace-Light promptBox'>
                                 <div className='testBox'> Are you sure you want to switch maps? </div>
                                 <div className="button-container">
-                                    <button className='yesButton' onClick={() => { handleYesClick() }}>Yes</button>
-                                    <button className='noButton' onClick={() => { handleNoClick() }}>No</button>
+                                    <button data-test-id="yes-button" className='yesButton' onClick={() => { handleYesClick() }}>Yes</button>
+                                    <button data-test-id="no-button" className='noButton' onClick={() => { handleNoClick() }}>No</button>
                                 </div>
                             </div>
                         }
