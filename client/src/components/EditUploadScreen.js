@@ -14,6 +14,7 @@ import franceGeoJson from '../assets/EditMapAssets/france-compress.geo.json';
 import irelandGeoJson from '../assets/EditMapAssets/ireland-compress.geo.json';
 import polandGeoJson from '../assets/EditMapAssets/poland-compress.geo.json';
 import finlandGeoJson from '../assets/EditMapAssets/finland-compress.geo.json';
+import index from "function.prototype.name";
 
 const DisplayMap = (props) => {
     const { dispatch } = useContext(MapContext)
@@ -45,7 +46,14 @@ const DisplayMap = (props) => {
                 console.log("No map found")
                 break;
         }
-        dispatch({ type: MapActionType.VIEW, payload: selected_file })
+        const edited = {
+            type: selected_file.type,
+            features: selected_file.features.map((feature, index) => ({
+                ...feature,
+                key: index,
+        })),
+        }
+        dispatch({ type: MapActionType.VIEW, payload: edited })
         navigate('/editingMap')   //For now brings you back to / change later
     }
     return (
@@ -101,8 +109,14 @@ const EditUpload = () => {
             reader.onload = (e) => {
                 const geojson = JSON.parse(e.target.result)//REMEMBER TO COMPRESS AFTER HANDLING OTHER FILE FORMATS
                 const compressed = simplify(geojson, options);
-
-                dispatch({ type: MapActionType.UPLOAD, payload: compressed })
+                const edited = {
+                    type: compressed.type,
+                    features: compressed.features.map((feature, index) => ({
+                        ...feature,
+                        key: index,
+                })),
+                }
+                dispatch({ type: MapActionType.UPLOAD, payload: edited })
             }
 
             dispatch({ type: MapActionType.RESET })
