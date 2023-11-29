@@ -244,9 +244,9 @@ const MapDisplay = (props) =>{
     console.log(styleMapping)
     const getFeatureStyleView = (feature) => {
         const foundName = possibleNames.find(propertyName => propertyName in feature.properties)
-        if (foundName) 
+        if (feature) 
         {
-            return styleMapping[feature.properties[foundName]] || {fillColor:'#ffffff'}
+            return styleMapping[feature.key] || {fillColor:'#ffffff'}
         }
         return {}
     }

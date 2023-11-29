@@ -8,8 +8,6 @@ const ColorSliderComponent = (props) => {
     const changeHlsa = props.changeHlsa
 
     const handleChangeColor = (newcolor) => {
-        // console.log('Changer')
-        // console.log(newcolor)
         changeHlsa(newcolor)
     }
     const adjusted = {...hlsaColor}
