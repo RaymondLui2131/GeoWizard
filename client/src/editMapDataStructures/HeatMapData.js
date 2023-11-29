@@ -3,7 +3,6 @@
 export class HeatMapEdit {
     constructor(featureName, colorHLSA) {
       this.featureName = featureName;  //feature is labeled with key
-      this.colorHEX = colorHEX;
       this.colorHLSA = colorHLSA;
     }
   }
