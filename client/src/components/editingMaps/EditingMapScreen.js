@@ -140,16 +140,17 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
                         </button>
                     </div>
                 </div>
+                <div className='flex'>
+                <div className='mr-4'>
+                    <button className={`bg-green-200 text-3xl font-NanumSquareNeoOTF-Lt px-8 rounded-full py-2 ${!publicStatus && 'opacity-50'}`} onClick={() => setPublic(true)}>
+                    Public
+                    </button>
+                </div>
                 <div>
-                    <div className='inline-block'><button className={`bg-green-200 text-3xl
-                                                    font-NanumSquareNeoOTF-Lt px-8 rounded-full py-2 ${!publicStatus && 'opacity-50'}`} onClick={() => setPublic(true)}>
-                        Public</button>
-                    </div>
-                    <div className=' inline-block'> <button className={`bg-red-300 text-3xl
-                                                    font-NanumSquareNeoOTF-Lt px-8  rounded-full py-2 ${publicStatus && 'opacity-50'}`} onClick={() => setPublic(false)}>
-                        Private</button>
-                    </div>
-
+                    <button className={`bg-red-300 text-3xl font-NanumSquareNeoOTF-Lt px-8 rounded-full py-2 ${publicStatus && 'opacity-50'}`} onClick={() => setPublic(false)}>
+                    Private
+                    </button>
+                </div>
                 </div>
             </div>
         </div>
@@ -564,7 +565,7 @@ const MapView = () => {
     return (
         map && (<>
             <div className='flex space-around px-28 pt-5'>
-                <div className='flex justify-center flex-col items-center'>
+                <div className='flex justify-center flex-col items-center w-8/12'>
                     <div>
                         {!validTitle
                             ?<div className='text-red-300 text-center'>Need Title</div>
@@ -605,14 +606,14 @@ const MapView = () => {
                         placeholder='Enter Description...' maxLength={48} onChange={(e) => setDescription(e.target.value)} >
                     </input>
                 </div>
-                <div className='px-32'>
+                <div className='px-32 w-4/12'>
                     <div className='text-2xl font-NanumSquareNeoOTF-Lt flex flex-col items-center text-center '>
 
                         {!mapTypeClicked
                             ?
                             <>
                                 {typeSelected == MAP_TYPES['NONE']
-                                    ? <button className='w-3/5 bg-primary-GeoOrange font-PyeongChangPeace-Light' onClick={() => isClicked(!mapTypeClicked)}>Select Map Type ▼ </button>
+                                    ? <button className='w-full bg-primary-GeoOrange font-PyeongChangPeace-Light' onClick={() => isClicked(!mapTypeClicked)}>Select Map Type ▼ </button>
                                     :
                                     <>
                                         <button className=' bg-primary-GeoOrange block w-96 px-4' onClick={() => isClicked(!mapTypeClicked)}>{mapString}</button>
@@ -624,15 +625,16 @@ const MapView = () => {
                                     </>
                                 }
                             </>
-                            :
+                            : !changingMapTypeIsClicked ?
                             <>
-                                <button onClick={() => isClicked(!mapTypeClicked)} className='w-[10.5rem] bg-primary-GeoOrange'>Select Map Type ▼</button>
-                                <button className='w-[10.5rem] bg-primary-GeoOrange' onClick={() => { handleHeatMapClick() }}>Heatmap</button>
-                                <button className='w-[10.5rem] bg-primary-GeoOrange' onClick={() => { handlePointMapClick() }}>Point/Locator</button>
-                                <button className='w-[10.5rem] bg-primary-GeoOrange' onClick={() => { handleSymbolMapClick() }}>Symbol</button>
-                                <button className='w-[10.5rem] bg-primary-GeoOrange' onClick={() => { handleChoroplethMapClick() }}>Choropleth</button>
-                                <button className='w-[10.5rem] bg-primary-GeoOrange' onClick={() => { handleFlowMapClick() }}>Flow</button>
+                                <button onClick={() => isClicked(!mapTypeClicked)} className='w-full bg-primary-GeoOrange'>Select Map Type ▼</button>
+                                <button className='w-full bg-primary-GeoOrange' onClick={() => { handleHeatMapClick() }}>Heatmap</button>
+                                <button className='w-full bg-primary-GeoOrange' onClick={() => { handlePointMapClick() }}>Point/Locator</button>
+                                <button className='w-full bg-primary-GeoOrange' onClick={() => { handleSymbolMapClick() }}>Symbol</button>
+                                <button className='w-full bg-primary-GeoOrange' onClick={() => { handleChoroplethMapClick() }}>Choropleth</button>
+                                <button className='w-full bg-primary-GeoOrange' onClick={() => { handleFlowMapClick() }}>Flow</button>
                             </>
+                            : null
                         }
                         
                         {typeSelected === 0 &&
