@@ -158,7 +158,7 @@ describe('testing editing map page', () => {
   it('should move to flow', () => {
     cy.contains('Select Map Type ▼').click()
     cy.contains('Flow').should('have.text', 'Flow')
-  })
+  }) 
 })
 
 describe('testing view page', () => {
