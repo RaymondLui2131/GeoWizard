@@ -40,15 +40,6 @@ const ProfileScreen = () => {
                 const userResponse = await authgetUserById(id);
                 if (userResponse) {
                     setUserData(userResponse);
-                    console.log(userResponse)
-                    setUserInfo({ about: userResponse.about, birthday: userResponse.birthday, location: userResponse.location })
-                    // Check if userData is available before fetching maps
-                    if (userResponse && userResponse.maps && userResponse.maps.length) {
-                        const mapsResponse = await getUserMaps(userResponse);
-                        if (mapsResponse) {
-                            setUserMaps(mapsResponse.filter(map => { return map.isPublic }));
-                        }
-                    }
                 }
             } catch (error) {
                 console.log(error);
@@ -56,7 +47,35 @@ const ProfileScreen = () => {
         };
 
         fetchData();
-    }, []);
+    }, [id]);
+
+    useEffect(() => {
+        const fetchAdditionalData = async () => {
+            if (userData) {
+                setUserInfo({
+                    about: userData.about,
+                    birthday: userData.birthday,
+                    location: userData.location
+                });
+
+                // Check if userData is available before fetching maps
+                if (userData.maps && userData.maps.length) {
+                    const mapsResponse = await getUserMaps(userData);
+                    if (mapsResponse) {
+                        if (user?._id === id) {
+                            setUserMaps(mapsResponse);
+                        } else {
+                            setUserMaps(mapsResponse.filter(map => map.isPublic));
+                        }
+                    }
+                } else {
+                    setUserMaps([])
+                }
+            }
+        };
+
+        fetchAdditionalData();
+    }, [userData]);
 
     useEffect(() => {
         const fetchComments = async () => {
@@ -81,7 +100,7 @@ const ProfileScreen = () => {
         }
 
         fetchComments()
-    }, [])
+    }, [userData])
 
 
     const generateMapCards = (sortType) => {
@@ -138,12 +157,18 @@ const ProfileScreen = () => {
     }
 
     const getHighestUpvotes = () => {
-        if (userMaps && userMaps.length > 0) {
-            return userMaps.reduce((prev, current) => {
-                return prev.likes > current.likes ? prev.likes : current.likes;
-            });
+        if (!userMaps || userMaps.length === 0) {
+            return 0
         }
-        return 0; // Return a default value or handle the case when userMaps is null or empty
+
+        let max_like = 0
+        userMaps.map(map => {
+            const like = map.likes
+            max_like = Math.max(max_like, like)
+
+        })
+        console.log(max_like)
+        return max_like
     }
 
     const handleSaveInfo = async (e) => {
@@ -206,15 +231,15 @@ const ProfileScreen = () => {
 
                         <div className='bg-gray-50 h-1/3 flex justify-evenly items-center rounded-b-2xl'>
                             <p className='text-center'>
-                                <span className='block font-PyeongChangPeace-Bold text-lg '>{userMaps && (userMaps.filter(map => map.isPublic)).length}</span>
+                                <span className='block font-PyeongChangPeace-Bold text-lg '>{(userMaps.filter(map => map.isPublic)).length}</span>
                                 <span className='block font-PyeongChangPeace-Light'>Posts</span>
                             </p>
                             <p className='text-center'>
-                                <span className='block font-PyeongChangPeace-Bold text-lg'>{userMaps && getHighestUpvotes()}</span>
+                                <span className='block font-PyeongChangPeace-Bold text-lg'>{getHighestUpvotes()}</span>
                                 <span className='block font-PyeongChangPeace-Light'>Highest Upvotes</span>
                             </p>
                             <p className='text-center'>
-                                <span className='block font-PyeongChangPeace-Bold text-lg'>{userData && getDaysActive()}</span>
+                                <span className='block font-PyeongChangPeace-Bold text-lg'>{getDaysActive()}</span>
                                 <span className='block font-PyeongChangPeace-Light'>Days Active</span>
                             </p>
                         </div>
@@ -248,7 +273,7 @@ const ProfileScreen = () => {
                     </div>
                     <ul className='grow h-3/4 flex flex-col justify-start overflow-scroll gap-5'>
                         {display === "posts" && userMaps && generateMapCards(sortType)}
-                        {display === "comments" && userMaps && generateCommentCards(sortType)}
+                        {display === "comments" && userComments && generateCommentCards(sortType)}
                     </ul>
                 </div>
             </div>

@@ -113,7 +113,7 @@ describe('testing edit upload', () => {
   it('should move to editing page', () => {
 
     cy.get('.France').click()
-    cy.url().should('eq', 'http://localhost:3000/editingmap')
+    cy.url().should('eq', 'http://localhost:3000/editingMap')
 
   })
 
