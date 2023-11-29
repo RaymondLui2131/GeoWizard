@@ -42,7 +42,7 @@ export default function useMapSearch(query, pageNumber) {
             params: {q: query, page: pageNumber},
             cancelToken: new axios.CancelToken(c => cancel = c)
         }).then(res => {
-            //console.log(res)
+            console.log(res)
             setMaps(prevMaps => {
                 return [...new Set([...prevMaps, ...res.data.map(m => {
                     // Check if mapObject has MapData and original_map before decompression

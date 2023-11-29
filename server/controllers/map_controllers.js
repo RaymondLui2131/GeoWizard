@@ -177,9 +177,18 @@ const changeLikesMap = asyncHandler(async (req, res) => {
 const queryMaps = asyncHandler(async (req, res) => {
     console.log('req', req.query)
     const { q, page } = req.query
-    const { query, metric, time } = q
+    const { query, metric, time} = q
     const pageSize = 3;
     const skip = pageSize * (page - 1);
+
+    console.log(q, page)
+
+    let mock = null
+
+    if (req.query.mock){
+        mock = true
+    }
+    
 
     let queryObj = { isPublic: true };
     if (query) {
@@ -235,8 +244,20 @@ const queryMaps = asyncHandler(async (req, res) => {
                 break;
         }
     }
+    console.log(queryObj)
+    console.log(sortObj)
 
-    //console.log(sortObj)
+
+    if (mock){
+        const publicMaps = await Map.find(queryObj)
+        if (!publicMaps) {
+            return res.status(404).json({ // 404 Not Found
+                message: "Could not find map data"
+            })
+        }
+        return res.status(200).json(publicMaps)
+    }
+
     const publicMaps = await Map.find(queryObj)
         .sort(sortObj)
         .skip(skip)
@@ -261,15 +282,13 @@ const queryMaps = asyncHandler(async (req, res) => {
             ]
         })
 
-
-
-    //console.log(publicMaps)
+    console.log(publicMaps)
     if (!publicMaps) {
         return res.status(404).json({ // 404 Not Found
             message: "Could not find map data"
         })
     }
-    return res.json(publicMaps)
+    return res.status(200).json(publicMaps)
 })
 
 module.exports = {
@@ -281,3 +300,4 @@ module.exports = {
     getUserMaps,
     getMapById
 }
+

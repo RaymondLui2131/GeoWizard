@@ -514,7 +514,7 @@ const MapView = () => {
                         <MapContainer
                             center={center}
                             zoom={5}
-                            style={{ height: '750px', width: '900px' }}
+                            style={{ height: '50rem', width: '70rem' }}
                             scrollWheelZoom={true}
                             maxBounds={[padded_NE, padded_SW]}
                             doubleClickZoom={ false}
