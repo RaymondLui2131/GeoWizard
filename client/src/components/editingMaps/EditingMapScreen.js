@@ -1,5 +1,5 @@
 import 'leaflet/dist/leaflet.css';
-import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, ImageOverlay } from 'react-leaflet';
 import { useState, useContext,useRef,useEffect } from "react";
 import L from 'leaflet';
 import { SaturationSlider , HueSlider } from 'react-slider-color-picker'
@@ -395,10 +395,10 @@ const MapView = () => {
 
     
     const [keyTable, setKeyTable] = useState([])//holds list of key labels mappings in form {color: hexColor, label:label}
-
-    const possibleNames = ['name', 'nom', 'nombre','title', 'label', 'id']
+    
     const [changingMapTypeIsClicked, setChangingMapTypeIsClicked] = useState(false)
     const [futureTypeSelected, setFutureTypeSelected] = useState(MAP_TYPES['NONE'])
+    const possibleNames = ['name', 'nom', 'state_name', 'nombre','title', 'label', 'id', 'nomgeo']
     // console.log(map)
     // const zoomLevel = 2
     // const center = [46.2276, 2.2137]
@@ -456,12 +456,10 @@ const MapView = () => {
     const geoJsonKey = JSON.stringify(styleMapping); // Create a key that changes when styleMapping changes
     // console.log("Style Mapping",styleMapping)
     const getFeatureStyle = (feature) => {
-        // console.log("AM HERE")
         const foundName = possibleNames.find(propertyName => propertyName in feature.properties)
-        if (foundName) 
+        if (feature) 
         {
-            // console.log("STYLING", styleMapping[feature.properties[foundName]] )
-            return styleMapping[feature.properties[foundName]] || {fillColor:'#ffffff'}
+            return styleMapping[feature.key] || {fillColor:'#ffffff'}
         }
         return {}
     }
@@ -474,9 +472,9 @@ const MapView = () => {
             {
                 const foundName = possibleNames.find(propertyName => propertyName in clickedFeature.properties)
                 // console.log("found Name",foundName)
-                if (foundName) {
-                    // console.log('Clicked feature ' + clickedFeature.properties[foundName])
-                    setAreaClicked(clickedFeature.properties[foundName])
+                if (feature.key) {
+                    // console.log('Clicked feature ' + clickedFeature.key)
+                    setAreaClicked(clickedFeature.key)
                 } else {
                     // console.log('No known name property found in clicked feature', clickedFeature)
                 }  
@@ -486,9 +484,9 @@ const MapView = () => {
             {
                 const foundName = possibleNames.find(propertyName => propertyName in clickedFeature.properties)
                 // console.log("found Name",foundName)
-                if (foundName) {
+                if (feature.key) {
                     // console.log('Clicked feature ' + clickedFeature.properties[foundName])
-                    setAreaClicked(clickedFeature.properties[foundName])
+                    setAreaClicked(clickedFeature.key)
                 } else {
                     // console.log('No known name property found in clicked feature', clickedFeature)
                 }  
@@ -598,6 +596,10 @@ const MapView = () => {
                                     layer.setStyle(featureStyle); 
                                 }}
                              />
+                             {/* <ImageOverlay
+                                url="../../assets/EditMapAssets/symbolImages/circle.png"
+                                bounds={[[51.1,-5.5], [41.3,9.5] ]}
+                            /> */}
                         </MapContainer>
                     </div>
 
