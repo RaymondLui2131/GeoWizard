@@ -565,7 +565,7 @@ const MapView = () => {
     return (
         map && (<>
             <div className='flex space-around px-28 pt-5'>
-                <div className='flex justify-center flex-col items-center'>
+                <div className='flex justify-center flex-col items-center w-8/12'>
                     <div>
                         {!validTitle
                             ?<div className='text-red-300 text-center'>Need Title</div>
