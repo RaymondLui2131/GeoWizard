@@ -228,13 +228,13 @@ const MapDisplay = (props) =>{
         
             case MAP_TYPES['HEATMAP']: {
                 console.log("Adding", edit.featureName)
-                styleMapping[edit.featureName] = { fillColor: hlsaToRGBA(edit.colorHLSA), fillOpacity: 1 };
+                styleMapping[edit.featureName] = { fillColor: hlsaToRGBA(edit.colorHLSA), fillOpacity: 0.7 };
                 break;
             }
             case MAP_TYPES['CHOROPLETH']:
             {
                 // console.log("Adding", edit.featureName)
-                styleMapping[edit.featureName] = {fillColor: edit.colorHEX , fillOpacity: 1}
+                styleMapping[edit.featureName] = {fillColor: edit.colorHEX , fillOpacity: 0.7}
                 break
             }
             default:
@@ -244,9 +244,9 @@ const MapDisplay = (props) =>{
     console.log(styleMapping)
     const getFeatureStyleView = (feature) => {
         const foundName = possibleNames.find(propertyName => propertyName in feature.properties)
-        if (foundName) 
+        if (feature) 
         {
-            return styleMapping[feature.properties[foundName]] || {fillColor:'#ffffff'}
+            return styleMapping[feature.key] || {fillColor:'#ffffff'}
         }
         return {}
     }
@@ -260,8 +260,8 @@ const MapDisplay = (props) =>{
                 scrollWheelZoom={true}
                 maxBounds={[padded_NE,padded_SW]}>
                 <TileLayer
-                    url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
-                    attribution='Tiles © Esri &mdash; Esri, DeLorme, NAVTEQ'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 />
                 {Object.keys(mapData).length    
                     ?<GeoJSON 

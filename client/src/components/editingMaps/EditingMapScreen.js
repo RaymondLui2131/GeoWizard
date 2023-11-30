@@ -1,5 +1,5 @@
 import 'leaflet/dist/leaflet.css';
-import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, ImageOverlay } from 'react-leaflet';
 import { useState, useContext,useRef,useEffect } from "react";
 import L from 'leaflet';
 import { SaturationSlider , HueSlider } from 'react-slider-color-picker'
@@ -140,16 +140,17 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
                         </button>
                     </div>
                 </div>
+                <div className='flex'>
+                <div className='mr-4'>
+                    <button className={`bg-green-200 text-3xl font-NanumSquareNeoOTF-Lt px-8 rounded-full py-2 ${!publicStatus && 'opacity-50'}`} onClick={() => setPublic(true)}>
+                    Public
+                    </button>
+                </div>
                 <div>
-                    <div className='inline-block'><button className={`bg-green-200 text-3xl
-                                                    font-NanumSquareNeoOTF-Lt px-8 rounded-full py-2 ${!publicStatus && 'opacity-50'}`} onClick={() => setPublic(true)}>
-                        Public</button>
-                    </div>
-                    <div className=' inline-block'> <button className={`bg-red-300 text-3xl
-                                                    font-NanumSquareNeoOTF-Lt px-8  rounded-full py-2 ${publicStatus && 'opacity-50'}`} onClick={() => setPublic(false)}>
-                        Private</button>
-                    </div>
-
+                    <button className={`bg-red-300 text-3xl font-NanumSquareNeoOTF-Lt px-8 rounded-full py-2 ${publicStatus && 'opacity-50'}`} onClick={() => setPublic(false)}>
+                    Private
+                    </button>
+                </div>
                 </div>
             </div>
         </div>
@@ -229,7 +230,7 @@ const MapEditOptions = (props) => {
             return (
                 <>
                     <div className='invisible'>gap space</div>
-                    <div className='h-full w-3/5 bg-gray-50 rounded-3xl'>
+                    <div className='h-full w-96 bg-gray-50 rounded-3xl'>
                         <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}><div>Point Locator Options</div></div>
                         <div className='grid grid-cols-3 gap-3  h-4/5  mx-auto'>
                             <div className='flex justify-center items-center w-20 h-24 mx-auto my-auto origin-center border-4'
@@ -299,7 +300,7 @@ const MapEditOptions = (props) => {
             return (
                 <>
                     <div className='invisible'>gap space</div>
-                    <div className='h-full w-3/5 bg-gray-50 rounded-3xl'>
+                    <div className='h-full w-96 bg-gray-50 rounded-3xl'>
                         <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
                         <div className='grid grid-cols-2 gap-2  h-4/5  mx-auto'>
                             <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
@@ -337,7 +338,7 @@ const MapEditOptions = (props) => {
             return (
                 <>
                     <div className='invisible'>gap space</div>
-                    <div className='h-full w-3/5 bg-gray-50 rounded-3xl'>
+                    <div className='h-full w-96 bg-gray-50 rounded-3xl'>
                         <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
                         <div className='grid grid-cols-2 gap-2  h-4/5  mx-auto'>
                             <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
@@ -394,8 +395,10 @@ const MapView = () => {
 
     
     const [keyTable, setKeyTable] = useState([])//holds list of key labels mappings in form {color: hexColor, label:label}
-
-    const possibleNames = ['name', 'nom', 'nombre','title', 'label', 'id']
+    
+    const [changingMapTypeIsClicked, setChangingMapTypeIsClicked] = useState(false)
+    const [futureTypeSelected, setFutureTypeSelected] = useState(MAP_TYPES['NONE'])
+    const possibleNames = ['name', 'nom', 'state_name', 'nombre','title', 'label', 'id', 'nomgeo']
     // console.log(map)
     // const zoomLevel = 2
     // const center = [46.2276, 2.2137]
@@ -432,13 +435,13 @@ const MapView = () => {
                 case MAP_TYPES['HEATMAP']:
                 {
                     // console.log("Adding", edit.featureName)
-                    newMappings[edit.featureName] = {fillColor: hlsaToRGBA(edit.colorHLSA), fillOpacity: 1}
+                    newMappings[edit.featureName] = {fillColor: hlsaToRGBA(edit.colorHLSA), fillOpacity: 0.7}
                     break
                 }
                 case MAP_TYPES['CHOROPLETH']:
                 {
                     // console.log("Adding", edit.featureName)
-                    newMappings[edit.featureName] = {fillColor: edit.colorHEX , fillOpacity: 1}
+                    newMappings[edit.featureName] = {fillColor: edit.colorHEX , fillOpacity: 0.7}
                     break
                 }
                 default:
@@ -453,12 +456,10 @@ const MapView = () => {
     const geoJsonKey = JSON.stringify(styleMapping); // Create a key that changes when styleMapping changes
     // console.log("Style Mapping",styleMapping)
     const getFeatureStyle = (feature) => {
-        // console.log("AM HERE")
         const foundName = possibleNames.find(propertyName => propertyName in feature.properties)
-        if (foundName) 
+        if (feature) 
         {
-            // console.log("STYLING", styleMapping[feature.properties[foundName]] )
-            return styleMapping[feature.properties[foundName]] || {fillColor:'#ffffff'}
+            return styleMapping[feature.key] || {fillColor:'#ffffff'}
         }
         return {}
     }
@@ -471,9 +472,9 @@ const MapView = () => {
             {
                 const foundName = possibleNames.find(propertyName => propertyName in clickedFeature.properties)
                 // console.log("found Name",foundName)
-                if (foundName) {
-                    // console.log('Clicked feature ' + clickedFeature.properties[foundName])
-                    setAreaClicked(clickedFeature.properties[foundName])
+                if (feature.key) {
+                    // console.log('Clicked feature ' + clickedFeature.key)
+                    setAreaClicked(clickedFeature.key)
                 } else {
                     // console.log('No known name property found in clicked feature', clickedFeature)
                 }  
@@ -483,9 +484,9 @@ const MapView = () => {
             {
                 const foundName = possibleNames.find(propertyName => propertyName in clickedFeature.properties)
                 // console.log("found Name",foundName)
-                if (foundName) {
+                if (feature.key) {
                     // console.log('Clicked feature ' + clickedFeature.properties[foundName])
-                    setAreaClicked(clickedFeature.properties[foundName])
+                    setAreaClicked(clickedFeature.key)
                 } else {
                     // console.log('No known name property found in clicked feature', clickedFeature)
                 }  
@@ -495,11 +496,74 @@ const MapView = () => {
                 break
         }
     }
+    const handleHeatMapClick = () => {
+        if (typeSelected === MAP_TYPES['NONE'] || typeSelected === MAP_TYPES['HEATMAP']){
+            isClicked(false)
+            setType(MAP_TYPES['HEATMAP'])
+        }
+        else {
+            setChangingMapTypeIsClicked(true)
+            setFutureTypeSelected(MAP_TYPES['HEATMAP'])
+        }
+    }
+    const handlePointMapClick = () => {
+        if (typeSelected === MAP_TYPES['NONE'] || typeSelected === MAP_TYPES['POINT']){
+            isClicked(false)
+            setType(MAP_TYPES['POINT'])
+        }
+        else {
+            setChangingMapTypeIsClicked(true)
+            setFutureTypeSelected(MAP_TYPES['POINT'])
+        }
+    }
+    const handleSymbolMapClick = () => {
+        if (typeSelected === MAP_TYPES['NONE'] || typeSelected === MAP_TYPES['SYMBOL']){
+            isClicked(false)
+            setType(MAP_TYPES['SYMBOL'])
+        }
+        else {
+            setChangingMapTypeIsClicked(true)
+            setFutureTypeSelected(MAP_TYPES['SYMBOL'])
+        }
+    }
+    const handleChoroplethMapClick = () => {
+        if (typeSelected === MAP_TYPES['NONE'] || typeSelected === MAP_TYPES['CHOROPLETH']){
+            isClicked(false)
+            setType(MAP_TYPES['CHOROPLETH'])
+        }
+        else {
+            setChangingMapTypeIsClicked(true)
+            setFutureTypeSelected(MAP_TYPES['CHOROPLETH'])
+        }
+    }
+    const handleFlowMapClick = () => {
+        if (typeSelected === MAP_TYPES['NONE'] || typeSelected === MAP_TYPES['FLOW']){
+            isClicked(false)
+            setType(MAP_TYPES['FLOW'])
+        }
+        else {
+            setChangingMapTypeIsClicked(true)
+            setFutureTypeSelected(MAP_TYPES['FLOW'])
+        }
+    }
+    const handleYesClick = () => {
+        console.log("Yes Click")
+        isClicked(false)
+        setType(futureTypeSelected)
+        setChangingMapTypeIsClicked(false)
+        setEditsList([])
+    }
+    const handleNoClick = () => {
+        console.log("No Click")
+        isClicked(false)
+        setType(typeSelected)
+        setChangingMapTypeIsClicked(false)
+    }
     // console.log("type", typeSelected)
     return (
         map && (<>
-            <div className='w-4/5 flex justify-center flex-row'>
-                <div className='w-1/2 flex justify-center flex-col pt-32 items-center'>
+            <div className='flex space-around px-28 pt-5'>
+                <div className='flex justify-center flex-col items-center w-8/12'>
                     <div>
                         {!validTitle
                             ?<div className='text-red-300 text-center'>Need Title</div>
@@ -514,14 +578,14 @@ const MapView = () => {
                         <MapContainer
                             center={center}
                             zoom={5}
-                            style={{ height: '750px', width: '900px' }}
+                            className='mapContainer'
                             scrollWheelZoom={true}
                             maxBounds={[padded_NE, padded_SW]}
                             doubleClickZoom={ false}
                             >
                             <TileLayer
-                                url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
-                                attribution='Tiles © Esri &mdash; Esri, DeLorme, NAVTEQ'
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                             />
                             <GeoJSON 
                                 key = {geoJsonKey}
@@ -532,25 +596,29 @@ const MapView = () => {
                                     layer.setStyle(featureStyle); 
                                 }}
                              />
+                             {/* <ImageOverlay
+                                url="../../assets/EditMapAssets/symbolImages/circle.png"
+                                bounds={[[51.1,-5.5], [41.3,9.5] ]}
+                            /> */}
                         </MapContainer>
                     </div>
 
-                    <input type='text' name='description' className='bg-primary-GeoPurple text-white placeholder-white text-2xl w-[35rem]
+                    <input type='text' name='description' className='bg-primary-GeoPurple text-white placeholder-white text-2xl w-[50rem]
                         text-center'
                         placeholder='Enter Description...' maxLength={48} onChange={(e) => setDescription(e.target.value)} >
                     </input>
                 </div>
-                <div className='w-1/2 flex justify-center pt-32 ' >
-                    <div className='w-full text-2xl font-NanumSquareNeoOTF-Lt flex flex-col  items-center text-center'>
+                <div className='px-32'>
+                    <div className='text-2xl font-NanumSquareNeoOTF-Lt flex flex-col items-center text-center '>
 
-                        {!mapTypeClicked
+                        {!mapTypeClicked && !changingMapTypeIsClicked 
                             ?
                             <>
                                 {typeSelected == MAP_TYPES['NONE']
-                                    ? <button className='w-3/5 bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked)}>Select Map Type ▼ </button>
+                                    ? <button className='w-full bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked)}>Select Map Type ▼ </button>
                                     :
                                     <>
-                                        <button className='w-3/5 bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked)}>{mapString}</button>
+                                        <button className=' bg-primary-GeoOrange block w-96 px-4' onClick={() => isClicked(!mapTypeClicked)}>{mapString}</button>
                                         <MapEditOptions mapType={typeSelected} setType={setType} areaClicked = {areaClicked} setAreaClicked={setAreaClicked}
                                             editsList = {editsList} setEditsList={setEditsList} setLower={setLower} setUpper = {setUpper} validHeatRange = {validHeatRange}
                                             setValidHeatRange={setValidHeatRange} setBaseColor= {setBaseColor}
@@ -559,15 +627,31 @@ const MapView = () => {
                                     </>
                                 }
                             </>
-                            :
+                            : 
                             <>
-                                <button onClick={() => isClicked(!mapTypeClicked)} className='w-3/5 bg-primary-GeoOrange'>Select Map Type ▼ </button>
-                                <button className='w-3/5 bg-primary-GeoOrange ' onClick={() => { isClicked(false); setType(MAP_TYPES['HEATMAP']) }}>Heatmap </button>
-                                <button className='w-3/5 bg-primary-GeoOrange' onClick={() => { isClicked(false); setType(MAP_TYPES['POINT']) }}>Point/Locator</button>
-                                <button className='w-3/5 bg-primary-GeoOrange' onClick={() => { isClicked(false); setType(MAP_TYPES['SYMBOL']) }}> Symbol </button>
-                                <button className='w-3/5 bg-primary-GeoOrange' onClick={() => { isClicked(false); setType(MAP_TYPES['CHOROPLETH']) }}>Choropleth </button>
-                                <button className='w-3/5 bg-primary-GeoOrange' onClick={() => { isClicked(false); setType(MAP_TYPES['FLOW']) }}>Flow </button>
+                                <button onClick={() => isClicked(!mapTypeClicked)} className='w-full bg-primary-GeoOrange'>Select Map Type ▼</button>
+                                <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handleHeatMapClick() }}>Heatmap</button>
+                                <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handlePointMapClick() }}>Point/Locator</button>
+                                <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handleSymbolMapClick() }}>Symbol</button>
+                                <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handleChoroplethMapClick() }}>Choropleth</button>
+                                <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handleFlowMapClick() }}>Flow</button>
                             </>
+                        }
+                        
+                        {typeSelected === 0 &&
+                            <div className='w-full text-xl pt-4 font-PyeongChangPeace-Light'>
+                                <p>Please select a map type to get started.</p>
+                            </div>
+                        }
+
+                        {changingMapTypeIsClicked &&
+                            <div className='w-full text-xl pt-4 font-PyeongChangPeace-Light promptBox'>
+                                <div className='testBox'> Are you sure you want to switch maps? </div>
+                                <div className="button-container">
+                                    <button data-test-id="yes-button" className='yesButton' onClick={() => { handleYesClick() }}>Yes</button>
+                                    <button data-test-id="no-button" className='noButton' onClick={() => { handleNoClick() }}>No</button>
+                                </div>
+                            </div>
                         }
 
                     </div>
@@ -587,7 +671,7 @@ const MapView = () => {
 const EditingMap = () => {
     return (
         <>
-            <div className="bg-primary-GeoPurple min-h-screen max-h-screen flex justify-between items-center flex-col overflow-auto">
+            <div className="bg-primary-GeoPurple min-h-screen max-h-[100%]">
                 <MapView />
             </div>
 
@@ -596,3 +680,5 @@ const EditingMap = () => {
 }
 
 export default EditingMap
+
+// bg-primary-GeoPurple min-h-screen max-h-screen flex justify-between items-center flex-col overflow-auto

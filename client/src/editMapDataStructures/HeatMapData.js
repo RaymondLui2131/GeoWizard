@@ -1,8 +1,8 @@
 
-//Stores color information for a feature. COlor is in HSV format
+//Stores color information for a feature. COlor is in Hlsa format
 export class HeatMapEdit {
     constructor(featureName, colorHLSA) {
-      this.featureName = featureName;
+      this.featureName = featureName;  //feature is labeled with key
       this.colorHLSA = colorHLSA;
     }
   }
