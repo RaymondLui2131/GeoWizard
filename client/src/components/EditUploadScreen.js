@@ -78,7 +78,8 @@ const EditUpload = () => {
     const { dispatch } = useContext(MapContext)
     const [mapIndex, setIndex] = useState(0); // index of mapArr
     const [mapArrayObj,] = useState([france, ireland, finland, poland]); // index of mapArr For now will just be array of imagepaths
-
+    const [mapErrorMessage,setMapErrorMessage] = useState(false) 
+    
     const navigate = useNavigate();
     const arrowOnclick = (direction) => {
         if (direction === 0)  //0 is left
@@ -123,6 +124,9 @@ const EditUpload = () => {
             reader.readAsText(selected_file)
             navigate('/editingMap')   //For now brings you back to / change later
         }
+        else {
+            setMapErrorMessage(true)
+        }
     }
     return (
         <>
@@ -144,6 +148,9 @@ const EditUpload = () => {
                                 <button data-test-id="upload-button" className="bg-primary-GeoOrange px-16 rounded-full py-2 " onClick={() => uploadHandle()}>
                                     Upload
                                 </button>
+                                {mapErrorMessage ?
+                                    <div style={{ color: '#8B0000', textAlign: 'center' }}> Please upload a supported format </div>
+                                : null}
                             </div>
                         </div>
                         <div className="flex flex-col pt-16">
