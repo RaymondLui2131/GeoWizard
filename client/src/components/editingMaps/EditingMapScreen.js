@@ -435,13 +435,13 @@ const MapView = () => {
                 case MAP_TYPES['HEATMAP']:
                 {
                     // console.log("Adding", edit.featureName)
-                    newMappings[edit.featureName] = {fillColor: hlsaToRGBA(edit.colorHLSA), fillOpacity: 1}
+                    newMappings[edit.featureName] = {fillColor: hlsaToRGBA(edit.colorHLSA), fillOpacity: 0.7}
                     break
                 }
                 case MAP_TYPES['CHOROPLETH']:
                 {
                     // console.log("Adding", edit.featureName)
-                    newMappings[edit.featureName] = {fillColor: edit.colorHEX , fillOpacity: 1}
+                    newMappings[edit.featureName] = {fillColor: edit.colorHEX , fillOpacity: 0.7}
                     break
                 }
                 default:
@@ -584,8 +584,8 @@ const MapView = () => {
                             doubleClickZoom={ false}
                             >
                             <TileLayer
-                                url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
-                                attribution='Tiles © Esri &mdash; Esri, DeLorme, NAVTEQ'
+                                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                             />
                             <GeoJSON 
                                 key = {geoJsonKey}
