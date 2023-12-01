@@ -282,7 +282,7 @@ const queryMaps = asyncHandler(async (req, res) => {
             ]
         })
 
-    console.log(publicMaps)
+    //console.log(publicMaps)
     if (!publicMaps) {
         return res.status(404).json({ // 404 Not Found
             message: "Could not find map data"

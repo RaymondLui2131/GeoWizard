@@ -376,6 +376,7 @@ const MapEditOptions = (props) => {
 
 const MapView = () => {
     const { map, /** dispatch */ } = useContext(MapContext)
+    console.log(map)
     // const [map, setMap] = useState(null)
     const [title, setTitle] = useState('')
     const [validTitle, setValidTitle] = useState(true)
