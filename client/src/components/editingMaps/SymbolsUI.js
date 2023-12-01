@@ -56,36 +56,36 @@ export const SymbolUi = (props) =>
     return (
         <>
             <div className='invisible'>gap space</div>
-            <div className='h-full w-3/5 bg-gray-50 rounded-3xl'>
-                <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
-                <div className='grid grid-cols-2 gap-2  h-4/5  mx-auto'>
-                    <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                        style={{ borderColor: selected === 'circle' ? selectedColor : '#F9FAFB' }}>
-                        <img src={circle} alt='circle' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("circle")} />
+                <div className='h-full w-96 bg-gray-50 rounded-3xl'>
+                    <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
+                    <div className='grid grid-cols-2 gap-2  h-4/5  mx-auto'>
+                        <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
+                            style={{ borderColor: selected === 'circle' ? selectedColor : '#F9FAFB' }}>
+                            <img src={circle} alt='circle' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("circle")} />
+                        </div>
+                        <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
+                            style={{ borderColor: selected === 'triangle' ? selectedColor : '#F9FAFB' }}>
+                            <img src={triangle} alt='triangle' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("triangle")} />
+                        </div>
+                        <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
+                            style={{ borderColor: selected === 'square' ? selectedColor : '#F9FAFB' }}>
+                            <img src={square} alt='square' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("square")} />
+                        </div>
+                        <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
+                            style={{ borderColor: selected === 'star' ? selectedColor : '#F9FAFB' }}>
+                            <img src={star} alt='star' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("star")} />
+                        </div>
+                        <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
+                            style={{ borderColor: selected === 'hexagon' ? selectedColor : '#F9FAFB' }}>
+                            <img src={hexagon} alt='hexagon' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("hexagon")} />
+                        </div>
+                        <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
+                            style={{ borderColor: selected === 'pentagon' ? selectedColor : '#F9FAFB' }}>
+                            <img src={pentagon} alt='pentagon' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("pentagon")} />
+                        </div>
                     </div>
-                    <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                        style={{ borderColor: selected === 'triangle' ? selectedColor : '#F9FAFB' }}>
-                        <img src={triangle} alt='triangle' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("triangle")} />
-                    </div>
-                    <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                        style={{ borderColor: selected === 'square' ? selectedColor : '#F9FAFB' }}>
-                        <img src={square} alt='square' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("square")} />
-                    </div>
-                    <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                        style={{ borderColor: selected === 'star' ? selectedColor : '#F9FAFB' }}>
-                        <img src={star} alt='star' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("star")} />
-                    </div>
-                    <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                        style={{ borderColor: selected === 'hexagon' ? selectedColor : '#F9FAFB' }}>
-                        <img src={hexagon} alt='hexagon' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("hexagon")} />
-                    </div>
-                    <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                        style={{ borderColor: selected === 'pentagon' ? selectedColor : '#F9FAFB' }}>
-                        <img src={pentagon} alt='pentagon' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("pentagon")} />
-                    </div>
-                </div>
-                <div className='flex flex-col items-center w-full mx-auto'>
-                    <HueSlider handleChangeColor={handleChangeColor} color={symbColor} />
+                    <div className='flex flex-col items-center w-full mx-auto'>
+                        <HueSlider handleChangeColor={handleChangeColor} color={symbColor} />
                 </div>
             </div>
     </>
