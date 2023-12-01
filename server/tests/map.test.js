@@ -2,14 +2,14 @@ const User = require("../models/user_model")
 const Map = require("../models/map_model")
 const MapController = require("../controllers/map_controllers")
 const MapData = require("../models/map_data_model")
+const request = require("supertest")
+const createServer = require("../utils/create_server")
+
+const app = createServer()
 
 jest.mock("../models/map_model", () => ({
     find: jest.fn(),
-    create: jest.fn(),
-    sort: jest.fn(),
-    skip: jest.fn(),
-    limit: jest.fn(),
-    populate: jest.fn()
+    create: jest.fn()
 }))
 
 jest.mock("../models/map_data_model", () => ({
@@ -285,10 +285,42 @@ describe("testing saveUserMap", () => {
             user_id: "user_id",
             map_id: "map_id"
         });
-        
+
         expect(user.maps).toContain("map_id");
         // Assertion to check if `save()` method was called
         expect(user.save).toHaveBeenCalled();
+    })
+})
+
+
+describe("testing getMapById", () => {
+    it("should return the map with the correct id", async () => {
+        const map = { _id: "456", title: "map456", user_id: {} }
+        const user = { user_id: "123", username: "testuser" }
+        Map.findById.mockReturnThis()
+        Map.findById().populate.mockImplementation(async () => {
+            map.user_id.username = user.username
+            return map
+        })
+
+        const res = await request(app).get(`/maps/${map._id}`)
+        expect(res.status).toBe(200)
+        expect(res.body).toEqual({
+            map: map,
+            username: map.user_id.username
+        })
+    })
+
+    it("should fail if map not found", async () => {
+        const map = { _id: "456", title: "map456", user_id: {} }
+        Map.findById.mockReturnThis()
+        Map.findById().populate.mockResolvedValueOnce(null)
+
+        const res = await request(app).get(`/maps/${map._id}`)
+        expect(res.status).toBe(404)
+        expect(res.body).toEqual({
+            message: "Map not found"
+        })
     })
 })
 

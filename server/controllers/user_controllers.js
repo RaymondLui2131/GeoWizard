@@ -227,7 +227,7 @@ const updateUserInfo = asyncHandler(async (req, res) => {
     const savedUser = await user.save()
 
     if (savedUser) {
-        return res.status(400).json({
+        return res.status(200).json({
             user: user,
             value: user[field]
         })
