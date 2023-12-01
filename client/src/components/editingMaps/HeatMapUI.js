@@ -2,7 +2,7 @@ import tinycolor from "tinycolor2"
 import { HeatMapEdit } from '../../editMapDataStructures/HeatMapData.js';
 import { MAP_TYPES } from "../../constants/MapTypes.js";
 import { SaturationSlider } from "react-slider-color-picker";
-
+import { useEffect } from "react";
 const ColorSliderComponent = (props) => {
     const hlsaColor = props.hlsaColor
     const changeHlsa = props.changeHlsa
@@ -36,36 +36,44 @@ export const HeatUi = (props) => {
     const hexToHlsa = props.hexToHlsa
     const validHeatRange = props.validHeatRange
     const setBaseColor = props.setBaseColor
-    console.log("sele",selected)
+    // console.log("sele",selected)
     const lower = parseInt(lowerBound)
     const upper = parseInt(upperBound)
-    if(upper>lower)
-        validHeatRange(true)
-    if(selected === '')
-    {
-        setHlsa(hexToHlsa('#ff0000'))
-        setSelected('red')
-    }
-    if(areaClicked)
-    {
-        if(setSelected !== '')
+
+    
+    useEffect(() => {
+        if(selected === '')
         {
-            const newEdit = new HeatMapEdit(areaClicked,heatColor)
-            let copyEdits = [...editsList]
-            copyEdits= copyEdits.filter((edit) => {return edit.featureName !== areaClicked})//removing edit entry for new one
-            copyEdits.push(newEdit)
-            setEditsList(copyEdits)
-            setAreaClicked(null)//resetting clicked
+            setHlsa(hexToHlsa('#ff0000'))
+            setSelected('red')
         }
-        
-    }
+    },[])
+    useEffect(() => {
+        if(upper>lower)
+        validHeatRange(true)
+    },[upper,lower])
+
+    useEffect(() => {
+        if(areaClicked)
+        {
+            if(setSelected !== '')
+            {
+                const newEdit = new HeatMapEdit(areaClicked,heatColor)
+                let copyEdits = [...editsList]
+                copyEdits= copyEdits.filter((edit) => {return edit.featureName !== areaClicked})//removing edit entry for new one
+                copyEdits.push(newEdit)
+                setEditsList(copyEdits)
+                setAreaClicked(null)//resetting clicked
+            }
+        }
+    }, [areaClicked,editsList]
+    )
     const colorSwap = (hexString) =>
     {
         const hslaForm = hexToHlsa(hexString)
         const hue = hslaForm.h
         //updating hues
         editsList.forEach((edit) => edit.colorHLSA.h = hue)
-        console.log("Updating edits",editsList)
         setEditsList([...editsList])
         setHlsa(hslaForm)
         setBaseColor(hslaForm)

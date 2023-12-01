@@ -283,7 +283,7 @@ const MapDisplay = (props) =>{
                                     color = {edit.colorHLSA}
                                 />)
                                 : null
-                             }
+                        }
                     </>
                     :null
                 }

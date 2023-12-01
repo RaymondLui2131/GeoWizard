@@ -446,8 +446,8 @@ const MapView = () => {
     }, [editsList])
 
     // console.log("CUrrent Edits",editsListRef.current)
-    const geoJsonKey = JSON.stringify(styleMapping); // Create a key that changes when styleMapping changes
-    // console.log("Style Mapping",styleMapping)
+    const geoJsonKey = JSON.stringify(editsListRef.current); // Create a key that changes when styleMapping changes
+    // console.log(geoJsonKey)
     const getFeatureStyle = (feature) => {
         if (feature) 
         {
@@ -457,11 +457,13 @@ const MapView = () => {
     }
     const onFeatureClick = (feature) => {
         const clickedFeature = feature;
+        // console.log(clickedFeature)
         // console.log(typeSelectedRef.current)
         switch(typeSelectedRef.current)
         {
             case MAP_TYPES['HEATMAP']:
             {
+                // console.log(feature)
                 if (feature.key) {//feature will be a feature from geojson
                     setAreaClicked(clickedFeature.key)
                 } else {
@@ -525,6 +527,7 @@ const MapView = () => {
         if (typeSelected === MAP_TYPES['NONE'] || typeSelected === MAP_TYPES['CHOROPLETH']){
             isClicked(false)
             setType(MAP_TYPES['CHOROPLETH'])
+            console.log("setting type choro")
         }
         else {
             setChangingMapTypeIsClicked(true)
@@ -554,7 +557,7 @@ const MapView = () => {
         setType(typeSelected)
         setChangingMapTypeIsClicked(false)
     }
-    // console.log("type", typeSelected)
+    // console.log("current type",typeSelected)
     return (
         map && (<>
             <div className='flex space-around px-28 pt-5'>
@@ -573,6 +576,7 @@ const MapView = () => {
                         <MapContainer
                             center={center}
                             zoom={5}
+                            // style={{ height: '750px', width: '900px' }}
                             className='mapContainer'
                             scrollWheelZoom={true}
                             maxBounds={[padded_NE, padded_SW]}
@@ -583,7 +587,7 @@ const MapView = () => {
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                             />
                             <GeoJSON 
-                                key = {geoJsonKey}
+                                key = {`${typeSelected}_${geoJsonKey}`}
                                 data={map.features}
                                 onEachFeature={(feature, layer) => {
                                     layer.on('click', (e) => {typeSelected===MAP_TYPES['CHOROPLETH'] || typeSelected===MAP_TYPES['HEATMAP']
@@ -592,11 +596,13 @@ const MapView = () => {
                                     if(typeSelected===MAP_TYPES['CHOROPLETH'] || typeSelected===MAP_TYPES['HEATMAP'])
                                     {
                                         const featureStyle = getFeatureStyle(feature)
+                                        if(featureStyle.fillColor !== '#ffffff')
+                                            // console.log("isColored",featureStyle.fillColor)
                                         layer.setStyle(featureStyle)
                                     }
                                 }}
                              />
-                             {typeSelected===MAP_TYPES['SYMBOL']
+                             {typeSelectedRef.current===MAP_TYPES['SYMBOL']
                                 ? editsList.map((edit) => 
                                 <DraggableImageOverlay key={edit.id} id={edit.id} image ={edit.symbol} 
                                     initialBounds = {edit.bounds}
@@ -607,7 +613,7 @@ const MapView = () => {
                                 : null
                              }
                              
-    
+                             
                         </MapContainer>
                     </div>
 
