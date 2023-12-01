@@ -1,5 +1,5 @@
 import 'leaflet/dist/leaflet.css';
-import { MapContainer, TileLayer, GeoJSON, ImageOverlay } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON} from 'react-leaflet';
 import { useState, useContext,useRef,useEffect } from "react";
 import L from 'leaflet';
 import { SaturationSlider , HueSlider } from 'react-slider-color-picker'
@@ -20,6 +20,9 @@ import HeatUi from './HeatMapUI.js';
 import { HeatMapHeader } from '../../editMapDataStructures/HeatMapData.js';
 import { ChoroHeader } from '../../editMapDataStructures/ChoroplethMapData.js';
 import ChoroUi from './ChoroUi.js';
+import DraggableImageOverlay from './ImageDragging.js';
+import SymbolUi from './SymbolsUI.js';
+import { SymbolHeader } from '../../editMapDataStructures/SymbolsMapData.js';
 //Note assigns saturation of 100 for satslider
 const hexToHlsa = (hexString) => {
 
@@ -91,6 +94,14 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
                     mapInfo.edits.editsList = editsList
                     break
                 }
+                case MAP_TYPES['SYMBOL']:
+                {
+                    const newSymbolHeader = new SymbolHeader(editsList.length)
+                    mapInfo.edits.header = newSymbolHeader
+                    mapInfo.edits.editsList = editsList
+                    break
+                }
+                
                 default:
                     break
             }
@@ -187,7 +198,7 @@ const MapEditOptions = (props) => {
     // console.log(key)
     // console.log(label)
 
-    const [symbColor, setSymbColor] = useState("#aabbcc");  //Used for symbmap color, hlsa
+    const [symbColor, setSymbColor] = useState(hexToHlsa('#aabbcc'));  //Used for symbmap color, hlsa
 
     const handleChangeColor = (newColor) => {
         setSymbColor(newColor)
@@ -296,43 +307,62 @@ const MapEditOptions = (props) => {
                 )
         }
         case MAP_TYPES['SYMBOL']:
+        {
+            const props = {
+                setType : setType,
+                selected: selected,
+                setSelected: setSelected,
+                selectedColor: selectedColor,
+                handleChangeColor: handleChangeColor,
+                symbColor:symbColor,
+                areaClicked:areaClicked,
+                setAreaClicked: setAreaClicked,
+                editsList: editsList,
+                setEditsList: setEditsList
+            }
             return (
                 <>
-                    <div className='invisible'>gap space</div>
-                    <div className='h-full w-3/5 bg-gray-50 rounded-3xl'>
-                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
-                        <div className='grid grid-cols-2 gap-2  h-4/5  mx-auto'>
-                            <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'circle' ? selectedColor : '#F9FAFB' }}>
-                                <img src={circle} alt='circle' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("circle")} />
-                            </div>
-                            <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'triangle' ? selectedColor : '#F9FAFB' }}>
-                                <img src={triangle} alt='triangle' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("triangle")} />
-                            </div>
-                            <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'square' ? selectedColor : '#F9FAFB' }}>
-                                <img src={square} alt='square' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("square")} />
-                            </div>
-                            <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'star' ? selectedColor : '#F9FAFB' }}>
-                                <img src={star} alt='star' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("star")} />
-                            </div>
-                            <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'hexagon' ? selectedColor : '#F9FAFB' }}>
-                                <img src={hexagon} alt='hexagon' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("hexagon")} />
-                            </div>
-                            <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'pentagon' ? selectedColor : '#F9FAFB' }}>
-                                <img src={pentagon} alt='pentagon' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("pentagon")} />
-                            </div>
-                        </div>
-                        <div className='flex flex-col items-center w-full mx-auto'>
-                            <HueSlider handleChangeColor={handleChangeColor} color={symbColor} />
-                        </div>
-                    </div>
+                    <SymbolUi {...props}/>
                 </>
-            )
+                )
+            // return (
+            //     <>
+            //         <div className='invisible'>gap space</div>
+            //         <div className='h-full w-3/5 bg-gray-50 rounded-3xl'>
+            //             <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
+            //             <div className='grid grid-cols-2 gap-2  h-4/5  mx-auto'>
+            //                 <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
+            //                     style={{ borderColor: selected === 'circle' ? selectedColor : '#F9FAFB' }}>
+            //                     <img src={circle} alt='circle' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("circle")} />
+            //                 </div>
+            //                 <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
+            //                     style={{ borderColor: selected === 'triangle' ? selectedColor : '#F9FAFB' }}>
+            //                     <img src={triangle} alt='triangle' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("triangle")} />
+            //                 </div>
+            //                 <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
+            //                     style={{ borderColor: selected === 'square' ? selectedColor : '#F9FAFB' }}>
+            //                     <img src={square} alt='square' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("square")} />
+            //                 </div>
+            //                 <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
+            //                     style={{ borderColor: selected === 'star' ? selectedColor : '#F9FAFB' }}>
+            //                     <img src={star} alt='star' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("star")} />
+            //                 </div>
+            //                 <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
+            //                     style={{ borderColor: selected === 'hexagon' ? selectedColor : '#F9FAFB' }}>
+            //                     <img src={hexagon} alt='hexagon' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("hexagon")} />
+            //                 </div>
+            //                 <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
+            //                     style={{ borderColor: selected === 'pentagon' ? selectedColor : '#F9FAFB' }}>
+            //                     <img src={pentagon} alt='pentagon' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("pentagon")} />
+            //                 </div>
+            //             </div>
+            //             <div className='flex flex-col items-center w-full mx-auto'>
+            //                 <HueSlider handleChangeColor={handleChangeColor} color={symbColor} />
+            //             </div>
+            //         </div>
+            //     </>
+            // )
+            }
         case MAP_TYPES['FLOW']:
             return (
                 <>
@@ -394,8 +424,6 @@ const MapView = () => {
 
     
     const [keyTable, setKeyTable] = useState([])//holds list of key labels mappings in form {color: hexColor, label:label}
-
-    const possibleNames = ['name', 'nom', 'state_name', 'nombre','title', 'label', 'id', 'nomgeo']
     // console.log(map)
     // const zoomLevel = 2
     // const center = [46.2276, 2.2137]
@@ -453,7 +481,6 @@ const MapView = () => {
     const geoJsonKey = JSON.stringify(styleMapping); // Create a key that changes when styleMapping changes
     // console.log("Style Mapping",styleMapping)
     const getFeatureStyle = (feature) => {
-        const foundName = possibleNames.find(propertyName => propertyName in feature.properties)
         if (feature) 
         {
             return styleMapping[feature.key] || {fillColor:'#ffffff'}
@@ -467,33 +494,35 @@ const MapView = () => {
         {
             case MAP_TYPES['HEATMAP']:
             {
-                const foundName = possibleNames.find(propertyName => propertyName in clickedFeature.properties)
-                // console.log("found Name",foundName)
-                if (feature.key) {
-                    // console.log('Clicked feature ' + clickedFeature.key)
+                if (feature.key) {//feature will be a feature from geojson
                     setAreaClicked(clickedFeature.key)
                 } else {
-                    // console.log('No known name property found in clicked feature', clickedFeature)
+                    console.log('No known name property found in clicked feature', clickedFeature)
                 }  
                 break
             }
-            case MAP_TYPES['CHOROPLETH']:
+            case MAP_TYPES['CHOROPLETH']://feature will be a feature from geojson
             {
-                const foundName = possibleNames.find(propertyName => propertyName in clickedFeature.properties)
-                // console.log("found Name",foundName)
                 if (feature.key) {
-                    // console.log('Clicked feature ' + clickedFeature.properties[foundName])
                     setAreaClicked(clickedFeature.key)
                 } else {
-                    // console.log('No known name property found in clicked feature', clickedFeature)
+                    console.log('No known name property found in clicked feature', clickedFeature)
                 }  
+                break
+            }
+            case MAP_TYPES['SYMBOL']: //feature will be a latlng obg
+            {
+                if(feature)
+                {
+                    // console.log(feature)
+                    setAreaClicked(feature)
+                }
                 break
             }
             default:
                 break
         }
     }
-
     // console.log("type", typeSelected)
     return (
         map && (<>
@@ -526,15 +555,28 @@ const MapView = () => {
                                 key = {geoJsonKey}
                                 data={map.features}
                                 onEachFeature={(feature, layer) => {
-                                    layer.on('click', () => onFeatureClick(feature))
-                                    const featureStyle = getFeatureStyle(feature)
-                                    layer.setStyle(featureStyle); 
+                                    layer.on('click', (e) => {typeSelected===MAP_TYPES['CHOROPLETH'] || typeSelected===MAP_TYPES['HEATMAP']
+                                    ?onFeatureClick(feature)
+                                    :onFeatureClick(e.latlng)})
+                                    if(typeSelected===MAP_TYPES['CHOROPLETH'] || typeSelected===MAP_TYPES['HEATMAP'])
+                                    {
+                                        const featureStyle = getFeatureStyle(feature)
+                                        layer.setStyle(featureStyle)
+                                    }
                                 }}
                              />
-                             {/* <ImageOverlay
-                                url="../../assets/EditMapAssets/symbolImages/circle.png"
-                                bounds={[[51.1,-5.5], [41.3,9.5] ]}
-                            /> */}
+                             {typeSelected===MAP_TYPES['SYMBOL']
+                                ? editsList.map((edit) => 
+                                <DraggableImageOverlay key={edit.id} id={edit.id} image ={edit.symbol} 
+                                    initialBounds = {edit.bounds}
+                                    color = {edit.colorHLSA}
+                                    editsList = {editsList}
+                                    setEditsList = {setEditsList}
+                                />)
+                                : null
+                             }
+                             
+    
                         </MapContainer>
                     </div>
 
