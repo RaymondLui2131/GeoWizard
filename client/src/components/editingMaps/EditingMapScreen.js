@@ -687,7 +687,7 @@ const MapView = () => {
 const EditingMap = () => {
     return (
         <>
-            <div className="bg-primary-GeoPurple min-h-screen max-h-[100%]">
+            <div className="bg-primary-GeoPurple min-h-screen max-h-screen overflow-auto">
                 <MapView />
             </div>
 
