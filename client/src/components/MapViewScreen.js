@@ -268,12 +268,27 @@ const MapDisplay = (props) =>{
                     <>
                     <GeoJSON 
                         data={mapData.original_map.features}
+                        pointToLayer={(feature, latlng) => {
+                            if (feature.properties && feature.properties.iconUrl) {
+                                const icon = L.icon({
+                                    iconUrl: feature.properties.iconUrl,
+                                    iconSize: [32, 32],
+                                });
+                                const marker = L.marker(latlng, { icon });
+                                return marker;
+                            }
+                            return L.circleMarker(latlng);
+                        }}
                         onEachFeature={(feature, layer) => {
+                            if (feature.geometry.type === 'Point') {
+                                return;
+                            }
                             if(MAP_TYPES[mapType]===MAP_TYPES['CHOROPLETH'] || MAP_TYPES[mapType]===MAP_TYPES['HEATMAP'])
                             {
                                 const featureStyle = getFeatureStyleView(feature)
                                 layer.setStyle(featureStyle)
                             } 
+                            
                         }}/>
                         {
                             MAP_TYPES[mapType]===MAP_TYPES['SYMBOL']
