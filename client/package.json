@@ -44,6 +44,8 @@
     "react-router-dom": "^6.18.0",
     "react-scripts": "^5.0.1",
     "react-slider-color-picker": "^2.0.0",
+    "shapefile": "^0.6.6",
+    "shpjs": "^4.0.4",
     "simplify-geojson": "^1.0.5",
     "tinycolor2": "^1.6.0",
     "togeojson": "^0.16.0"

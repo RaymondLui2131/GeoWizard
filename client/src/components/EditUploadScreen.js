@@ -17,6 +17,8 @@ import finlandGeoJson from '../assets/EditMapAssets/finland-compress.geo.json';
 import index from "function.prototype.name";
 
 import toGeoJSON from '@mapbox/togeojson';
+import L from 'leaflet';
+/* global shp */
 
 const DisplayMap = (props) => {
     const { dispatch } = useContext(MapContext)
@@ -111,14 +113,41 @@ const EditUpload = () => {
         const parser = new DOMParser();
 
         switch (file_type) {
-            case 'zip':
-                setMapErrorMessage(true)
-                break
+            case 'zip': 
+                reader.onload = (e) => {
+                    const shpBuffer = e.target.result;
+                    shp(shpBuffer).then((geojsonArray) => {
+                        const compressedArray = geojsonArray.map(geojson => {
+                            if (geojson.type === 'FeatureCollection') {
+                                return {
+                                    ...geojson,
+                                    features: geojson.features.map(feature => simplify(feature, options))
+                                };
+                            }
+                            return geojson; 
+                        });
+
+                        const compressed = compressedArray[0];
+                        const edited = {
+                            type: compressed.type,
+                            features: compressed.features.map((feature, index) => ({
+                                ...feature,
+                                key: index,
+                            })),
+                        };
+
+                        dispatch({ type: MapActionType.UPLOAD, payload: edited });
+                        navigate('/editingMap');
+                    }).catch((error) => {
+                        console.error("Error parsing shapefile:", error);
+                    });
+                };
+                reader.readAsArrayBuffer(selected_file);
+                break;
             case 'json':
                 reader.onload = (e) => {
                     const geojson = JSON.parse(e.target.result)//REMEMBER TO COMPRESS AFTER HANDLING OTHER FILE FORMATS
                     const compressed = simplify(geojson, options);
-                    console.log(compressed)
                     const edited = {
                         type: compressed.type,
                         features: compressed.features.map((feature, index) => ({
@@ -137,9 +166,7 @@ const EditUpload = () => {
                 reader.onload = (e) => {
                     const kmlDocument = parser.parseFromString(e.target.result, "text/xml");
                     const geojson = toGeoJSON.kml(kmlDocument);
-            
                     const compressed = simplify(geojson, options);
-                    console.log(compressed);
                     const edited = {
                         type: compressed.type,
                         features: compressed.features.map((feature, index) => ({
