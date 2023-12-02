@@ -18,7 +18,9 @@
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
+    "@mapbox/togeojson": "^0.16.2",
     "@react-oauth/google": "^0.11.1",
+    "@tmcw/togeojson": "^5.8.1",
     "@turf/simplify": "^6.5.0",
     "@turf/turf": "^6.5.0",
     "axios": "^1.6.0",
@@ -43,7 +45,8 @@
     "react-scripts": "^5.0.1",
     "react-slider-color-picker": "^2.0.0",
     "simplify-geojson": "^1.0.5",
-    "tinycolor2": "^1.6.0"
+    "tinycolor2": "^1.6.0",
+    "togeojson": "^0.16.0"
   },
   "browserslist": {
     "production": [

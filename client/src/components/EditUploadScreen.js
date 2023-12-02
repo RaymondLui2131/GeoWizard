@@ -105,27 +105,35 @@ const EditUpload = () => {
         const file_type = selected_file.name.split('.').pop().toLowerCase()
         console.log(file_type)
         const options = {tolerance: 0.01, highQuality: true}
-        if (selected_file && file_type === "json") {
-            const reader = new FileReader()
-            reader.onload = (e) => {
-                const geojson = JSON.parse(e.target.result)//REMEMBER TO COMPRESS AFTER HANDLING OTHER FILE FORMATS
-                const compressed = simplify(geojson, options);
-                const edited = {
-                    type: compressed.type,
-                    features: compressed.features.map((feature, index) => ({
-                        ...feature,
-                        key: index,
-                })),
-                }
-                dispatch({ type: MapActionType.UPLOAD, payload: edited })
-            }
+        const reader = new FileReader()
 
-            dispatch({ type: MapActionType.RESET })
-            reader.readAsText(selected_file)
-            navigate('/editingMap')   //For now brings you back to / change later
-        }
-        else {
-            setMapErrorMessage(true)
+        switch (file_type) {
+            case 'zip':
+                setMapErrorMessage(true)
+                break
+            case 'json':
+                reader.onload = (e) => {
+                    const geojson = JSON.parse(e.target.result)//REMEMBER TO COMPRESS AFTER HANDLING OTHER FILE FORMATS
+                    const compressed = simplify(geojson, options);
+                    const edited = {
+                        type: compressed.type,
+                        features: compressed.features.map((feature, index) => ({
+                            ...feature,
+                            key: index,
+                    })),
+                    }
+                    dispatch({ type: MapActionType.UPLOAD, payload: edited })
+                }
+
+                dispatch({ type: MapActionType.RESET })
+                reader.readAsText(selected_file)
+                navigate('/editingMap')   //For now brings you back to / change later
+                break
+            case 'kml':
+                setMapErrorMessage(true)
+                break
+            default:
+                setMapErrorMessage(true)
         }
     }
     return (
