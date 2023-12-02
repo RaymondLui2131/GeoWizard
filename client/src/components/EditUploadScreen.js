@@ -16,6 +16,8 @@ import polandGeoJson from '../assets/EditMapAssets/poland-compress.geo.json';
 import finlandGeoJson from '../assets/EditMapAssets/finland-compress.geo.json';
 import index from "function.prototype.name";
 
+import toGeoJSON from '@mapbox/togeojson';
+
 const DisplayMap = (props) => {
     const { dispatch } = useContext(MapContext)
     const navigate = useNavigate();
@@ -106,6 +108,7 @@ const EditUpload = () => {
         console.log(file_type)
         const options = {tolerance: 0.01, highQuality: true}
         const reader = new FileReader()
+        const parser = new DOMParser();
 
         switch (file_type) {
             case 'zip':
@@ -115,6 +118,7 @@ const EditUpload = () => {
                 reader.onload = (e) => {
                     const geojson = JSON.parse(e.target.result)//REMEMBER TO COMPRESS AFTER HANDLING OTHER FILE FORMATS
                     const compressed = simplify(geojson, options);
+                    console.log(compressed)
                     const edited = {
                         type: compressed.type,
                         features: compressed.features.map((feature, index) => ({
@@ -130,8 +134,31 @@ const EditUpload = () => {
                 navigate('/editingMap')   //For now brings you back to / change later
                 break
             case 'kml':
-                setMapErrorMessage(true)
-                break
+                reader.onload = (e) => {
+                    const kmlDocument = parser.parseFromString(e.target.result, "text/xml");
+                    const geojson = toGeoJSON.kml(kmlDocument);
+            
+                    const compressed = simplify(geojson, options);
+                    console.log(compressed);
+                    const edited = {
+                        type: compressed.type,
+                        features: compressed.features.map((feature, index) => ({
+                            ...feature,
+                            properties: {
+                                ...feature.properties,
+                                iconUrl: feature.properties.icon, // Store the icon URL
+                            },
+                            key: index,
+                        })),
+                    };
+                    dispatch({ type: MapActionType.UPLOAD, payload: edited });
+                };
+            
+                dispatch({ type: MapActionType.RESET });
+                reader.readAsText(selected_file);
+                navigate('/editingMap');
+                break;
+
             default:
                 setMapErrorMessage(true)
         }
