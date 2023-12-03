@@ -550,6 +550,7 @@ const MapView = () => {
         setType(futureTypeSelected)
         setChangingMapTypeIsClicked(false)
         setEditsList([])
+        setKeyTable([])
     }
     const handleNoClick = () => {
         console.log("No Click")
