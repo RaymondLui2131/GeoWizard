@@ -19,10 +19,12 @@ import { /**MapActionType，*/ MapContext } from "../../api/MapContext.js"
 import HeatUi from './HeatMapUI.js';
 import { HeatMapHeader } from '../../editMapDataStructures/HeatMapData.js';
 import { ChoroHeader } from '../../editMapDataStructures/ChoroplethMapData.js';
+import { NoneMapHeader } from '../../editMapDataStructures/NoneMapData.js';
 import ChoroUi from './ChoroUi.js';
 import DraggableImageOverlay from './ImageDragging.js';
 import SymbolUi from './SymbolsUI.js';
 import { SymbolHeader } from '../../editMapDataStructures/SymbolsMapData.js';
+import { async } from 'regenerator-runtime';
 //Note assigns saturation of 100 for satslider
 const hexToHlsa = (hexString) => {
 
@@ -75,6 +77,11 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
                 {
                     const lower = parseFloat(lowerBound)
                     const upper = parseFloat(upperBound)
+                    if(!upper || !lower)
+                    {
+                        setValidHeatRange(false)
+                        return
+                    }
                     if(upper < lower) //handle invalid upper
                     {
                         setValidHeatRange(false)
@@ -127,7 +134,62 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
             }
             // console.log(response)
         }
-    };
+    }
+    const handleExport = async () =>{
+        let editHeader = new NoneMapHeader()
+        switch(mapType){
+            case MAP_TYPES['HEATMAP']:
+            {
+                const lower = parseFloat(lowerBound)
+                    const upper = parseFloat(upperBound)
+                    if(upper < lower) //handle invalid upper
+                    {
+                        setValidHeatRange(false)
+                        return
+                    }
+                    else
+                        setValidHeatRange(true)
+                editHeader = new HeatMapHeader(lower,upper,baseColor)
+                break
+            }
+            case MAP_TYPES['CHOROPLETH']:
+            {
+                editHeader = new ChoroHeader(keyTable)
+                break
+            }
+            case MAP_TYPES['SYMBOL']:
+            {
+                editHeader = new SymbolHeader(editsList.length)
+                break
+            }
+            default:
+                break
+        }
+        const exportedData = {
+            ...map,
+            edits:{
+                header: editHeader,
+                editsList:editsList
+            },
+            description:description,
+            title:title
+        }
+        let fileName = "geowizardMap"
+        if(title !== '')
+            fileName = title
+
+        const exportString = JSON.stringify(exportedData)
+        const blob = new Blob([exportString],{ type: "text/json" })
+        const href = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = href;
+        link.download = fileName + ".geowizjson";
+        document.body.appendChild(link);
+        link.click();
+
+        document.body.removeChild(link);
+        URL.revokeObjectURL(href);
+    }
     return (
         <div className='w-4/5 flex  flex-row justify-between mt-4'>
             <div className='flex flex-row'>
@@ -140,7 +202,7 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
             <div className='flex justify-between'>
                 <div className='pr-14'>
                     <div className='inline-block'><button className='bg-primary-GeoOrange text-3xl 
-                                                font-NanumSquareNeoOTF-Lt px-14 rounded-full py-2'>
+                                                font-NanumSquareNeoOTF-Lt px-14 rounded-full py-2' onClick={()=>handleExport()}>
                         Export</button>
                     </div>
                     <div className='pl-12 inline-block pr-16'>
@@ -391,7 +453,7 @@ const MapView = () => {
     
     const [changingMapTypeIsClicked, setChangingMapTypeIsClicked] = useState(false)
     const [futureTypeSelected, setFutureTypeSelected] = useState(MAP_TYPES['NONE'])
-    const possibleNames = ['name', 'nom', 'state_name', 'nombre','title', 'label', 'id', 'nomgeo']
+    const [geoJsonKey,setgeojsonKey] = useState('')
     // console.log(map)
     // const zoomLevel = 2
     // const center = [46.2276, 2.2137]
@@ -413,8 +475,33 @@ const MapView = () => {
         padded_SW.lng = padded_SW.lng - 5
     }
     const mapString = STRING_MAPPING[typeSelected]
-
     const typeSelectedRef = useRef(typeSelected)
+    useEffect(() => {//if upload geojson, then render the edits as well
+        if(map)
+        {
+            console.log("this is map",map)
+            if(map.description)
+                setDescription(map.description)
+            if(map.edits)
+            {
+                
+                const fileMapType = map.edits.header.type
+                // console.log("has map edits", fileMapType)
+                setType(MAP_TYPES[fileMapType])
+                setEditsList([...(map.edits.editsList)])
+                switch(MAP_TYPES[fileMapType]){
+                    case MAP_TYPES['CHOROPLETH']:
+                        // console.log("setting key table")
+                        setKeyTable(map.edits.header.keyTable)
+                        break
+                    default:
+                        break
+                }
+            }
+            if(map.title)
+                setTitle(map.title)
+        }
+    }, [map])
     useEffect(() => {
         typeSelectedRef.current = typeSelected
     }, [typeSelected])
@@ -443,11 +530,14 @@ const MapView = () => {
         }
         )
         setStyleMapping(newMappings)
+        const curKey = JSON.stringify(editsListRef.current); // Create a key that changes when styleMapping changes
+        setgeojsonKey(curKey)
     }, [editsList])
 
+
     // console.log("CUrrent Edits",editsListRef.current)
-    const geoJsonKey = JSON.stringify(editsListRef.current); // Create a key that changes when styleMapping changes
-    // console.log(geoJsonKey)
+   
+    console.log(geoJsonKey)
     const getFeatureStyle = (feature) => {
         if (feature) 
         {

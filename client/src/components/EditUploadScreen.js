@@ -185,7 +185,22 @@ const EditUpload = () => {
                 reader.readAsText(selected_file);
                 navigate('/editingMap');
                 break;
-
+            case 'geowizjson': //custum format similar to geojson
+                reader.onload = (e) => {
+                    const wizjson = JSON.parse(e.target.result)
+                    // console.log("whats uploaded",wizjson)
+                    const edited = {
+                        features: [...wizjson.features],
+                        description: wizjson.description,
+                        edits: {...wizjson.edits},
+                        title: wizjson.title
+                    }
+                    console.log("this is wat got dispactached", edited)
+                    dispatch({ type: MapActionType.UPLOAD, payload: edited })
+                }
+                reader.readAsText(selected_file)
+                navigate('/editingMap')
+                break
             default:
                 setMapErrorMessage(true)
         }
@@ -206,7 +221,7 @@ const EditUpload = () => {
                                 </ul>
                             </div>
                             <div className=" pt-20 ">
-                                <input className="hidden" type="file" accept=".zip, .json, .kml, .shp" ref={inputRef} onChange={handleFileChange} />
+                                <input className="hidden" type="file" accept=".zip, .json, .kml, .shp, .geowizjson" ref={inputRef} onChange={handleFileChange} />
                                 <button data-test-id="upload-button" className="bg-primary-GeoOrange px-16 rounded-full py-2 " onClick={() => uploadHandle()}>
                                     Upload
                                 </button>
