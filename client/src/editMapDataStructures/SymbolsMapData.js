@@ -19,5 +19,6 @@ export class SymbolEdit {
 export class SymbolHeader {
     constructor(numHeader) {
       this.numHeader = numHeader
+      this.type = 'SYMBOL'
     }
-  }
+}
