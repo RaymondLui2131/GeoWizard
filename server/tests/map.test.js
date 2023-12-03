@@ -9,7 +9,9 @@ const app = createServer()
 
 jest.mock("../models/map_model", () => ({
     find: jest.fn(),
-    create: jest.fn()
+    create: jest.fn(),
+    findById: jest.fn(),
+    populate: jest.fn()
 }))
 
 jest.mock("../models/map_data_model", () => ({
@@ -357,6 +359,7 @@ describe("testing query", () => {
     })
 
 })
+
 // describe("testing Maps Likes", () => {
 //     let user_id
 //     let mapID
