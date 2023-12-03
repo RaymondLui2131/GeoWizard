@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1701320132118" clover="3.2.0">
-  <project timestamp="1701320132118" name="All files">
-    <metrics statements="1044" coveredstatements="748" conditionals="46" coveredconditionals="44" methods="3" coveredmethods="2" elements="1093" coveredelements="794" complexity="0" loc="1044" ncloc="1044" packages="5" files="12" classes="12"/>
+<coverage generated="1701562818134" clover="3.2.0">
+  <project timestamp="1701562818134" name="All files">
+    <metrics statements="1063" coveredstatements="784" conditionals="51" coveredconditionals="45" methods="3" coveredmethods="2" elements="1117" coveredelements="831" complexity="0" loc="1063" ncloc="1063" packages="5" files="12" classes="12"/>
     <package name="server">
       <metrics statements="47" coveredstatements="43" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="0"/>
-      <file name="jwt_middleware.js" path="C:\Users\kahui\GeoWizard\server\jwt_middleware.js">
+      <file name="jwt_middleware.js" path="D:\HackerMan\CSE416\GeoWizard\server\jwt_middleware.js">
         <metrics statements="47" coveredstatements="43" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -56,8 +56,8 @@
       </file>
     </package>
     <package name="server.controllers">
-      <metrics statements="668" coveredstatements="389" conditionals="42" coveredconditionals="41" methods="1" coveredmethods="1"/>
-      <file name="comment_controllers.js" path="C:\Users\kahui\GeoWizard\server\controllers\comment_controllers.js">
+      <metrics statements="687" coveredstatements="425" conditionals="47" coveredconditionals="42" methods="1" coveredmethods="1"/>
+      <file name="comment_controllers.js" path="D:\HackerMan\CSE416\GeoWizard\server\controllers\comment_controllers.js">
         <metrics statements="132" coveredstatements="33" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -192,8 +192,8 @@
         <line num="131" count="1" type="stmt"/>
         <line num="132" count="1" type="stmt"/>
       </file>
-      <file name="map_controllers.js" path="C:\Users\kahui\GeoWizard\server\controllers\map_controllers.js">
-        <metrics statements="283" coveredstatements="132" conditionals="17" coveredconditionals="17" methods="1" coveredmethods="1"/>
+      <file name="map_controllers.js" path="D:\HackerMan\CSE416\GeoWizard\server\controllers\map_controllers.js">
+        <metrics statements="302" coveredstatements="168" conditionals="22" coveredconditionals="18" methods="1" coveredmethods="1"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
         <line num="3" count="1" type="stmt"/>
@@ -370,31 +370,31 @@
         <line num="174" count="1" type="stmt"/>
         <line num="175" count="1" type="stmt"/>
         <line num="176" count="1" type="stmt"/>
-        <line num="177" count="1" type="stmt"/>
-        <line num="178" count="0" type="stmt"/>
-        <line num="179" count="0" type="stmt"/>
-        <line num="180" count="0" type="stmt"/>
-        <line num="181" count="0" type="stmt"/>
-        <line num="182" count="0" type="stmt"/>
-        <line num="183" count="0" type="stmt"/>
-        <line num="184" count="0" type="stmt"/>
-        <line num="185" count="0" type="stmt"/>
-        <line num="186" count="0" type="stmt"/>
-        <line num="187" count="0" type="stmt"/>
-        <line num="188" count="0" type="stmt"/>
-        <line num="189" count="0" type="stmt"/>
-        <line num="190" count="0" type="stmt"/>
-        <line num="191" count="0" type="stmt"/>
-        <line num="192" count="0" type="stmt"/>
-        <line num="193" count="0" type="stmt"/>
-        <line num="194" count="0" type="stmt"/>
-        <line num="195" count="0" type="stmt"/>
-        <line num="196" count="0" type="stmt"/>
-        <line num="197" count="0" type="stmt"/>
-        <line num="198" count="0" type="stmt"/>
-        <line num="199" count="0" type="stmt"/>
-        <line num="200" count="0" type="stmt"/>
-        <line num="201" count="0" type="stmt"/>
+        <line num="177" count="1" type="cond" truecount="1" falsecount="0"/>
+        <line num="178" count="1" type="stmt"/>
+        <line num="179" count="1" type="stmt"/>
+        <line num="180" count="1" type="stmt"/>
+        <line num="181" count="1" type="stmt"/>
+        <line num="182" count="1" type="stmt"/>
+        <line num="183" count="1" type="stmt"/>
+        <line num="184" count="1" type="stmt"/>
+        <line num="185" count="1" type="stmt"/>
+        <line num="186" count="1" type="stmt"/>
+        <line num="187" count="1" type="stmt"/>
+        <line num="188" count="1" type="stmt"/>
+        <line num="189" count="1" type="stmt"/>
+        <line num="190" count="1" type="stmt"/>
+        <line num="191" count="1" type="stmt"/>
+        <line num="192" count="1" type="stmt"/>
+        <line num="193" count="1" type="stmt"/>
+        <line num="194" count="1" type="stmt"/>
+        <line num="195" count="1" type="stmt"/>
+        <line num="196" count="1" type="stmt"/>
+        <line num="197" count="1" type="stmt"/>
+        <line num="198" count="1" type="stmt"/>
+        <line num="199" count="1" type="stmt"/>
+        <line num="200" count="1" type="stmt"/>
+        <line num="201" count="1" type="cond" truecount="0" falsecount="1"/>
         <line num="202" count="0" type="stmt"/>
         <line num="203" count="0" type="stmt"/>
         <line num="204" count="0" type="stmt"/>
@@ -419,9 +419,9 @@
         <line num="223" count="0" type="stmt"/>
         <line num="224" count="0" type="stmt"/>
         <line num="225" count="0" type="stmt"/>
-        <line num="226" count="0" type="stmt"/>
-        <line num="227" count="0" type="stmt"/>
-        <line num="228" count="0" type="stmt"/>
+        <line num="226" count="1" type="stmt"/>
+        <line num="227" count="1" type="stmt"/>
+        <line num="228" count="1" type="cond" truecount="0" falsecount="1"/>
         <line num="229" count="0" type="stmt"/>
         <line num="230" count="0" type="stmt"/>
         <line num="231" count="0" type="stmt"/>
@@ -440,19 +440,19 @@
         <line num="244" count="0" type="stmt"/>
         <line num="245" count="0" type="stmt"/>
         <line num="246" count="0" type="stmt"/>
-        <line num="247" count="0" type="stmt"/>
-        <line num="248" count="0" type="stmt"/>
-        <line num="249" count="0" type="stmt"/>
-        <line num="250" count="0" type="stmt"/>
-        <line num="251" count="0" type="stmt"/>
-        <line num="252" count="0" type="stmt"/>
-        <line num="253" count="0" type="stmt"/>
+        <line num="247" count="1" type="stmt"/>
+        <line num="248" count="1" type="stmt"/>
+        <line num="249" count="1" type="stmt"/>
+        <line num="250" count="1" type="stmt"/>
+        <line num="251" count="1" type="stmt"/>
+        <line num="252" count="1" type="stmt"/>
+        <line num="253" count="1" type="cond" truecount="0" falsecount="1"/>
         <line num="254" count="0" type="stmt"/>
         <line num="255" count="0" type="stmt"/>
         <line num="256" count="0" type="stmt"/>
         <line num="257" count="0" type="stmt"/>
-        <line num="258" count="0" type="stmt"/>
-        <line num="259" count="0" type="stmt"/>
+        <line num="258" count="1" type="stmt"/>
+        <line num="259" count="1" type="cond" truecount="0" falsecount="1"/>
         <line num="260" count="0" type="stmt"/>
         <line num="261" count="0" type="stmt"/>
         <line num="262" count="0" type="stmt"/>
@@ -467,18 +467,37 @@
         <line num="271" count="0" type="stmt"/>
         <line num="272" count="0" type="stmt"/>
         <line num="273" count="0" type="stmt"/>
-        <line num="274" count="1" type="stmt"/>
-        <line num="275" count="1" type="stmt"/>
-        <line num="276" count="1" type="stmt"/>
-        <line num="277" count="1" type="stmt"/>
-        <line num="278" count="1" type="stmt"/>
-        <line num="279" count="1" type="stmt"/>
-        <line num="280" count="1" type="stmt"/>
-        <line num="281" count="1" type="stmt"/>
-        <line num="282" count="1" type="stmt"/>
-        <line num="283" count="1" type="stmt"/>
+        <line num="274" count="0" type="stmt"/>
+        <line num="275" count="0" type="stmt"/>
+        <line num="276" count="0" type="stmt"/>
+        <line num="277" count="0" type="stmt"/>
+        <line num="278" count="0" type="stmt"/>
+        <line num="279" count="0" type="stmt"/>
+        <line num="280" count="0" type="stmt"/>
+        <line num="281" count="0" type="stmt"/>
+        <line num="282" count="0" type="stmt"/>
+        <line num="283" count="0" type="stmt"/>
+        <line num="284" count="0" type="stmt"/>
+        <line num="285" count="0" type="stmt"/>
+        <line num="286" count="0" type="stmt"/>
+        <line num="287" count="0" type="stmt"/>
+        <line num="288" count="0" type="stmt"/>
+        <line num="289" count="0" type="stmt"/>
+        <line num="290" count="0" type="stmt"/>
+        <line num="291" count="0" type="stmt"/>
+        <line num="292" count="0" type="stmt"/>
+        <line num="293" count="1" type="stmt"/>
+        <line num="294" count="1" type="stmt"/>
+        <line num="295" count="1" type="stmt"/>
+        <line num="296" count="1" type="stmt"/>
+        <line num="297" count="1" type="stmt"/>
+        <line num="298" count="1" type="stmt"/>
+        <line num="299" count="1" type="stmt"/>
+        <line num="300" count="1" type="stmt"/>
+        <line num="301" count="1" type="stmt"/>
+        <line num="302" count="1" type="stmt"/>
       </file>
-      <file name="user_controllers.js" path="C:\Users\kahui\GeoWizard\server\controllers\user_controllers.js">
+      <file name="user_controllers.js" path="D:\HackerMan\CSE416\GeoWizard\server\controllers\user_controllers.js">
         <metrics statements="253" coveredstatements="224" conditionals="25" coveredconditionals="24" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -737,7 +756,7 @@
     </package>
     <package name="server.models">
       <metrics statements="241" coveredstatements="241" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-      <file name="comments_model.js" path="C:\Users\kahui\GeoWizard\server\models\comments_model.js">
+      <file name="comments_model.js" path="D:\HackerMan\CSE416\GeoWizard\server\models\comments_model.js">
         <metrics statements="40" coveredstatements="40" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -780,7 +799,7 @@
         <line num="39" count="1" type="stmt"/>
         <line num="40" count="1" type="stmt"/>
       </file>
-      <file name="map_data_model.js" path="C:\Users\kahui\GeoWizard\server\models\map_data_model.js">
+      <file name="map_data_model.js" path="D:\HackerMan\CSE416\GeoWizard\server\models\map_data_model.js">
         <metrics statements="32" coveredstatements="32" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -815,7 +834,7 @@
         <line num="31" count="1" type="stmt"/>
         <line num="32" count="1" type="stmt"/>
       </file>
-      <file name="map_model.js" path="C:\Users\kahui\GeoWizard\server\models\map_model.js">
+      <file name="map_model.js" path="D:\HackerMan\CSE416\GeoWizard\server\models\map_model.js">
         <metrics statements="106" coveredstatements="106" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -924,7 +943,7 @@
         <line num="105" count="1" type="stmt"/>
         <line num="106" count="1" type="stmt"/>
       </file>
-      <file name="user_model.js" path="C:\Users\kahui\GeoWizard\server\models\user_model.js">
+      <file name="user_model.js" path="D:\HackerMan\CSE416\GeoWizard\server\models\user_model.js">
         <metrics statements="63" coveredstatements="63" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -993,7 +1012,7 @@
     </package>
     <package name="server.routes">
       <metrics statements="36" coveredstatements="36" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
-      <file name="comments_routes.js" path="C:\Users\kahui\GeoWizard\server\routes\comments_routes.js">
+      <file name="comments_routes.js" path="D:\HackerMan\CSE416\GeoWizard\server\routes\comments_routes.js">
         <metrics statements="8" coveredstatements="8" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -1004,7 +1023,7 @@
         <line num="7" count="1" type="stmt"/>
         <line num="8" count="1" type="stmt"/>
       </file>
-      <file name="map_routes.js" path="C:\Users\kahui\GeoWizard\server\routes\map_routes.js">
+      <file name="map_routes.js" path="D:\HackerMan\CSE416\GeoWizard\server\routes\map_routes.js">
         <metrics statements="11" coveredstatements="11" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -1018,7 +1037,7 @@
         <line num="10" count="1" type="stmt"/>
         <line num="11" count="1" type="stmt"/>
       </file>
-      <file name="user_routes.js" path="C:\Users\kahui\GeoWizard\server\routes\user_routes.js">
+      <file name="user_routes.js" path="D:\HackerMan\CSE416\GeoWizard\server\routes\user_routes.js">
         <metrics statements="17" coveredstatements="17" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
@@ -1041,7 +1060,7 @@
     </package>
     <package name="server.utils">
       <metrics statements="52" coveredstatements="39" conditionals="2" coveredconditionals="1" methods="1" coveredmethods="1"/>
-      <file name="create_server.js" path="C:\Users\kahui\GeoWizard\server\utils\create_server.js">
+      <file name="create_server.js" path="D:\HackerMan\CSE416\GeoWizard\server\utils\create_server.js">
         <metrics statements="52" coveredstatements="39" conditionals="2" coveredconditionals="1" methods="1" coveredmethods="1"/>
         <line num="1" count="1" type="stmt"/>
         <line num="2" count="1" type="stmt"/>
