@@ -590,7 +590,21 @@ const MapView = () => {
                             <GeoJSON 
                                 key = {`${typeSelected}_${geoJsonKey}`}
                                 data={map.features}
+                                pointToLayer={(feature, latlng) => {
+                                    if (feature.properties && feature.properties.iconUrl) {
+                                        const icon = L.icon({
+                                            iconUrl: feature.properties.iconUrl,
+                                            iconSize: [32, 32],
+                                        });
+                                        const marker = L.marker(latlng, { icon });
+                                        return marker;
+                                    }
+                                    return L.circleMarker(latlng);
+                                }}
                                 onEachFeature={(feature, layer) => {
+                                    if (feature.geometry.type === 'Point' && feature.properties.iconUrl) {
+                                        return;
+                                    }
                                     layer.on('click', (e) => {typeSelected===MAP_TYPES['CHOROPLETH'] || typeSelected===MAP_TYPES['HEATMAP']
                                     ?onFeatureClick(feature)
                                     :onFeatureClick(e.latlng)})
@@ -688,7 +702,7 @@ const MapView = () => {
 const EditingMap = () => {
     return (
         <>
-            <div className="bg-primary-GeoPurple min-h-screen max-h-[100%]">
+            <div className="bg-primary-GeoPurple min-h-screen max-h-screen overflow-auto">
                 <MapView />
             </div>
 
