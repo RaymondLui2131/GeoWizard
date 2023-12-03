@@ -73,8 +73,9 @@ export const HeatUi = (props) => {
         const hslaForm = hexToHlsa(hexString)
         const hue = hslaForm.h
         //updating hues
-        editsList.forEach((edit) => edit.colorHLSA.h = hue)
-        setEditsList([...editsList])
+        const changedEdits = [...editsList]
+        changedEdits.forEach((edit) => edit.colorHLSA.h = hue)
+        setEditsList(changedEdits)
         setHlsa(hslaForm)
         setBaseColor(hslaForm)
     }
