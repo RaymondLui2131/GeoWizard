@@ -9,5 +9,6 @@ export class ChoroEdit {
 export class ChoroHeader {
     constructor(keyTable) {
       this.keyTable = keyTable   //[], each entry stored in {color:hexColor, label:label}
+      this.type = 'CHOROPLETH'
     }
   }
