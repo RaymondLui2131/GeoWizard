@@ -1,6 +1,6 @@
 export class NoneMapHeader {
     constructor() {
-      this.type = 'None'
+      this.type = 'NONE'
     }
 }
 
