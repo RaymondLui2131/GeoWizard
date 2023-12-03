@@ -18,6 +18,7 @@ import index from "function.prototype.name";
 
 import toGeoJSON from '@mapbox/togeojson';
 import L from 'leaflet';
+import { truncate } from "lodash";
 /* global shp */
 
 const DisplayMap = (props) => {
@@ -111,12 +112,26 @@ const EditUpload = () => {
         const options = {tolerance: 0.01, highQuality: true}
         const reader = new FileReader()
         const parser = new DOMParser();
+        const JSZip = require('jszip');
 
         switch (file_type) {
             case 'zip': 
-                reader.onload = (e) => {
-                    const shpBuffer = e.target.result;
-                    shp(shpBuffer).then((geojsonArray) => {
+                reader.onload = async (e) => {
+                    try {
+                        const zipBuffer = e.target.result;
+                        const zip = await JSZip.loadAsync(zipBuffer);
+                        const files = Object.keys(zip.files);
+                        const hasShp = files.some(f => f.endsWith('.shp'));
+                        const hasShx = files.some(f => f.endsWith('.shx'));
+                        const hasDbf = files.some(f => f.endsWith('.dbf'));
+            
+                        if (!hasShp || !hasShx || !hasDbf) {
+                            console.error("Invalid zip file: required shapefile components (.shp, .shx, .dbf) not found");
+                            setMapErrorMessage(true);
+                            return;
+                        }
+            
+                        const geojsonArray = await shp(zipBuffer);
                         const compressedArray = geojsonArray.map(geojson => {
                             if (geojson.type === 'FeatureCollection') {
                                 return {
@@ -124,9 +139,9 @@ const EditUpload = () => {
                                     features: geojson.features.map(feature => simplify(feature, options))
                                 };
                             }
-                            return geojson; 
+                            return geojson;
                         });
-
+            
                         const compressed = compressedArray[0];
                         const edited = {
                             type: compressed.type,
@@ -135,15 +150,16 @@ const EditUpload = () => {
                                 key: index,
                             })),
                         };
-
+            
                         dispatch({ type: MapActionType.UPLOAD, payload: edited });
                         navigate('/editingMap');
-                    }).catch((error) => {
-                        console.error("Error parsing shapefile:", error);
-                    });
+                    } catch (error) {
+                        console.error("Error processing zip file:", error);
+                        // Handle error here
+                    }
                 };
                 reader.readAsArrayBuffer(selected_file);
-                break;
+                break;        
             case 'json':
                 reader.onload = (e) => {
                     const geojson = JSON.parse(e.target.result)//REMEMBER TO COMPRESS AFTER HANDLING OTHER FILE FORMATS
