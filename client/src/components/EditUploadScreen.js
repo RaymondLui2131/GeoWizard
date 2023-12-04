@@ -239,11 +239,11 @@ const EditUpload = () => {
                             </div>
                             <div className=" pt-20 ">
                                 <input className="hidden" type="file" accept=".zip, .json, .kml, .shp, .geowizjson" ref={inputRef} onChange={handleFileChange} />
-                                <div class="group flex relative">
+                                <div className="group flex relative">
                                     <button data-test-id="upload-button" className="bg-primary-GeoOrange px-16 rounded-full py-2 disabled:opacity-30" onClick={() => uploadHandle()} disabled={!user}>
                                         Upload
                                     </button>
-                                    {!user && <span class="group-hover:opacity-100 transition-opacity bg-gray-800 px-1 text-sm text-gray-100 whitespace-nowrap rounded-md absolute left-1/2 
+                                    {!user && <span className="group-hover:opacity-100 transition-opacity bg-gray-800 px-1 text-sm text-gray-100 whitespace-nowrap rounded-md absolute left-1/2 
     -translate-x-1/2 translate-y-full opacity-0 m-4 mx-auto">You must be logged in to upload a map</span>}
                                 </div>
 
