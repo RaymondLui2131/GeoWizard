@@ -24,14 +24,6 @@ jobs:
       - name: Install CSS
         run: npx tailwindcss -i ./client/src/index.css -o ./client/src/dist/output.css
 
-      - name: Install server
-        run: cd server && npm install --legacy-peer-deps
-
-      - name: Start server
-        run: |
-          cd server
-          npm start &
-
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
@@ -39,8 +31,7 @@ jobs:
           start: npm start
           install: false
           wait-on: 'http://localhost:3000' 
-          wait-on-timeout: 60
-         
+          wait-on-timeout: 60 
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v3
