@@ -16,6 +16,7 @@ export const SymbolUi = (props) =>
     const selectedColor = props.selectedColor
     const areaClicked = props.areaClicked
     const setAreaClicked = props.setAreaClicked
+    
 
     const [counter, setCounter] = useState(0)
     function calculateBounds(center, aspectRatio, distance) {

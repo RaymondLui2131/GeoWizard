@@ -127,7 +127,7 @@ describe('testing editing map page', () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/editUpload")
     cy.get('[data-test-id="upload-button"]').click()
-    cy.get('input[type="file"]').attachFile("france-r.geo.json")
+    cy.get('input[type="file"]').attachFile("france-compress.geo.json")
   })
 
   it('should change title', () => {
@@ -158,7 +158,12 @@ describe('testing editing map page', () => {
   it('should move to flow', () => {
     cy.contains('Select Map Type ▼').click()
     cy.contains('Flow').should('have.text', 'Flow')
-  }) 
+  })
+  
+  it('should export the file', () => {
+    cy.contains('Export').click()
+    cy.readFile('cypress/downloads/geowizardMap.geowizjson').should("exist");
+  })
 })
 
 describe('testing view page', () => {
