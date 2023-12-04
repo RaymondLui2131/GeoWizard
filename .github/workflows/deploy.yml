@@ -18,24 +18,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4 
 
-      - name: Install dependencies for client
-        run: |
-          cd client
-          npm install --legacy-peer-deps
-          npx tailwindcss -i ./src/index.css -o ./src/dist/output.css
+      - name: Install dependencies
+        run: cd client && npm install --legacy-peer-deps
+
+      - name: Install CSS
+        run: npx tailwindcss -i ./client/src/index.css -o ./client/src/dist/output.css
+
+      - name: Install server
+        run: cd server && npm install --legacy-peer-deps
 
       - name: Start server
         run: |
-          cd server && npm install --legacy-peer-deps && npm start
+          cd server
+          npm start &
 
-      - name: Start Cypress tests in client directory
+      - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
           working-directory: client
           start: npm start
           install: false
           wait-on: 'http://localhost:3000' 
-          wait-on-timeout: 60 
+          wait-on-timeout: 60
+         
 
       - name: Upload screenshots
         uses: actions/upload-artifact@v3
