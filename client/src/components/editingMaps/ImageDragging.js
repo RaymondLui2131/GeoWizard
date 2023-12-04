@@ -5,7 +5,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css'
 import { circle, triangle, square, star, hexagon, pentagon } from '../../assets/EditMapAssets/symbolImages/index.js'
 import tinycolor from 'tinycolor2';
-
+import 'leaflet-geometryutil';
 const mappings = {
   'circle': circle,
   'triangle': triangle,
@@ -73,7 +73,19 @@ export const DraggableImageOverlay = (props) => {
     const editsList = props.editsList
     const setEditsList = props.setEditsList
     const id = props.id
+    const arrayBounds = props.mapBounds
 
+    
+    const mapBounds = L.latLngBounds(arrayBounds[0], arrayBounds[1]);
+    const boundsPolygon = [
+      arrayBounds[1], // Southwest
+      L.latLng(arrayBounds[1].lat, arrayBounds[0].lng), // Northwest
+      arrayBounds[0], // Northeast
+      L.latLng(arrayBounds[0].lat, arrayBounds[1].lng), // Southeast
+      arrayBounds[1] // Close the loop
+    ]
+    console.log("MAX",mapBounds)
+    console.log(arrayBounds)
     const map = useMap()
     const [bounds, setBounds] = useState(initialBounds);
     const [markerPosition, setMarkerPosition] = useState(getCenter(initialBounds));
@@ -114,6 +126,11 @@ export const DraggableImageOverlay = (props) => {
     const updateImagePosition = useCallback((newPosition) => {
       // Logic to calculate new bounds based on the new marker position
       // This needs to be adjusted based on how you want the image to move
+      if (!mapBounds.contains(L.latLng(newPosition.lat, newPosition.lng))) { //past mappcontainer bounds
+        const closestPoint = L.GeometryUtil.closest(map, boundsPolygon, newPosition);
+        newPosition.lat = closestPoint.lat
+        newPosition.lng = closestPoint.lng
+      }
       console.log("updating", newPosition)
       console.log("old", markerPosition)
 

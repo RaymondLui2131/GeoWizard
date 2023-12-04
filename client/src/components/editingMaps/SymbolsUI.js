@@ -16,6 +16,7 @@ export const SymbolUi = (props) =>
     const selectedColor = props.selectedColor
     const areaClicked = props.areaClicked
     const setAreaClicked = props.setAreaClicked
+    
 
     const [counter, setCounter] = useState(0)
     function calculateBounds(center, aspectRatio, distance) {
@@ -58,7 +59,7 @@ export const SymbolUi = (props) =>
             <div className='invisible'>gap space</div>
                 <div className='h-full w-96 bg-gray-50 rounded-3xl'>
                     <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
-                    <div className='grid grid-cols-2 gap-2  h-4/5  mx-auto'>
+                    <div className='grid grid-cols-2 gap-2  h-4/5  mx-auto symbolOptions'>
                         <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
                             style={{ borderColor: selected === 'circle' ? selectedColor : '#F9FAFB' }}>
                             <img src={circle} alt='circle' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("circle")} />
