@@ -1,5 +1,5 @@
 import 'cypress-file-upload'
-
+import AuthController from '../../src/api/auth_request_api'
 describe('template spec', () => {
   it('passes', () => {
     cy.visit('http://localhost:3000') // change this later
@@ -125,7 +125,13 @@ describe('testing edit upload', () => {
 })
 describe('testing editing map page', () => {
   beforeEach(() => {
-    cy.setCookie('token', "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NjUwYjM1YWEzNWVlZDE3N2FlNjM4MyIsImlhdCI6MTcwMTcyNDY3MiwiZXhwIjoxNzA0MzE2NjcyfQ._GrroZQKU9_LDvJ9DN1gDtyJyqhD4_2hNSyJiOV3_WQ");
+    cy.setCookie('token', '123')
+    cy.stub(AuthController, 'authgetUser').withArgs('123').resolves({
+      _id: 'id',
+      username: 'testuser',
+      email: 'test@example.com',
+      token: "123"
+    })
     cy.visit("http://localhost:3000/editUpload")
     cy.get('[data-test-id="upload-button"]').click()
     cy.get('input[type="file"]').attachFile("france-compress.geo.json")
