@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { useState, useContext, useRef } from "react";
 import { useNavigate } from 'react-router-dom'
 import { MapContext, MapActionType } from "../api/MapContext"
-import {simplify} from '@turf/turf'
-
+import { simplify } from '@turf/turf'
+import { UserContext } from "../api/UserContext";
 import france from "../assets/EditMapAssets/france.png"
 import ireland from "../assets/EditMapAssets/ireland.png"
 import finland from "../assets/EditMapAssets/finland.png"
@@ -34,7 +34,7 @@ const DisplayMap = (props) => {
     const handleExistingMapsClick = (countryName) => {
         dispatch({ type: MapActionType.RESET })
         let selected_file = null
-        switch(countryName){
+        switch (countryName) {
             case 'France':
                 selected_file = franceGeoJson
                 break;
@@ -43,10 +43,10 @@ const DisplayMap = (props) => {
                 break;
             case 'Finland':
                 selected_file = finlandGeoJson
-                break; 
+                break;
             case 'Poland':
                 selected_file = polandGeoJson
-                break; 
+                break;
             default:
                 console.log("No map found")
                 break;
@@ -56,7 +56,7 @@ const DisplayMap = (props) => {
             features: selected_file.features.map((feature, index) => ({
                 ...feature,
                 key: index,
-        })),
+            })),
         }
         dispatch({ type: MapActionType.VIEW, payload: edited })
         navigate('/editingMap')   //For now brings you back to / change later
@@ -79,12 +79,13 @@ DisplayMap.propTypes = {
 };
 
 const EditUpload = () => {
+    const { user } = useContext(UserContext)
     const inputRef = useRef(null);
     const { dispatch } = useContext(MapContext)
     const [mapIndex, setIndex] = useState(0); // index of mapArr
     const [mapArrayObj,] = useState([france, ireland, finland, poland]); // index of mapArr For now will just be array of imagepaths
-    const [mapErrorMessage,setMapErrorMessage] = useState(false) 
-    
+    const [mapErrorMessage, setMapErrorMessage] = useState(false)
+
     const navigate = useNavigate();
     const arrowOnclick = (direction) => {
         if (direction === 0)  //0 is left
@@ -109,13 +110,13 @@ const EditUpload = () => {
         const selected_file = event.target.files[0]
         const file_type = selected_file.name.split('.').pop().toLowerCase()
         console.log(file_type)
-        const options = {tolerance: 0.01, highQuality: true}
+        const options = { tolerance: 0.01, highQuality: true }
         const reader = new FileReader()
         const parser = new DOMParser();
         const JSZip = require('jszip');
 
         switch (file_type) {
-            case 'zip': 
+            case 'zip':
                 reader.onload = async (e) => {
                     try {
                         const zipBuffer = e.target.result;
@@ -124,13 +125,13 @@ const EditUpload = () => {
                         const hasShp = files.some(f => f.endsWith('.shp'));
                         const hasShx = files.some(f => f.endsWith('.shx'));
                         const hasDbf = files.some(f => f.endsWith('.dbf'));
-            
+
                         if (!hasShp || !hasShx || !hasDbf) {
                             console.error("Invalid zip file: required shapefile components (.shp, .shx, .dbf) not found");
                             setMapErrorMessage(true);
                             return;
                         }
-            
+
                         const geojsonArray = await shp(zipBuffer);
                         const compressedArray = geojsonArray.map(geojson => {
                             if (geojson.type === 'FeatureCollection') {
@@ -141,7 +142,7 @@ const EditUpload = () => {
                             }
                             return geojson;
                         });
-            
+
                         const compressed = compressedArray[0];
                         const edited = {
                             type: compressed.type,
@@ -150,7 +151,7 @@ const EditUpload = () => {
                                 key: index,
                             })),
                         };
-            
+
                         dispatch({ type: MapActionType.UPLOAD, payload: edited });
                         navigate('/editingMap');
                     } catch (error) {
@@ -159,7 +160,7 @@ const EditUpload = () => {
                     }
                 };
                 reader.readAsArrayBuffer(selected_file);
-                break;        
+                break;
             case 'json':
                 reader.onload = (e) => {
                     const geojson = JSON.parse(e.target.result)//REMEMBER TO COMPRESS AFTER HANDLING OTHER FILE FORMATS
@@ -169,7 +170,7 @@ const EditUpload = () => {
                         features: compressed.features.map((feature, index) => ({
                             ...feature,
                             key: index,
-                    })),
+                        })),
                     }
                     dispatch({ type: MapActionType.UPLOAD, payload: edited })
                 }
@@ -196,7 +197,7 @@ const EditUpload = () => {
                     };
                     dispatch({ type: MapActionType.UPLOAD, payload: edited });
                 };
-            
+
                 dispatch({ type: MapActionType.RESET });
                 reader.readAsText(selected_file);
                 navigate('/editingMap');
@@ -208,7 +209,7 @@ const EditUpload = () => {
                     const edited = {
                         features: [...wizjson.features],
                         description: wizjson.description,
-                        edits: {...wizjson.edits},
+                        edits: { ...wizjson.edits },
                         title: wizjson.title
                     }
                     console.log("this is wat got dispactached", edited)
@@ -238,12 +239,17 @@ const EditUpload = () => {
                             </div>
                             <div className=" pt-20 ">
                                 <input className="hidden" type="file" accept=".zip, .json, .kml, .shp, .geowizjson" ref={inputRef} onChange={handleFileChange} />
-                                <button data-test-id="upload-button" className="bg-primary-GeoOrange px-16 rounded-full py-2 " onClick={() => uploadHandle()}>
-                                    Upload
-                                </button>
+                                <div class="group flex relative">
+                                    <button data-test-id="upload-button" className="bg-primary-GeoOrange px-16 rounded-full py-2 disabled:opacity-30" onClick={() => uploadHandle()} disabled={!user}>
+                                        Upload
+                                    </button>
+                                    {!user && <span class="group-hover:opacity-100 transition-opacity bg-gray-800 px-1 text-sm text-gray-100 whitespace-nowrap rounded-md absolute left-1/2 
+    -translate-x-1/2 translate-y-full opacity-0 m-4 mx-auto">You must be logged in to upload a map</span>}
+                                </div>
+
                                 {mapErrorMessage ?
                                     <div style={{ color: '#8B0000', textAlign: 'center' }}> Please upload a supported format </div>
-                                : null}
+                                    : null}
                             </div>
                         </div>
                         <div className="flex flex-col pt-16">

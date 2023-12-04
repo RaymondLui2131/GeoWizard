@@ -44,17 +44,6 @@ const hlsaToRGBA = (hlsa) => {
     // console.log("COnversion",rgbaString)
     return rgbaString
 }
-function toValidFileName(inputString) {
-    let validName = inputString.replace(/[/:*?"<>|]/g, '')
-    validName = validName.replace(/[\s,;&]/g, '_')
-    validName = validName.trim()
-  
-    if (validName.length > 255) {
-      validName = validName.substring(0, 255)
-    }
-  
-    return validName
-  }
 
 
 const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound,setValidHeatRange,
@@ -193,10 +182,7 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
         const blob = new Blob([exportString],{ type: "text/json" })
         const href = URL.createObjectURL(blob);
         const link = document.createElement("a");
-        link.href = href;   
-        fileName = toValidFileName(fileName)
-        if(fileName === '')
-            fileName = "geowizardMap"
+        link.href = href;
         link.download = fileName + ".geowizjson";
         document.body.appendChild(link);
         link.click();
@@ -263,7 +249,6 @@ const MapEditOptions = (props) => {
     const keyTable = props.keyTable //holds list of key labels mappings in form {color: hexColor, label:label}
     const setKeyTable = props.setKeyTable
 
-    const mapBounds = props.mapBounds
     const [selected, setSelected] = useState('') //used to control current item can for any
     const [heatColor, setHlsa] = useState(hexToHlsa('#000000')) //Used for heat map, in hlsa format
     
@@ -494,6 +479,7 @@ const MapView = () => {
     useEffect(() => {//if upload geojson, then render the edits as well
         if(map)
         {
+            console.log("this is map",map)
             if(map.description)
                 setDescription(map.description)
             if(map.edits)
@@ -662,7 +648,7 @@ const MapView = () => {
         setType(typeSelected)
         setChangingMapTypeIsClicked(false)
     }
-    console.log(map)
+    // console.log("current type",typeSelected)
     return (
         map && (<>
             <div className='flex space-around px-28 pt-5'>
@@ -728,7 +714,6 @@ const MapView = () => {
                                     color = {edit.colorHLSA}
                                     editsList = {editsList}
                                     setEditsList = {setEditsList}
-                                    mapBounds = {[padded_NE, padded_SW]}
                                 />)
                                 : null
                              }
@@ -756,7 +741,7 @@ const MapView = () => {
                                         <MapEditOptions mapType={typeSelected} setType={setType} areaClicked = {areaClicked} setAreaClicked={setAreaClicked}
                                             editsList = {editsList} setEditsList={setEditsList} setLower={setLower} setUpper = {setUpper} validHeatRange = {validHeatRange}
                                             setValidHeatRange={setValidHeatRange} setBaseColor= {setBaseColor}
-                                            keyTable={keyTable} setKeyTable={setKeyTable} mapBounds={[padded_NE, padded_SW]}
+                                            keyTable={keyTable} setKeyTable={setKeyTable}
                                         />
                                     </>
                                 }
