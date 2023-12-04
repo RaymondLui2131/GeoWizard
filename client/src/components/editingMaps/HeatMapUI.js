@@ -97,7 +97,7 @@ export const HeatUi = (props) => {
          <div className='invisible'>gap space</div>
             <div className='h-full w-96 bg-gray-50 rounded-3xl'>
                 <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}>Colors</div>
-                <div className='grid grid-cols-3 gap-3 h-2/3 pt-12'>
+                <div className='grid grid-cols-3 gap-3 h-2/3 pt-12 heatcolors'>
                     <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { colorSwap('#ff0000'); setSelected('red') }}
                         style={{ borderColor: selected === 'red' ? selectedColor : '#000000', backgroundColor: '#ff0000' }}></div>
 

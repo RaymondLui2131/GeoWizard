@@ -139,6 +139,11 @@ describe('testing editing map page', () => {
     cy.contains('Select Map Type ▼').click()
     cy.contains('Heatmap').should('have.text', 'Heatmap')
   })
+  it('should show heatmap options', () => {
+    cy.contains('Select Map Type ▼').click()
+    cy.contains('Heatmap').click()
+    cy.get('[class*="heatcolors"]').should("exist")
+  })
 
   it('should move to pointmap', () => {
     cy.contains('Select Map Type ▼').click()
@@ -149,10 +154,21 @@ describe('testing editing map page', () => {
     cy.contains('Select Map Type ▼').click()
     cy.contains('Symbol').should('have.text', 'Symbol')
   })
+  it('should show symbol options', () => {
+    cy.contains('Select Map Type ▼').click()
+    cy.contains('Symbol').click()
+    cy.get('[class*="symbolOptions"]').should("exist")
+  })
 
   it('should move to choropleth', () => {
     cy.contains('Select Map Type ▼').click()
     cy.contains('Choropleth').should('have.text', 'Choropleth')
+  })
+
+  it('should show choropleth options', () => {
+    cy.contains('Select Map Type ▼').click()
+    cy.contains('Choropleth').click()
+    cy.get('[class*="choroOptions"]').should("exist")
   })
 
   it('should move to flow', () => {
