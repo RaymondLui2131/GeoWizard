@@ -125,6 +125,7 @@ describe('testing edit upload', () => {
 })
 describe('testing editing map page', () => {
   beforeEach(() => {
+    cy.setCookie('token', "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY1NjUwYjM1YWEzNWVlZDE3N2FlNjM4MyIsImlhdCI6MTcwMTcyNDY3MiwiZXhwIjoxNzA0MzE2NjcyfQ._GrroZQKU9_LDvJ9DN1gDtyJyqhD4_2hNSyJiOV3_WQ");
     cy.visit("http://localhost:3000/editUpload")
     cy.get('[data-test-id="upload-button"]').click()
     cy.get('input[type="file"]').attachFile("france-compress.geo.json")
