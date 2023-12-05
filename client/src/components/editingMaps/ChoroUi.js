@@ -3,6 +3,7 @@ import { HexColorPicker } from "react-colorful"
 import { useState, useEffect, useContext } from "react"
 import { ChoroEdit } from "../../editMapDataStructures/ChoroplethMapData"
 import ChoroTransaction from "../../transactions/ChoroTransaction"
+import ChoroTableTransaction from "../../transactions/ChoroTableTransaction"
 import { MapContext } from "../../api/MapContext"
 const KeyRow = (props) => {
     const color = props.color
@@ -12,15 +13,26 @@ const KeyRow = (props) => {
     const editsList = props.editsList
     const setEditsList = props.setEditsList
     const [label, setLabel] = useState(props.label)
+    const { transactions } = useContext(MapContext)
 
-    const handleRemove = (color) => {
+    const removeTableEntry = (color, keyTable, editsList, setKeyTable, setEditsList) => {
         const filtered = keyTable.filter((row) => row.color !== color)
         const filterEdits = editsList.filter((edit) => edit.colorHEX !== color) //remove coloring of features after removing key
         // console.log("filtered list",filtered)
         setKeyTable(filtered)
-        setEditsList(filterEdits)
-
+        setEditsList(filterEdits)  
     }
+
+    const addTableEntry = (color, keyTable, editsList, setKeyTable, setEditsList) => {
+         setKeyTable(keyTable)
+         setEditsList(editsList)
+    }
+
+    const handleRemove = (color) => {
+        const transaction = new ChoroTableTransaction(color, keyTable, editsList, setKeyTable, setEditsList, removeTableEntry, addTableEntry)
+        transactions.addTransaction(transaction)
+    }
+
     const handleUpdateLabel = (text) => {
         const currKeyTable = [...keyTable]
         const found = currKeyTable.find((row) => row.color === color)
