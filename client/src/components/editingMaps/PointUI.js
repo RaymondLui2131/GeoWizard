@@ -7,7 +7,6 @@ import React, { useState, useEffect, useRef } from 'react'
 import { PointEdit } from '../../editMapDataStructures/PointMapData.js'
 
 export const PointUI = (props) => {
-    console.log(props)
     const setType = props.setType
     const selected = props.selected
     const setSelected = props.setSelected
