@@ -6,6 +6,7 @@ const bcrypt = require("bcryptjs")
 const UserController = require("../controllers/user_controllers")
 const app = createServer()
 const jwt = require("jsonwebtoken")
+
 const user_data1 = {
     id: "123",
     username: "testuser",
@@ -21,7 +22,7 @@ jest.mock("../models/user_model", () => ({
     findOne: jest.fn(),
     create: jest.fn(),
     findById: jest.fn(),
-    select: jest.fn()
+    select: jest.fn(),
 }));
 
 jest.mock("bcryptjs", () => ({
@@ -338,5 +339,135 @@ describe("testing getUserById", () => {
         expect(res.body).toEqual({
             message: "User not found"
         });
+    })
+})
+
+describe("testing updateUserInfo", () => {
+    it("should update user location successfully", async () => {
+        const field = "location"
+        const value = "Stony Brook, NY"
+        const req = mockRequest({
+            field: field,
+            value: value
+        })
+
+        const user = { _id: "123", location: "", save: jest.fn() }
+        req.user = user
+
+        const res = mockResponse()
+
+        user.save.mockImplementation(async () => {
+            user[req.body.field] = req.body.value
+            return user
+        })
+
+        await UserController.updateUserInfo(req, res)
+        expect(user[field]).toEqual(value)
+        expect(res.status).toHaveBeenCalledWith(200)
+        expect(res.json).toHaveBeenCalledWith({
+            user: user,
+            value: value
+        })
+    })
+
+    it("should update user about successfully", async () => {
+        const field = "about"
+        const value = "hello world"
+        const req = mockRequest({
+            field: field,
+            value: value
+        })
+
+        const user = { _id: "123", about: "", save: jest.fn() }
+        req.user = user
+
+        const res = mockResponse()
+
+        user.save.mockImplementation(async () => {
+            user[req.body.field] = req.body.value
+            return user
+        })
+
+        await UserController.updateUserInfo(req, res)
+        expect(user[field]).toEqual(value)
+        expect(res.status).toHaveBeenCalledWith(200)
+        expect(res.json).toHaveBeenCalledWith({
+            user: user,
+            value: value
+        })
+    })
+
+    it("should update user birthday successfully", async () => {
+        const field = "birthday"
+        const value = new Date()
+        const req = mockRequest({
+            field: field,
+            value: value
+        })
+
+        const user = { _id: "123", birthday: "", save: jest.fn() }
+        req.user = user
+
+        const res = mockResponse()
+
+        user.save.mockImplementation(async () => {
+            user[req.body.field] = req.body.value
+            return user
+        })
+
+        await UserController.updateUserInfo(req, res)
+        expect(user[field]).toEqual(value)
+        expect(res.status).toHaveBeenCalledWith(200)
+        expect(res.json).toHaveBeenCalledWith({
+            user: user,
+            value: value
+        })
+    })
+
+    it("should fail if field does not exist", async () => {
+        const field = "bad"
+        const value = new Date()
+        const req = mockRequest({
+            field: field,
+            value: value
+        })
+
+        const user = { _id: "123", save: jest.fn() }
+        req.user = user
+
+        const res = mockResponse()
+
+        user.save.mockImplementation(async () => {
+            user[req.body.field] = req.body.value
+            return user
+        })
+
+        await UserController.updateUserInfo(req, res)
+        expect(res.status).toHaveBeenCalledWith(400)
+        expect(res.json).toHaveBeenCalledWith({
+            message: `field ${field} does not exist`
+        })
+    })
+
+    it("should fail if network error", async () => {
+        const field = "birthday"
+        const value = new Date()
+        const req = mockRequest({
+            field: field,
+            value: value
+        })
+
+        const user = { _id: "123", birthday: "", save: jest.fn() }
+        req.user = user
+
+        const res = mockResponse()
+
+        user.save.mockResolvedValueOnce(null)
+
+        await UserController.updateUserInfo(req, res)
+        expect(res.status).toHaveBeenCalledWith(500)
+        expect(res.json).toHaveBeenCalledWith({
+            message: "updateUserInfo failed"
+        })
     })
 })

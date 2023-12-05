@@ -1,5 +1,5 @@
 import 'leaflet/dist/leaflet.css';
-import { MapContainer, TileLayer, GeoJSON, ImageOverlay } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON} from 'react-leaflet';
 import { useState, useContext,useRef,useEffect } from "react";
 import L from 'leaflet';
 import { SaturationSlider , HueSlider } from 'react-slider-color-picker'
@@ -19,7 +19,12 @@ import { /**MapActionType，*/ MapContext } from "../../api/MapContext.js"
 import HeatUi from './HeatMapUI.js';
 import { HeatMapHeader } from '../../editMapDataStructures/HeatMapData.js';
 import { ChoroHeader } from '../../editMapDataStructures/ChoroplethMapData.js';
+import { NoneMapHeader } from '../../editMapDataStructures/NoneMapData.js';
 import ChoroUi from './ChoroUi.js';
+import DraggableImageOverlay from './ImageDragging.js';
+import SymbolUi from './SymbolsUI.js';
+import { SymbolHeader } from '../../editMapDataStructures/SymbolsMapData.js';
+import { async } from 'regenerator-runtime';
 //Note assigns saturation of 100 for satslider
 const hexToHlsa = (hexString) => {
 
@@ -39,6 +44,17 @@ const hlsaToRGBA = (hlsa) => {
     // console.log("COnversion",rgbaString)
     return rgbaString
 }
+function toValidFileName(inputString) {
+    let validName = inputString.replace(/[/:*?"<>|]/g, '')
+    validName = validName.replace(/[\s,;&]/g, '_')
+    validName = validName.trim()
+  
+    if (validName.length > 255) {
+      validName = validName.substring(0, 255)
+    }
+  
+    return validName
+  }
 
 
 const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound,setValidHeatRange,
@@ -72,6 +88,11 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
                 {
                     const lower = parseFloat(lowerBound)
                     const upper = parseFloat(upperBound)
+                    if(!upper || !lower)
+                    {
+                        setValidHeatRange(false)
+                        return
+                    }
                     if(upper < lower) //handle invalid upper
                     {
                         setValidHeatRange(false)
@@ -91,6 +112,14 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
                     mapInfo.edits.editsList = editsList
                     break
                 }
+                case MAP_TYPES['SYMBOL']:
+                {
+                    const newSymbolHeader = new SymbolHeader(editsList.length)
+                    mapInfo.edits.header = newSymbolHeader
+                    mapInfo.edits.editsList = editsList
+                    break
+                }
+                
                 default:
                     break
             }
@@ -116,7 +145,65 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
             }
             // console.log(response)
         }
-    };
+    }
+    const handleExport = async () =>{
+        let editHeader = new NoneMapHeader()
+        switch(mapType){
+            case MAP_TYPES['HEATMAP']:
+            {
+                const lower = parseFloat(lowerBound)
+                    const upper = parseFloat(upperBound)
+                    if(upper < lower) //handle invalid upper
+                    {
+                        setValidHeatRange(false)
+                        return
+                    }
+                    else
+                        setValidHeatRange(true)
+                editHeader = new HeatMapHeader(lower,upper,baseColor)
+                break
+            }
+            case MAP_TYPES['CHOROPLETH']:
+            {
+                editHeader = new ChoroHeader(keyTable)
+                break
+            }
+            case MAP_TYPES['SYMBOL']:
+            {
+                editHeader = new SymbolHeader(editsList.length)
+                break
+            }
+            default:
+                break
+        }
+        const exportedData = {
+            ...map,
+            edits:{
+                header: editHeader,
+                editsList:editsList
+            },
+            description:description,
+            title:title
+        }
+        let fileName = "geowizardMap"
+        if(title !== '')
+            fileName = title
+
+        const exportString = JSON.stringify(exportedData)
+        const blob = new Blob([exportString],{ type: "text/json" })
+        const href = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = href;   
+        fileName = toValidFileName(fileName)
+        if(fileName === '')
+            fileName = "geowizardMap"
+        link.download = fileName + ".geowizjson";
+        document.body.appendChild(link);
+        link.click();
+
+        document.body.removeChild(link);
+        URL.revokeObjectURL(href);
+    }
     return (
         <div className='w-4/5 flex  flex-row justify-between mt-4'>
             <div className='flex flex-row'>
@@ -129,7 +216,7 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
             <div className='flex justify-between'>
                 <div className='pr-14'>
                     <div className='inline-block'><button className='bg-primary-GeoOrange text-3xl 
-                                                font-NanumSquareNeoOTF-Lt px-14 rounded-full py-2'>
+                                                font-NanumSquareNeoOTF-Lt px-14 rounded-full py-2' onClick={()=>handleExport()}>
                         Export</button>
                     </div>
                     <div className='pl-12 inline-block pr-16'>
@@ -176,6 +263,7 @@ const MapEditOptions = (props) => {
     const keyTable = props.keyTable //holds list of key labels mappings in form {color: hexColor, label:label}
     const setKeyTable = props.setKeyTable
 
+    const mapBounds = props.mapBounds
     const [selected, setSelected] = useState('') //used to control current item can for any
     const [heatColor, setHlsa] = useState(hexToHlsa('#000000')) //Used for heat map, in hlsa format
     
@@ -188,7 +276,7 @@ const MapEditOptions = (props) => {
     // console.log(key)
     // console.log(label)
 
-    const [symbColor, setSymbColor] = useState("#aabbcc");  //Used for symbmap color, hlsa
+    const [symbColor, setSymbColor] = useState(hexToHlsa('#aabbcc'));  //Used for symbmap color, hlsa
 
     const handleChangeColor = (newColor) => {
         setSymbColor(newColor)
@@ -297,43 +385,25 @@ const MapEditOptions = (props) => {
                 )
         }
         case MAP_TYPES['SYMBOL']:
+        {
+            const props = {
+                setType : setType,
+                selected: selected,
+                setSelected: setSelected,
+                selectedColor: selectedColor,
+                handleChangeColor: handleChangeColor,
+                symbColor:symbColor,
+                areaClicked:areaClicked,
+                setAreaClicked: setAreaClicked,
+                editsList: editsList,
+                setEditsList: setEditsList
+            }
             return (
                 <>
-                    <div className='invisible'>gap space</div>
-                    <div className='h-full w-96 bg-gray-50 rounded-3xl'>
-                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
-                        <div className='grid grid-cols-2 gap-2  h-4/5  mx-auto'>
-                            <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'circle' ? selectedColor : '#F9FAFB' }}>
-                                <img src={circle} alt='circle' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("circle")} />
-                            </div>
-                            <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'triangle' ? selectedColor : '#F9FAFB' }}>
-                                <img src={triangle} alt='triangle' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("triangle")} />
-                            </div>
-                            <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'square' ? selectedColor : '#F9FAFB' }}>
-                                <img src={square} alt='square' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("square")} />
-                            </div>
-                            <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'star' ? selectedColor : '#F9FAFB' }}>
-                                <img src={star} alt='star' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("star")} />
-                            </div>
-                            <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'hexagon' ? selectedColor : '#F9FAFB' }}>
-                                <img src={hexagon} alt='hexagon' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("hexagon")} />
-                            </div>
-                            <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'pentagon' ? selectedColor : '#F9FAFB' }}>
-                                <img src={pentagon} alt='pentagon' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("pentagon")} />
-                            </div>
-                        </div>
-                        <div className='flex flex-col items-center w-full mx-auto'>
-                            <HueSlider handleChangeColor={handleChangeColor} color={symbColor} />
-                        </div>
-                    </div>
+                    <SymbolUi {...props}/>
                 </>
-            )
+                )
+            }
         case MAP_TYPES['FLOW']:
             return (
                 <>
@@ -398,7 +468,7 @@ const MapView = () => {
     
     const [changingMapTypeIsClicked, setChangingMapTypeIsClicked] = useState(false)
     const [futureTypeSelected, setFutureTypeSelected] = useState(MAP_TYPES['NONE'])
-    const possibleNames = ['name', 'nom', 'state_name', 'nombre','title', 'label', 'id', 'nomgeo']
+    const [geoJsonKey,setgeojsonKey] = useState('')
     // console.log(map)
     // const zoomLevel = 2
     // const center = [46.2276, 2.2137]
@@ -420,8 +490,32 @@ const MapView = () => {
         padded_SW.lng = padded_SW.lng - 5
     }
     const mapString = STRING_MAPPING[typeSelected]
-
     const typeSelectedRef = useRef(typeSelected)
+    useEffect(() => {//if upload geojson, then render the edits as well
+        if(map)
+        {
+            if(map.description)
+                setDescription(map.description)
+            if(map.edits)
+            {
+                
+                const fileMapType = map.edits.header.type
+                // console.log("has map edits", fileMapType)
+                setType(MAP_TYPES[fileMapType])
+                setEditsList([...(map.edits.editsList)])
+                switch(MAP_TYPES[fileMapType]){
+                    case MAP_TYPES['CHOROPLETH']:
+                        // console.log("setting key table")
+                        setKeyTable(map.edits.header.keyTable)
+                        break
+                    default:
+                        break
+                }
+            }
+            if(map.title)
+                setTitle(map.title)
+        }
+    }, [map])
     useEffect(() => {
         typeSelectedRef.current = typeSelected
     }, [typeSelected])
@@ -450,13 +544,15 @@ const MapView = () => {
         }
         )
         setStyleMapping(newMappings)
+        const curKey = JSON.stringify(editsListRef.current); // Create a key that changes when styleMapping changes
+        setgeojsonKey(curKey)
     }, [editsList])
 
+
     // console.log("CUrrent Edits",editsListRef.current)
-    const geoJsonKey = JSON.stringify(styleMapping); // Create a key that changes when styleMapping changes
-    // console.log("Style Mapping",styleMapping)
+   
+    console.log(geoJsonKey)
     const getFeatureStyle = (feature) => {
-        const foundName = possibleNames.find(propertyName => propertyName in feature.properties)
         if (feature) 
         {
             return styleMapping[feature.key] || {fillColor:'#ffffff'}
@@ -465,31 +561,36 @@ const MapView = () => {
     }
     const onFeatureClick = (feature) => {
         const clickedFeature = feature;
+        // console.log(clickedFeature)
         // console.log(typeSelectedRef.current)
         switch(typeSelectedRef.current)
         {
             case MAP_TYPES['HEATMAP']:
             {
-                const foundName = possibleNames.find(propertyName => propertyName in clickedFeature.properties)
-                // console.log("found Name",foundName)
-                if (feature.key) {
-                    // console.log('Clicked feature ' + clickedFeature.key)
+                // console.log(feature)
+                if (feature.key) {//feature will be a feature from geojson
                     setAreaClicked(clickedFeature.key)
                 } else {
-                    // console.log('No known name property found in clicked feature', clickedFeature)
+                    console.log('No known name property found in clicked feature', clickedFeature)
                 }  
                 break
             }
-            case MAP_TYPES['CHOROPLETH']:
+            case MAP_TYPES['CHOROPLETH']://feature will be a feature from geojson
             {
-                const foundName = possibleNames.find(propertyName => propertyName in clickedFeature.properties)
-                // console.log("found Name",foundName)
                 if (feature.key) {
-                    // console.log('Clicked feature ' + clickedFeature.properties[foundName])
                     setAreaClicked(clickedFeature.key)
                 } else {
-                    // console.log('No known name property found in clicked feature', clickedFeature)
+                    console.log('No known name property found in clicked feature', clickedFeature)
                 }  
+                break
+            }
+            case MAP_TYPES['SYMBOL']: //feature will be a latlng obg
+            {
+                if(feature)
+                {
+                    // console.log(feature)
+                    setAreaClicked(feature)
+                }
                 break
             }
             default:
@@ -530,6 +631,7 @@ const MapView = () => {
         if (typeSelected === MAP_TYPES['NONE'] || typeSelected === MAP_TYPES['CHOROPLETH']){
             isClicked(false)
             setType(MAP_TYPES['CHOROPLETH'])
+            console.log("setting type choro")
         }
         else {
             setChangingMapTypeIsClicked(true)
@@ -552,6 +654,7 @@ const MapView = () => {
         setType(futureTypeSelected)
         setChangingMapTypeIsClicked(false)
         setEditsList([])
+        setKeyTable([])
     }
     const handleNoClick = () => {
         console.log("No Click")
@@ -559,7 +662,7 @@ const MapView = () => {
         setType(typeSelected)
         setChangingMapTypeIsClicked(false)
     }
-    // console.log("type", typeSelected)
+    console.log(map)
     return (
         map && (<>
             <div className='flex space-around px-28 pt-5'>
@@ -578,6 +681,7 @@ const MapView = () => {
                         <MapContainer
                             center={center}
                             zoom={5}
+                            // style={{ height: '750px', width: '900px' }}
                             className='mapContainer'
                             scrollWheelZoom={true}
                             maxBounds={[padded_NE, padded_SW]}
@@ -588,18 +692,48 @@ const MapView = () => {
                                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                             />
                             <GeoJSON 
-                                key = {geoJsonKey}
+                                key = {`${typeSelected}_${geoJsonKey}`}
                                 data={map.features}
+                                pointToLayer={(feature, latlng) => {
+                                    if (feature.properties && feature.properties.iconUrl) {
+                                        const icon = L.icon({
+                                            iconUrl: feature.properties.iconUrl,
+                                            iconSize: [32, 32],
+                                        });
+                                        const marker = L.marker(latlng, { icon });
+                                        return marker;
+                                    }
+                                    return L.circleMarker(latlng);
+                                }}
                                 onEachFeature={(feature, layer) => {
-                                    layer.on('click', () => onFeatureClick(feature))
-                                    const featureStyle = getFeatureStyle(feature)
-                                    layer.setStyle(featureStyle); 
+                                    if (feature.geometry.type === 'Point' && feature.properties.iconUrl) {
+                                        return;
+                                    }
+                                    layer.on('click', (e) => {typeSelected===MAP_TYPES['CHOROPLETH'] || typeSelected===MAP_TYPES['HEATMAP']
+                                    ?onFeatureClick(feature)
+                                    :onFeatureClick(e.latlng)})
+                                    if(typeSelected===MAP_TYPES['CHOROPLETH'] || typeSelected===MAP_TYPES['HEATMAP'])
+                                    {
+                                        const featureStyle = getFeatureStyle(feature)
+                                        if(featureStyle.fillColor !== '#ffffff')
+                                            // console.log("isColored",featureStyle.fillColor)
+                                        layer.setStyle(featureStyle)
+                                    }
                                 }}
                              />
-                             {/* <ImageOverlay
-                                url="../../assets/EditMapAssets/symbolImages/circle.png"
-                                bounds={[[51.1,-5.5], [41.3,9.5] ]}
-                            /> */}
+                             {typeSelectedRef.current===MAP_TYPES['SYMBOL']
+                                ? editsList.map((edit) => 
+                                <DraggableImageOverlay key={edit.id} id={edit.id} image ={edit.symbol} 
+                                    initialBounds = {edit.bounds}
+                                    color = {edit.colorHLSA}
+                                    editsList = {editsList}
+                                    setEditsList = {setEditsList}
+                                    mapBounds = {[padded_NE, padded_SW]}
+                                />)
+                                : null
+                             }
+                             
+                             
                         </MapContainer>
                     </div>
 
@@ -615,30 +749,32 @@ const MapView = () => {
                             ?
                             <>
                                 {typeSelected == MAP_TYPES['NONE']
-                                    ? <button className='w-full bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked)}>Select Map Type ▼ </button>
+                                    ? <button className='w-96 bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked)}>Select Map Type ▼ </button>
                                     :
                                     <>
-                                        <button className=' bg-primary-GeoOrange block w-96 px-4' onClick={() => isClicked(!mapTypeClicked)}>{mapString}</button>
+                                        <button className=' bg-primary-GeoOrange w-full' onClick={() => isClicked(!mapTypeClicked)}>{mapString}</button>
                                         <MapEditOptions mapType={typeSelected} setType={setType} areaClicked = {areaClicked} setAreaClicked={setAreaClicked}
                                             editsList = {editsList} setEditsList={setEditsList} setLower={setLower} setUpper = {setUpper} validHeatRange = {validHeatRange}
                                             setValidHeatRange={setValidHeatRange} setBaseColor= {setBaseColor}
-                                            keyTable={keyTable} setKeyTable={setKeyTable}
+                                            keyTable={keyTable} setKeyTable={setKeyTable} mapBounds={[padded_NE, padded_SW]}
                                         />
                                     </>
                                 }
                             </>
                             : 
-                            <>
-                                <button onClick={() => isClicked(!mapTypeClicked)} className='w-full bg-primary-GeoOrange'>Select Map Type ▼</button>
+                            <div className='w-96'>                                    
+                                <>
+                                <button className='w-full bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked)}>Select Map Type ▼ </button>
                                 <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handleHeatMapClick() }}>Heatmap</button>
                                 <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handlePointMapClick() }}>Point/Locator</button>
                                 <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handleSymbolMapClick() }}>Symbol</button>
                                 <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handleChoroplethMapClick() }}>Choropleth</button>
                                 <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handleFlowMapClick() }}>Flow</button>
-                            </>
+                                </>
+                            </div>
                         }
                         
-                        {typeSelected === 0 &&
+                        {typeSelected === MAP_TYPES['NONE'] &&
                             <div className='w-full text-xl pt-4 font-PyeongChangPeace-Light'>
                                 <p>Please select a map type to get started.</p>
                             </div>
@@ -671,7 +807,7 @@ const MapView = () => {
 const EditingMap = () => {
     return (
         <>
-            <div className="bg-primary-GeoPurple min-h-screen max-h-[100%]">
+            <div className="bg-primary-GeoPurple min-h-screen max-h-screen overflow-auto">
                 <MapView />
             </div>
 

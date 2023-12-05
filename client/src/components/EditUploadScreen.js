@@ -16,6 +16,11 @@ import polandGeoJson from '../assets/EditMapAssets/poland-compress.geo.json';
 import finlandGeoJson from '../assets/EditMapAssets/finland-compress.geo.json';
 import index from "function.prototype.name";
 
+import toGeoJSON from '@mapbox/togeojson';
+import L from 'leaflet';
+import { truncate } from "lodash";
+/* global shp */
+
 const DisplayMap = (props) => {
     const { dispatch } = useContext(MapContext)
     const navigate = useNavigate();
@@ -105,27 +110,115 @@ const EditUpload = () => {
         const file_type = selected_file.name.split('.').pop().toLowerCase()
         console.log(file_type)
         const options = {tolerance: 0.01, highQuality: true}
-        if (selected_file && file_type === "json") {
-            const reader = new FileReader()
-            reader.onload = (e) => {
-                const geojson = JSON.parse(e.target.result)//REMEMBER TO COMPRESS AFTER HANDLING OTHER FILE FORMATS
-                const compressed = simplify(geojson, options);
-                const edited = {
-                    type: compressed.type,
-                    features: compressed.features.map((feature, index) => ({
-                        ...feature,
-                        key: index,
-                })),
-                }
-                dispatch({ type: MapActionType.UPLOAD, payload: edited })
-            }
+        const reader = new FileReader()
+        const parser = new DOMParser();
+        const JSZip = require('jszip');
 
-            dispatch({ type: MapActionType.RESET })
-            reader.readAsText(selected_file)
-            navigate('/editingMap')   //For now brings you back to / change later
-        }
-        else {
-            setMapErrorMessage(true)
+        switch (file_type) {
+            case 'zip': 
+                reader.onload = async (e) => {
+                    try {
+                        const zipBuffer = e.target.result;
+                        const zip = await JSZip.loadAsync(zipBuffer);
+                        const files = Object.keys(zip.files);
+                        const hasShp = files.some(f => f.endsWith('.shp'));
+                        const hasShx = files.some(f => f.endsWith('.shx'));
+                        const hasDbf = files.some(f => f.endsWith('.dbf'));
+            
+                        if (!hasShp || !hasShx || !hasDbf) {
+                            console.error("Invalid zip file: required shapefile components (.shp, .shx, .dbf) not found");
+                            setMapErrorMessage(true);
+                            return;
+                        }
+            
+                        const geojsonArray = await shp(zipBuffer);
+                        const compressedArray = geojsonArray.map(geojson => {
+                            if (geojson.type === 'FeatureCollection') {
+                                return {
+                                    ...geojson,
+                                    features: geojson.features.map(feature => simplify(feature, options))
+                                };
+                            }
+                            return geojson;
+                        });
+            
+                        const compressed = compressedArray[0];
+                        const edited = {
+                            type: compressed.type,
+                            features: compressed.features.map((feature, index) => ({
+                                ...feature,
+                                key: index,
+                            })),
+                        };
+            
+                        dispatch({ type: MapActionType.UPLOAD, payload: edited });
+                        navigate('/editingMap');
+                    } catch (error) {
+                        console.error("Error processing zip file:", error);
+                        // Handle error here
+                    }
+                };
+                reader.readAsArrayBuffer(selected_file);
+                break;        
+            case 'json':
+                reader.onload = (e) => {
+                    const geojson = JSON.parse(e.target.result)//REMEMBER TO COMPRESS AFTER HANDLING OTHER FILE FORMATS
+                    const compressed = simplify(geojson, options);
+                    const edited = {
+                        type: compressed.type,
+                        features: compressed.features.map((feature, index) => ({
+                            ...feature,
+                            key: index,
+                    })),
+                    }
+                    dispatch({ type: MapActionType.UPLOAD, payload: edited })
+                }
+
+                dispatch({ type: MapActionType.RESET })
+                reader.readAsText(selected_file)
+                navigate('/editingMap')   //For now brings you back to / change later
+                break
+            case 'kml':
+                reader.onload = (e) => {
+                    const kmlDocument = parser.parseFromString(e.target.result, "text/xml");
+                    const geojson = toGeoJSON.kml(kmlDocument);
+                    const compressed = simplify(geojson, options);
+                    const edited = {
+                        type: compressed.type,
+                        features: compressed.features.map((feature, index) => ({
+                            ...feature,
+                            properties: {
+                                ...feature.properties,
+                                iconUrl: feature.properties.icon, // Store the icon URL
+                            },
+                            key: index,
+                        })),
+                    };
+                    dispatch({ type: MapActionType.UPLOAD, payload: edited });
+                };
+            
+                dispatch({ type: MapActionType.RESET });
+                reader.readAsText(selected_file);
+                navigate('/editingMap');
+                break;
+            case 'geowizjson': //custum format similar to geojson
+                reader.onload = (e) => {
+                    const wizjson = JSON.parse(e.target.result)
+                    // console.log("whats uploaded",wizjson)
+                    const edited = {
+                        features: [...wizjson.features],
+                        description: wizjson.description,
+                        edits: {...wizjson.edits},
+                        title: wizjson.title
+                    }
+                    console.log("this is wat got dispactached", edited)
+                    dispatch({ type: MapActionType.UPLOAD, payload: edited })
+                }
+                reader.readAsText(selected_file)
+                navigate('/editingMap')
+                break
+            default:
+                setMapErrorMessage(true)
         }
     }
     return (
@@ -144,7 +237,7 @@ const EditUpload = () => {
                                 </ul>
                             </div>
                             <div className=" pt-20 ">
-                                <input className="hidden" type="file" accept=".zip, .json, .kml, .shp" ref={inputRef} onChange={handleFileChange} />
+                                <input className="hidden" type="file" accept=".zip, .json, .kml, .shp, .geowizjson" ref={inputRef} onChange={handleFileChange} />
                                 <button data-test-id="upload-button" className="bg-primary-GeoOrange px-16 rounded-full py-2 " onClick={() => uploadHandle()}>
                                     Upload
                                 </button>

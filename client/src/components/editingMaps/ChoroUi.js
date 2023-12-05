@@ -104,7 +104,7 @@ export const ChoroUi = (props) =>{
         <>
             <div className='invisible'>gap space</div>
             <div className='h-full w-96 bg-gray-50 rounded-3xl font-NanumSquareNeoOTF-Lt flex flex-col'>
-                <div className='bg-primary-GeoOrange rounded-t-3xl ' onClick={() => setType(MAP_TYPES['NONE'])}><div>Color Selector</div>
+                <div className='bg-primary-GeoOrange rounded-t-3xl choroOptions' onClick={() => setType(MAP_TYPES['NONE'])}><div>Color Selector</div>
                 </div>
                 <div className='flex flex-col items-center pt-10 w-full mx-auto'>
                     <HexColorPicker color={choroColor} onChange={setColor} style={{ width: '80%', height: '300px' }} />

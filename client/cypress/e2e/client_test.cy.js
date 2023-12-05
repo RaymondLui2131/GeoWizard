@@ -127,7 +127,7 @@ describe('testing editing map page', () => {
   beforeEach(() => {
     cy.visit("http://localhost:3000/editUpload")
     cy.get('[data-test-id="upload-button"]').click()
-    cy.get('input[type="file"]').attachFile("france-r.geo.json")
+    cy.get('input[type="file"]').attachFile("france-compress.geo.json")
   })
 
   it('should change title', () => {
@@ -139,6 +139,11 @@ describe('testing editing map page', () => {
     cy.contains('Select Map Type ▼').click()
     cy.contains('Heatmap').should('have.text', 'Heatmap')
   })
+  it('should show heatmap options', () => {
+    cy.contains('Select Map Type ▼').click()
+    cy.contains('Heatmap').click()
+    cy.get('[class*="heatcolors"]').should("exist")
+  })
 
   it('should move to pointmap', () => {
     cy.contains('Select Map Type ▼').click()
@@ -149,16 +154,32 @@ describe('testing editing map page', () => {
     cy.contains('Select Map Type ▼').click()
     cy.contains('Symbol').should('have.text', 'Symbol')
   })
+  it('should show symbol options', () => {
+    cy.contains('Select Map Type ▼').click()
+    cy.contains('Symbol').click()
+    cy.get('[class*="symbolOptions"]').should("exist")
+  })
 
   it('should move to choropleth', () => {
     cy.contains('Select Map Type ▼').click()
     cy.contains('Choropleth').should('have.text', 'Choropleth')
   })
 
+  it('should show choropleth options', () => {
+    cy.contains('Select Map Type ▼').click()
+    cy.contains('Choropleth').click()
+    cy.get('[class*="choroOptions"]').should("exist")
+  })
+
   it('should move to flow', () => {
     cy.contains('Select Map Type ▼').click()
     cy.contains('Flow').should('have.text', 'Flow')
-  }) 
+  })
+  
+  it('should export the file', () => {
+    cy.contains('Export').click()
+    cy.readFile('cypress/downloads/geowizardMap.geowizjson').should("exist");
+  })
 })
 
 describe('testing view page', () => {

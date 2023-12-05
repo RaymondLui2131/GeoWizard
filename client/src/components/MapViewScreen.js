@@ -13,7 +13,7 @@ import { changeLikesMap } from '../api/map_request_api';  //for now requesting, 
 import { changeLikesComment,postComment } from '../api/comment_request_api.js';
 import tinycolor from 'tinycolor2';
 import { useNavigate } from "react-router-dom";
-
+import NotDraggableImageOverlay from './editingMaps/ImageNotDraggable.js';
 const fakeView = {
     title:'The Title of the Map',
     author: 'anon123',
@@ -264,12 +264,42 @@ const MapDisplay = (props) =>{
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 />
                 {Object.keys(mapData).length    
-                    ?<GeoJSON 
+                    ?
+                    <>
+                    <GeoJSON 
                         data={mapData.original_map.features}
+                        pointToLayer={(feature, latlng) => {
+                            if (feature.properties && feature.properties.iconUrl) {
+                                const icon = L.icon({
+                                    iconUrl: feature.properties.iconUrl,
+                                    iconSize: [32, 32],
+                                });
+                                const marker = L.marker(latlng, { icon });
+                                return marker;
+                            }
+                            return L.circleMarker(latlng);
+                        }}
                         onEachFeature={(feature, layer) => {
-                            const featureStyle = getFeatureStyleView(feature)
-                            layer.setStyle(featureStyle); 
+                            if (feature.geometry.type === 'Point') {
+                                return;
+                            }
+                            if(MAP_TYPES[mapType]===MAP_TYPES['CHOROPLETH'] || MAP_TYPES[mapType]===MAP_TYPES['HEATMAP'])
+                            {
+                                const featureStyle = getFeatureStyleView(feature)
+                                layer.setStyle(featureStyle)
+                            } 
+                            
                         }}/>
+                        {
+                            MAP_TYPES[mapType]===MAP_TYPES['SYMBOL']
+                                ? edits.editsList.map((edit) => 
+                                <NotDraggableImageOverlay key={edit.id} id={edit.id} image ={edit.symbol} 
+                                    initialBounds = {edit.bounds}
+                                    color = {edit.colorHLSA}
+                                />)
+                                : null
+                        }
+                    </>
                     :null
                 }
                 
@@ -282,10 +312,13 @@ const Key = (props) =>{//Note this key layout only works for color
     
     const mapType = props.type
     const header = props.header
-    console.log("header",header.upper)
-    const [heatColor,setHeatColor] = useState(header.basecolorHLSA)
-    const hlsaColor = {h:0, s:.73, l:.51, a:1}  //TESTING
 
+    const [heatColor,setHeatColor] = useState({})
+    useEffect(() => {
+        if(header)
+            setHeatColor(header.basecolorHLSA)
+    }, [])
+    
     console.log("Map type",mapType)
     if(MAP_TYPES[mapType] === MAP_TYPES['CHOROPLETH'])
         return(
@@ -314,7 +347,6 @@ const Key = (props) =>{//Note this key layout only works for color
             </>
         )
     if(MAP_TYPES[mapType] === MAP_TYPES['HEATMAP'])
-        
         return(
             <>
             <div className='w-1/12 border-4 border-black bg-gray-50 flex flex-col justify-around font-NanumSquareNeoOTF-Lt items-center'>
