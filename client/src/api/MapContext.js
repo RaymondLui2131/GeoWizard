@@ -19,6 +19,7 @@ export const mapReducer = (state, action) => {
         }
 
         case "RESET": {
+            state.transactions.clearAllTransactions()
             return { ...state, map: null }
         }
 
