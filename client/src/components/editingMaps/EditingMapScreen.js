@@ -240,6 +240,9 @@ const MapEditOptions = (props) => {
     const upperBound = props.upperBound
     const selectedColor = '#3b82f6' //used for heatmap
     const validHeatRange = props.validHeatRange
+    const heatColor = props.heatColor
+    const setHlsa = props.setHlsa
+
     const setValidHeatRange = props.setValidHeatRange
     const setBaseColor = props.setBaseColor
 
@@ -247,9 +250,8 @@ const MapEditOptions = (props) => {
     const setKeyTable = props.setKeyTable
 
     const [selected, setSelected] = useState('') //used to control current item can for any
-    const [heatColor, setHlsa] = useState(hexToHlsa('#000000')) //Used for heat map, in hlsa format
-
-
+    
+  
 
     const [choroColor, setColor] = useState("#ffffff");  //Used for choro map, hex format
     const [key, setKey] = useState('')
@@ -269,33 +271,34 @@ const MapEditOptions = (props) => {
             return (null)
 
         case MAP_TYPES['HEATMAP']:
-            {
-                const props = {
-                    setType: setType,
-                    selected: selected,
-                    setSelected: setSelected,
-                    selectedColor: selectedColor,
-                    areaClicked: areaClicked,
-                    setAreaClicked: setAreaClicked,
-                    heatColor: heatColor,
-                    setHlsa: setHlsa,
-                    editsList: editsList,
-                    setEditsList: setEditsList,
-                    setUpper: setUpper,
-                    setLower: setLower,
-                    hexToHlsa: hexToHlsa,
-                    lowerBound: lowerBound,
-                    upperBound: upperBound,
-                    validHeatRange: validHeatRange,
-                    setValidHeatRange: setValidHeatRange,
-                    setBaseColor: setBaseColor
-                }
-                return (
-                    <>
-                        <HeatUi  {...props} />
-                    </>
-                )
+        {
+            const props = {
+                setType : setType,
+                selected : selected,
+                setSelected : setSelected,
+                selectedColor : selectedColor,
+                areaClicked : areaClicked,
+                setAreaClicked: setAreaClicked,
+                heatColor : heatColor,
+                setHlsa : setHlsa,
+                editsList : editsList,
+                setEditsList : setEditsList,
+                setUpper: setUpper,
+                setLower:setLower,
+                hexToHlsa: hexToHlsa,
+                lowerBound: lowerBound,
+                upperBound: upperBound,
+                validHeatRange: validHeatRange,
+                setValidHeatRange: setValidHeatRange,
+                setBaseColor:setBaseColor,
+
             }
+            return (
+                <>
+                    <HeatUi  {...props} />
+                </>
+            )
+        }
         case MAP_TYPES['POINT']:
             return (
                 <>
@@ -443,8 +446,8 @@ const MapView = () => {
     const [lowerBound, setLower] = useState('0')
     const [upperBound, setUpper] = useState('1')
     const [validHeatRange, setValidHeatRange] = useState(true)
-    const [baseColor, setBaseColor] = useState(hexToHlsa('#ffffff'))
-
+    const [heatColor, setHlsa] = useState(hexToHlsa('#000000')) //Used for heat map, in hlsa format
+    const [baseColor,setBaseColor] = useState(hexToHlsa('#ffffff'))
 
     const [keyTable, setKeyTable] = useState([])//holds list of key labels mappings in form {color: hexColor, label:label}
 
@@ -484,7 +487,12 @@ const MapView = () => {
                 // console.log("has map edits", fileMapType)
                 setType(MAP_TYPES[fileMapType])
                 setEditsList([...(map.edits.editsList)])
-                switch (MAP_TYPES[fileMapType]) {
+                
+                switch(MAP_TYPES[fileMapType]){
+                    case MAP_TYPES['HEATMAP']:
+                        // console.log("setting key table")
+                        setHlsa(map.edits.header.basecolorHLSA)
+                        break
                     case MAP_TYPES['CHOROPLETH']:
                         // console.log("setting key table")
                         setKeyTable(map.edits.header.keyTable)
@@ -730,10 +738,10 @@ const MapView = () => {
                                     :
                                     <>
                                         <button className=' bg-primary-GeoOrange w-full' onClick={() => isClicked(!mapTypeClicked)}>{mapString}</button>
-                                        <MapEditOptions mapType={typeSelected} setType={setType} areaClicked={areaClicked} setAreaClicked={setAreaClicked}
-                                            editsList={editsList} setEditsList={setEditsList} setLower={setLower} setUpper={setUpper} validHeatRange={validHeatRange}
-                                            setValidHeatRange={setValidHeatRange} setBaseColor={setBaseColor}
-                                            keyTable={keyTable} setKeyTable={setKeyTable}
+                                        <MapEditOptions mapType={typeSelected} setType={setType} areaClicked = {areaClicked} setAreaClicked={setAreaClicked}
+                                            editsList = {editsList} setEditsList={setEditsList} setLower={setLower} setUpper = {setUpper} validHeatRange = {validHeatRange}
+                                            setValidHeatRange={setValidHeatRange} setBaseColor= {setBaseColor} heatColor = {heatColor} setHlsa = {setHlsa}
+                                            keyTable={keyTable} setKeyTable={setKeyTable} mapBounds={[padded_NE, padded_SW]}
                                         />
                                     </>
                                 }
