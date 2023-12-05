@@ -22,6 +22,10 @@ const mockRequest = (body) => ({
     body
 });
 
+const mockRequestQuery = (query) => ({
+    query
+});
+
 const mockResponse = () => {
     const res = {};
     res.status = jest.fn().mockReturnValue(res);
@@ -322,6 +326,39 @@ describe("testing getMapById", () => {
     })
 })
 
+describe("testing query", () => {
+
+    it(" query for map", async () => {
+        Map.find.mockResolvedValue([{
+            _id: '123',
+            title: 'Test',
+            description : "",
+            user_id: '123',
+            likes: 0,
+            dislikes: 0,
+            views: 0,
+            comments : [],
+            mapType: 'type',
+            isPublic: true,
+            mapType: "POINT",
+            userLikes: [],
+            userDislikes: [],
+            MapData: "abcdef",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            __v: 0
+        }])
+
+
+        const req = mockRequestQuery({ q: {query: 'Test', metric: '', time: ''}, page: 1, mock: true})
+
+        const res = mockResponse()
+        await MapController.queryMaps(req, res)
+
+        expect(res.status).toHaveBeenCalledWith(200)
+    })
+
+})
 
 // describe("testing Maps Likes", () => {
 //     let user_id

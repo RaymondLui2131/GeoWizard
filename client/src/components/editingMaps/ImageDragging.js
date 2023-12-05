@@ -3,7 +3,7 @@ import { MapContainer, ImageOverlay, Marker, useMapEvents, useMap } from 'react-
 import {drag, resize} from '../../assets/EditMapAssets/symbolImages/index.js'
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css'
-import { circle, triangle, square, star, hexagon, pentagon } from '../../assets/EditMapAssets/symbolImages/index.js'
+import { circle, triangle, square, star, hexagon, pentagon,redXSymb } from '../../assets/EditMapAssets/symbolImages/index.js'
 import tinycolor from 'tinycolor2';
 import 'leaflet-geometryutil';
 const mappings = {
@@ -58,6 +58,12 @@ const draggableIcon = new L.Icon({
     iconSize: [25, 25], // Size of the icon
     iconAnchor: [12, 12], // Point of the icon which will correspond to marker's location
     popupAnchor: [0, -12] // Point from which the popup should open relative to the iconAnchor
+  })
+  const removeIcon = new L.Icon({
+    iconUrl: redXSymb,
+    iconSize: [25, 25], // Size of the icon
+    iconAnchor: [12, 12], // Point of the icon which will correspond to marker's location
+    popupAnchor: [0, -12] // Point from which the popup should open relative to the iconAnchor
   });
 
 const cornerIcon = new L.Icon({
@@ -74,7 +80,6 @@ export const DraggableImageOverlay = (props) => {
     const setEditsList = props.setEditsList
     const id = props.id
     const arrayBounds = props.mapBounds
-
     
     const mapBounds = L.latLngBounds(arrayBounds[0], arrayBounds[1]);
     const boundsPolygon = [
@@ -91,9 +96,8 @@ export const DraggableImageOverlay = (props) => {
     const [markerPosition, setMarkerPosition] = useState(getCenter(initialBounds));
     const [isClicked, setClicked] = useState(false)
     const [imageRend, setImage] = useState(image)
-
-    
-
+    const [northWest, setNorthWest] = useState(L.latLng(bounds[1][0], bounds[0][1]))
+    console.log(northWest)
     useEffect(() => {
       replaceWhiteWithColor(imageRend,color)
           .then(modifiedDataURL => {
@@ -104,7 +108,7 @@ export const DraggableImageOverlay = (props) => {
 
 
 
-    console.log("currBounds", bounds)
+    // console.log("currBounds", bounds)
     function getCenter(bounds) {
       // Simple function to calculate the center of the bounds
       return [(bounds[0][0] + bounds[1][0]) / 2, (bounds[0][1] + bounds[1][1]) / 2];
@@ -131,8 +135,8 @@ export const DraggableImageOverlay = (props) => {
         newPosition.lat = closestPoint.lat
         newPosition.lng = closestPoint.lng
       }
-      console.log("updating", newPosition)
-      console.log("old", markerPosition)
+      // console.log("updating", newPosition)
+      // console.log("old", markerPosition)
 
       const latDiff = newPosition.lat - markerPosition[0];
       const lngDiff = newPosition.lng - markerPosition[1];
@@ -142,9 +146,10 @@ export const DraggableImageOverlay = (props) => {
         [bounds[1][0] + latDiff, bounds[1][1] + lngDiff]
       ];
   
-      
-      setBounds(newBounds);
-      setMarkerPosition([newPosition.lat, newPosition.lng]);
+
+      setBounds(newBounds)
+      setNorthWest(L.latLng(newBounds[1][0], newBounds[0][1]))
+      setMarkerPosition([newPosition.lat, newPosition.lng])
 
       
     }, [bounds, markerPosition]);
@@ -185,6 +190,7 @@ export const DraggableImageOverlay = (props) => {
        
         setMarkerPosition(getCenter(newBounds))
         setBounds(newBounds)
+        setNorthWest(L.latLng(newBounds[1][0], newBounds[0][1]))
     }, [bounds, setBounds]);
     useMapEvents({
     click: (e) => {
@@ -192,7 +198,13 @@ export const DraggableImageOverlay = (props) => {
         setClicked(false); // Hide the marker if click is outside the overlay bounds
         }
     }
-    });
+    })
+    const removeSymbol = () =>{
+        let copyEdits  =[...editsList]
+        copyEdits= copyEdits.filter((edit) => {return edit.id !== id})//removing edit entry for new one
+        // console.log("current edits List",copyEdits)
+        setEditsList(copyEdits)
+    }
     return (
       <>
         <ImageOverlay url={imageRend} bounds={bounds} 
@@ -216,6 +228,27 @@ export const DraggableImageOverlay = (props) => {
                 dragend: () =>{
                     updateBounds()
                 }
+            }}
+        />
+        <Marker 
+            position={markerPosition}
+            draggable={true}
+            icon={draggableIcon}
+            eventHandlers={{
+                drag: (event) => {
+                    updateImagePosition(event.target.getLatLng())
+                },
+                dragend: () =>{
+                    updateBounds()
+                }
+            }}
+        />
+        <Marker 
+            position={northWest}
+            draggable={false}
+            icon={removeIcon}
+            eventHandlers={{
+                click: () => removeSymbol()          
             }}
         />
         {bounds.map((cornerLatLng, index) => (

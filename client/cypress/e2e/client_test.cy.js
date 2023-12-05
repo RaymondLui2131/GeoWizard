@@ -1,4 +1,5 @@
 import 'cypress-file-upload'
+import AuthController from '../../src/api/auth_request_api'
 
 describe('template spec', () => {
   it('passes', () => {
@@ -125,10 +126,31 @@ describe('testing edit upload', () => {
 })
 describe('testing editing map page', () => {
   beforeEach(() => {
+    // cy.stub(AuthController, 'authgetUser').withArgs('123').resolves({
+    //   _id: 'id',
+    //   username: 'testuser',
+    //   email: 'test@example.com',
+    //   token: "123"
+    // })
+
+    cy.setCookie('token', '123')
+    cy.intercept('GET', '/users/me', {
+      statusCode: 200,
+      body: {
+        _id: 'id',
+        username: 'testuser',
+        email: 'test@example.com',
+        token: "123"
+      }
+    })
     cy.visit("http://localhost:3000/editUpload")
     cy.get('[data-test-id="upload-button"]').click()
     cy.get('input[type="file"]').attachFile("france-compress.geo.json")
   })
+
+  afterEach(() => {
+    cy.clearCookie('token');
+  });
 
   it('should change title', () => {
     cy.get('input[placeholder="Enter Title...').type('New Title').should('have.value', 'New Title')
@@ -175,7 +197,7 @@ describe('testing editing map page', () => {
     cy.contains('Select Map Type ▼').click()
     cy.contains('Flow').should('have.text', 'Flow')
   })
-  
+
   it('should export the file', () => {
     cy.contains('Export').click()
     cy.readFile('cypress/downloads/geowizardMap.geowizjson').should("exist");
@@ -201,8 +223,8 @@ describe('testing create account screen', () => {
   it('should type text into the input field', () => {
 
     cy.get('.caUserEmail')
-      .type('exampleText') 
-      .should('have.value', 'exampleText'); 
+      .type('exampleText')
+      .should('have.value', 'exampleText');
 
   })
 
