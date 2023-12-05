@@ -44,8 +44,52 @@ export const HeatUi = (props) => {
     useEffect(() => {
         if(selected === '')
         {
-            setHlsa(hexToHlsa('#ff0000'))
-            setSelected('red')
+            const curColor = JSON.stringify(heatColor)
+            console.log("string curretn",curColor)
+            switch(curColor){
+                case JSON.stringify(hexToHlsa('#ff0000')):
+                    setHlsa(hexToHlsa('#ff0000'))
+                    setSelected('red')
+                    break
+                case JSON.stringify(hexToHlsa('#00ff00')):
+                    setHlsa(hexToHlsa('#00ff00'))
+                    setSelected('green')
+                    break
+                case JSON.stringify(hexToHlsa('#0019ff')):
+                    setHlsa(hexToHlsa('#0019ff'))
+                    setSelected('blue')
+                    break
+                case JSON.stringify(hexToHlsa('#00fffd')):
+                    setHlsa(hexToHlsa('#00fffd'))
+                    setSelected('cyan')
+                    break
+                case JSON.stringify(hexToHlsa('#9900ff')):
+                    setHlsa(hexToHlsa('#9900ff'))
+                    setSelected('purple')
+                    break
+                case JSON.stringify(hexToHlsa('#ffb400')):
+                    setHlsa(hexToHlsa('#ffb400'))
+                    setSelected('orange')
+                    break
+                case JSON.stringify(hexToHlsa('#ff6e00')):
+                    setHlsa(hexToHlsa('#ff6e00'))
+                    setSelected('darkorange')
+                    break
+                case JSON.stringify(hexToHlsa('#ff00d9')):
+                    setHlsa(hexToHlsa('#ff00d9'))
+                    setSelected('pink')
+                    break
+                case JSON.stringify(hexToHlsa('#fffe00')):
+                    setHlsa(hexToHlsa('#fffe00'))
+                    setSelected('yellow')
+                    break
+                default:
+                    console.log("am here")
+                    setHlsa(hexToHlsa('#ff0000'))
+                    setSelected('red')
+                    break
+            }
+            
         }
     },[])
     useEffect(() => {
@@ -97,7 +141,7 @@ export const HeatUi = (props) => {
          <div className='invisible'>gap space</div>
             <div className='h-full w-96 bg-gray-50 rounded-3xl'>
                 <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}>Colors</div>
-                <div className='grid grid-cols-3 gap-3 h-2/3 pt-12'>
+                <div className='grid grid-cols-3 gap-3 h-2/3 pt-12 heatcolors'>
                     <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { colorSwap('#ff0000'); setSelected('red') }}
                         style={{ borderColor: selected === 'red' ? selectedColor : '#000000', backgroundColor: '#ff0000' }}></div>
 

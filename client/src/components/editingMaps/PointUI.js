@@ -196,8 +196,8 @@ export const PointUI = (props) => {
                     />
 
                     <div className="flex justify-between font-NanumSquareNeoOTF-Lt">
-                    <div>Longitude: {longitude ? longitude.toFixed(4) : ''} </div>
-                    <div>Latitude: {latitude ? latitude.toFixed(4) : ''} </div>
+                    <div className=' mr-2'>Longitude: {longitude ? longitude.toFixed(3) : ''} </div>
+                    <div>Latitude: {latitude ? latitude.toFixed(3) : ''} </div>
                     </div>
 
                     <div className='font-NanumSquareNeoOTF-Bd text-red-500 mb-4'> {errorMessage ? `Error: ${errorMessage}` : ''}</div>
