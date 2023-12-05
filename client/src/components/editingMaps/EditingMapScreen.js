@@ -427,7 +427,7 @@ const MapEditOptions = (props) => {
 }
 
 const MapView = () => {
-    const { map, /** dispatch */ } = useContext(MapContext)
+    const { map, transactions } = useContext(MapContext)
     // const [map, setMap] = useState(null)
     const [title, setTitle] = useState('')
     const [validTitle, setValidTitle] = useState(true)
@@ -632,6 +632,7 @@ const MapView = () => {
         setChangingMapTypeIsClicked(false)
         setEditsList([])
         setKeyTable([])
+        transactions.clearAllTransactions()
     }
     const handleNoClick = () => {
         console.log("No Click")
