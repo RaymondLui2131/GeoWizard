@@ -242,6 +242,8 @@ describe("testing saveUserMap", () => {
                 original_map: 'original_data',
                 edits: 'edited_data'
             },
+            createOrSave: 'create',
+            idToUpdate: ''
         })
 
         req.user = { _id: "123" }
@@ -268,6 +270,8 @@ describe("testing saveUserMap", () => {
                 original_map: 'original_data',
                 edits: 'edited_data'
             },
+            createOrSave: 'create',
+            idToUpdate: ''
         })
 
         const user = { _id: "user_id", maps: [], save: jest.fn() }
