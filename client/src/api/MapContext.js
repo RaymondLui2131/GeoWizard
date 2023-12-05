@@ -5,7 +5,8 @@ export const MapContext = createContext()
 export const MapActionType = {
     UPLOAD: "UPLOAD",
     VIEW: "VIEW",
-    RESET: "RESET"
+    RESET: "RESET",
+    FORK: "FORK"
 }
 
 export const mapReducer = (state, action) => {
@@ -20,7 +21,12 @@ export const mapReducer = (state, action) => {
 
         case "RESET": {
             state.transactions.clearAllTransactions()
-            return { ...state, map: null }
+            return { ...state, map: null, mapObj: null }
+        }
+
+        case "FORK": {
+            state.transactions.clearAllTransactions()
+            return { ...state, map: payload.map, mapObj: payload.mapObj }
         }
 
         default:
@@ -32,6 +38,7 @@ export const mapReducer = (state, action) => {
 export const MapContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(mapReducer, {
         map: null,
+        mapObj: null,
         transactions: new jsTPS()
     })
 
