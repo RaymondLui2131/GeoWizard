@@ -17,14 +17,17 @@ import { saveUserMap, createMap } from "../../api/map_request_api.js"
 import { /**UserActionType, */ UserContext } from "../../api/UserContext.js"
 import { /**MapActionType，*/ MapContext } from "../../api/MapContext.js"
 import HeatUi from './HeatMapUI.js';
+import { PointUI } from './PointUI.js';
 import { HeatMapHeader } from '../../editMapDataStructures/HeatMapData.js';
 import { ChoroHeader } from '../../editMapDataStructures/ChoroplethMapData.js';
 import { NoneMapHeader } from '../../editMapDataStructures/NoneMapData.js';
 import ChoroUi from './ChoroUi.js';
 import DraggableImageOverlay from './ImageDragging.js';
+import PointMarker from './PointMarker.js';
 import SymbolUi from './SymbolsUI.js';
 import { SymbolHeader } from '../../editMapDataStructures/SymbolsMapData.js';
 import { async } from 'regenerator-runtime';
+import { PointHeader } from '../../editMapDataStructures/PointMapData.js';
 //Note assigns saturation of 100 for satslider
 const hexToHlsa = (hexString) => {
 
@@ -104,13 +107,21 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                         break
                     }
                 case MAP_TYPES['SYMBOL']:
+                {
+                    const newSymbolHeader = new SymbolHeader(editsList.length)
+                    mapInfo.edits.header = newSymbolHeader
+                    mapInfo.edits.editsList = editsList
+                    break
+                }
+
+                case MAP_TYPES['POINT']:
                     {
-                        const newSymbolHeader = new SymbolHeader(editsList.length)
-                        mapInfo.edits.header = newSymbolHeader
+                        const newPointHeader= new PointHeader(editsList.length)
+                        mapInfo.edits.header = newPointHeader
                         mapInfo.edits.editsList = editsList
                         break
                     }
-
+                
                 default:
                     break
             }
@@ -160,8 +171,13 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                     break
                 }
             case MAP_TYPES['SYMBOL']:
+            {
+                editHeader = new SymbolHeader(editsList.length)
+                break
+            }
+            case MAP_TYPES['POINT']:
                 {
-                    editHeader = new SymbolHeader(editsList.length)
+                    editHeader = new PointHeader(editsList.length)
                     break
                 }
             default:
@@ -228,6 +244,8 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
 }
 
 const MapEditOptions = (props) => {
+    const padded_NE = props.padded_NE
+    const padded_SW = props.padded_SW
     const type_of_map = props.mapType
     const setType = props.setType
     const areaClicked = props.areaClicked
@@ -300,52 +318,25 @@ const MapEditOptions = (props) => {
             )
         }
         case MAP_TYPES['POINT']:
+            {
+            const props = {
+                setType : setType,
+                selected: selected,
+                setSelected: setSelected,
+                selectedColor: selectedColor,
+                handleChangeColor: handleChangeColor,
+                symbColor:symbColor,
+                areaClicked:areaClicked,
+                setAreaClicked: setAreaClicked,
+                editsList: editsList,
+                setEditsList: setEditsList,
+                padded_NE : padded_NE,
+                padded_SW : padded_SW
+            }
             return (
-                <>
-                    <div className='invisible'>gap space</div>
-                    <div className='h-full w-96 bg-gray-50 rounded-3xl'>
-                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}><div>Point Locator Options</div></div>
-                        <div className='grid grid-cols-3 gap-3  h-4/5  mx-auto'>
-                            <div className='flex justify-center items-center w-20 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'p1' ? selectedColor : '#F9FAFB' }}>
-                                <img src={p1} alt='p1' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("p1")} />
-                            </div>
-                            <div className='flex justify-center items-center w-20 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'p2' ? selectedColor : '#F9FAFB' }}>
-                                <img src={p2} alt='p2' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("p2")} />
-                            </div>
-                            <div className='flex justify-center items-center w-20 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'p3' ? selectedColor : '#F9FAFB' }}>
-                                <img src={p3} alt='p3' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("p3")} />
-                            </div>
-                            <div className='flex justify-center items-center w-20 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'p4' ? selectedColor : '#F9FAFB' }}>
-                                <img src={p4} alt='p4' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("p4")} />
-                            </div>
-                            <div className='flex justify-center items-center w-20 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'p5' ? selectedColor : '#F9FAFB' }}>
-                                <img src={p5} alt='p5' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("p5")} />
-                            </div>
-                            <div className='flex justify-center items-center w-20 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'p6' ? selectedColor : '#F9FAFB' }}>
-                                <img src={p6} alt='p6' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("p6")} />
-                            </div>
-                            <div className='flex justify-center items-center w-20 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'p7' ? selectedColor : '#F9FAFB' }}>
-                                <img src={p7} alt='p7' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("p7")} />
-                            </div>
-                            <div className='flex justify-center items-center w-20 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'p8' ? selectedColor : '#F9FAFB' }}>
-                                <img src={p8} alt='p8' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("p8")} />
-                            </div>
-                            <div className='flex justify-center items-center w-20 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'p9' ? selectedColor : '#F9FAFB' }}>
-                                <img src={p9} alt='p9' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("p9")} />
-                            </div>
-                        </div>
-                    </div>
-                </>
+                    <PointUI{...props}></PointUI>
             )
+            }
         case MAP_TYPES['CHOROPLETH']:
             {
                 const props = {
@@ -578,6 +569,17 @@ const MapView = () => {
                     }
                     break
                 }
+
+            case MAP_TYPES['POINT']: //feature will be a latlng obg
+            {
+                if(feature)
+                {
+                    // console.log(feature)
+                    setAreaClicked(feature)
+                }
+                break
+            }
+
             default:
                 break
         }
@@ -652,7 +654,7 @@ const MapView = () => {
     return (
         map && (<>
             <div className='flex space-around px-28 pt-5'>
-                <div className='flex justify-center flex-col items-center w-8/12'>
+                <div className='flex justify-center flex-col items-center'>
                     <div>
                         {!validTitle
                             ? <div className='text-red-300 text-center'>Need Title</div>
@@ -715,11 +717,23 @@ const MapView = () => {
                                         color={edit.colorHLSA}
                                         editsList={editsList}
                                         setEditsList={setEditsList}
+                                        mapBounds = {[padded_NE, padded_SW]}
                                     />)
                                 : null
-                            }
+                             }
 
-
+                            {typeSelectedRef.current===MAP_TYPES['POINT']
+                                ? editsList.map((edit) => 
+                                <PointMarker key={edit.id} 
+                                    id={edit.id} 
+                                    edit ={edit} 
+                                    editsList = {editsList}
+                                    setEditsList = {setEditsList}
+                                />)
+                                : null
+                             }
+                             
+                             
                         </MapContainer>
                     </div>
 
@@ -728,8 +742,8 @@ const MapView = () => {
                         placeholder='Enter Description...' maxLength={48} onChange={(e) => setDescription(e.target.value)} >
                     </input>
                 </div>
-                <div className='px-32'>
-                    <div className='text-2xl font-NanumSquareNeoOTF-Lt flex flex-col items-center text-center '>
+                <div className='px-16'>
+                    <div className='text-2xl font-NanumSquareNeoOTF-Lt flex flex-col items-center text-center'>
 
                         {!mapTypeClicked && !changingMapTypeIsClicked
                             ?

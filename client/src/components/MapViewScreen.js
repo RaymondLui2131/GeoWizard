@@ -14,6 +14,8 @@ import { changeLikesComment,postComment } from '../api/comment_request_api.js';
 import tinycolor from 'tinycolor2';
 import { useNavigate } from "react-router-dom";
 import NotDraggableImageOverlay from './editingMaps/ImageNotDraggable.js';
+import PointMarkerNotEditable from './editingMaps/PointMarkerNotEditable.js';
+
 const fakeView = {
     title:'The Title of the Map',
     author: 'anon123',
@@ -296,6 +298,16 @@ const MapDisplay = (props) =>{
                                 <NotDraggableImageOverlay key={edit.id} id={edit.id} image ={edit.symbol} 
                                     initialBounds = {edit.bounds}
                                     color = {edit.colorHLSA}
+                                />)
+                                : null
+                        }
+                        {
+                            MAP_TYPES[mapType]===MAP_TYPES['POINT']
+                                ? edits.editsList.map((edit) => 
+                                <PointMarkerNotEditable 
+                                key={edit.id} 
+                                id={edit.id} 
+                                edit ={edit} 
                                 />)
                                 : null
                         }
