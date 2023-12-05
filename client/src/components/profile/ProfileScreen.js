@@ -26,7 +26,8 @@ const ProfileScreen = () => {
     const [userInfo, setUserInfo] = useState({
         about: "",
         birthday: "",
-        location: ""
+        location: "",
+        username: ""
     })
 
     const handleInputChange = (e) => {
@@ -55,7 +56,8 @@ const ProfileScreen = () => {
                 setUserInfo({
                     about: userData.about,
                     birthday: userData.birthday,
-                    location: userData.location
+                    location: userData.location,
+                    username: userData.username
                 });
 
                 // Check if userData is available before fetching maps
@@ -196,14 +198,23 @@ const ProfileScreen = () => {
                     </div>
                     <div className='shadow-aesthetic absolute w-4/5 h-1/2 top-20 left-1/2 transform -translate-x-1/2 rounded-2xl bg-white flex flex-col justify-between'>
                         <div className='shadow-aesthetic absolute left-1/2 transform -translate-x-1/2 -top-16 rounded-full w-32 h-32  bg-primary-GeoBlue z-10 flex items-center justify-center'>
-                            <span className='text-black text-7xl font-PyeongChangPeace-Light'>{userData && userData.username[0]}</span>
+                            <span className='text-black text-7xl font-PyeongChangPeace-Light'>{userInfo?.username[0]}</span>
                         </div>
 
                         <div className='flex flex-col justify-evenly mt-20 text-center items-center gap-2.5'>
-                            <p className='text-black text-4xl font-PyeongChangPeace-Light'>@{userData && userData.username}</p>
+                            <div className="flex items-center ">
+                                <span className='text-black text-4xl font-PyeongChangPeace-Light'>@</span>
+                                <EditText
+                                    className={`text-black text-4xl font-PyeongChangPeace-Light ${user?._id !== id ? 'hover:bg-none' : 'hover:bg-gray-100 hover:cursor-pointer'}`}
+                                    name='username'
+                                    value={userInfo?.username}
+                                    onSave={(e) => handleSaveInfo(e)}
+                                    onChange={handleInputChange}
+                                    readonly={user?._id !== id}
+                                />
+                            </div>
                             <div className='flex items-center gap-1 justify-start'>
                                 <FontAwesomeIcon icon={faLocationDot} />
-                                {/* <p className='text-black text-base font-PyeongChangPeace-Light'>Stony Brook, NY</p> */}
                                 <EditText
                                     className={`text-black text-base font-PyeongChangPeace-Light ${user?._id !== id ? 'hover:bg-none' : 'hover:bg-gray-100 hover:cursor-pointer'}`}
                                     name='location'
