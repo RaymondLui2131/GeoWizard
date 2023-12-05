@@ -66,8 +66,9 @@ export const ChoroUi = (props) =>{
     const setEditsList = props.setEditsList
 
     useEffect(() => {
-        if (areaClicked) {
-            console.log('something clicked', areaClicked)
+        console.log('something clicked', areaClicked)
+
+        if (areaClicked || areaClicked === 0) {
 
             let newColor = [...editsList]
             newColor = newColor.filter((edit) => edit.colorHEX === choroColor)

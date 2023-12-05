@@ -547,8 +547,8 @@ const MapView = () => {
         switch (typeSelectedRef.current) {
             case MAP_TYPES['HEATMAP']:
                 {
-                    // console.log(feature)
-                    if (feature.key) {//feature will be a feature from geojson
+                    // console.log("decided Heat",feature)
+                    if (feature) {//feature will be a feature from geojson
                         setAreaClicked(clickedFeature.key)
                     } else {
                         console.log('No known name property found in clicked feature', clickedFeature)
@@ -557,7 +557,7 @@ const MapView = () => {
                 }
             case MAP_TYPES['CHOROPLETH']://feature will be a feature from geojson
                 {
-                    if (feature.key) {
+                    if (feature) {
                         setAreaClicked(clickedFeature.key)
                     } else {
                         console.log('No known name property found in clicked feature', clickedFeature)
