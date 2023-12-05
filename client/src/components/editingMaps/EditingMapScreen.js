@@ -23,9 +23,11 @@ import { ChoroHeader } from '../../editMapDataStructures/ChoroplethMapData.js';
 import { NoneMapHeader } from '../../editMapDataStructures/NoneMapData.js';
 import ChoroUi from './ChoroUi.js';
 import DraggableImageOverlay from './ImageDragging.js';
+import PointMarker from './PointMarker.js';
 import SymbolUi from './SymbolsUI.js';
 import { SymbolHeader } from '../../editMapDataStructures/SymbolsMapData.js';
 import { async } from 'regenerator-runtime';
+import { PointHeader } from '../../editMapDataStructures/PointMapData.js';
 //Note assigns saturation of 100 for satslider
 const hexToHlsa = (hexString) => {
 
@@ -109,6 +111,14 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
                     mapInfo.edits.editsList = editsList
                     break
                 }
+
+                case MAP_TYPES['POINT']:
+                    {
+                        const newPointHeader= new PointHeader(editsList.length)
+                        mapInfo.edits.header = newPointHeader
+                        mapInfo.edits.editsList = editsList
+                        break
+                    }
                 
                 default:
                     break
@@ -163,6 +173,11 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
                 editHeader = new SymbolHeader(editsList.length)
                 break
             }
+            case MAP_TYPES['POINT']:
+                {
+                    editHeader = new PointHeader(editsList.length)
+                    break
+                }
             default:
                 break
         }
@@ -232,6 +247,8 @@ const BottomRow = ({ title, mapType, description,editsList,lowerBound,upperBound
 }
 
 const MapEditOptions = (props) => {
+    const padded_NE = props.padded_NE
+    const padded_SW = props.padded_SW
     const type_of_map = props.mapType
     const setType = props.setType
     const areaClicked = props.areaClicked
@@ -312,7 +329,9 @@ const MapEditOptions = (props) => {
                 areaClicked:areaClicked,
                 setAreaClicked: setAreaClicked,
                 editsList: editsList,
-                setEditsList: setEditsList
+                setEditsList: setEditsList,
+                padded_NE : padded_NE,
+                padded_SW : padded_SW
             }
             return (
                     <PointUI{...props}></PointUI>
@@ -552,6 +571,17 @@ const MapView = () => {
                 }
                 break
             }
+
+            case MAP_TYPES['POINT']: //feature will be a latlng obg
+            {
+                if(feature)
+                {
+                    // console.log(feature)
+                    setAreaClicked(feature)
+                }
+                break
+            }
+
             default:
                 break
         }
@@ -625,7 +655,7 @@ const MapView = () => {
     return (
         map && (<>
             <div className='flex space-around px-28 pt-5'>
-                <div className='flex justify-center flex-col items-center w-8/12'>
+                <div className='flex justify-center flex-col items-center'>
                     <div>
                         {!validTitle
                             ?<div className='text-red-300 text-center'>Need Title</div>
@@ -690,6 +720,17 @@ const MapView = () => {
                                 />)
                                 : null
                              }
+
+                            {typeSelectedRef.current===MAP_TYPES['POINT']
+                                ? editsList.map((edit) => 
+                                <PointMarker key={edit.id} 
+                                    id={edit.id} 
+                                    edit ={edit} 
+                                    editsList = {editsList}
+                                    setEditsList = {setEditsList}
+                                />)
+                                : null
+                             }
                              
                              
                         </MapContainer>
@@ -700,8 +741,8 @@ const MapView = () => {
                         placeholder='Enter Description...' maxLength={48} onChange={(e) => setDescription(e.target.value)} >
                     </input>
                 </div>
-                <div className='px-32'>
-                    <div className='text-2xl font-NanumSquareNeoOTF-Lt flex flex-col items-center text-center '>
+                <div className='px-16'>
+                    <div className='text-2xl font-NanumSquareNeoOTF-Lt flex flex-col items-center text-center'>
 
                         {!mapTypeClicked && !changingMapTypeIsClicked 
                             ?
@@ -714,7 +755,7 @@ const MapView = () => {
                                         <MapEditOptions mapType={typeSelected} setType={setType} areaClicked = {areaClicked} setAreaClicked={setAreaClicked}
                                             editsList = {editsList} setEditsList={setEditsList} setLower={setLower} setUpper = {setUpper} validHeatRange = {validHeatRange}
                                             setValidHeatRange={setValidHeatRange} setBaseColor= {setBaseColor}
-                                            keyTable={keyTable} setKeyTable={setKeyTable}
+                                            keyTable={keyTable} setKeyTable={setKeyTable} padded_NE={padded_NE} padded_SW={padded_SW}
                                         />
                                     </>
                                 }

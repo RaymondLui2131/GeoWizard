@@ -7,6 +7,7 @@ import p6 from './p6.png'
 import p7 from './p7.png'
 import p8 from './p8.png'
 import p9 from './p9.png'
+import redX from './redX.png'
 
 
 export {
@@ -19,4 +20,5 @@ export {
     p7,
     p9,
     p8,
+    redX
   };
