@@ -423,12 +423,12 @@ const MapEditOptions = (props) => {
 }
 
 const MapView = () => {
-    const { map, transactions } = useContext(MapContext)
+    const { map, mapObj, transactions } = useContext(MapContext)
     // const [map, setMap] = useState(null)
     const [title, setTitle] = useState('')
     const [validTitle, setValidTitle] = useState(true)
     const [description, setDescription] = useState('')
-    // console.log(title)
+    console.log(title)
     // const [map,] = useState(franceMap) //For testing
     const [typeSelected, setType] = useState(MAP_TYPES['NONE'])
     const [mapTypeClicked, isClicked] = useState(false)
@@ -470,10 +470,17 @@ const MapView = () => {
     const mapString = STRING_MAPPING[typeSelected]
     const typeSelectedRef = useRef(typeSelected)
     useEffect(() => {//if upload geojson, then render the edits as well
+        if (mapObj) {
+            map.description = mapObj.description
+            map.edits = mapObj.MapData.edits
+            map.title = mapObj.title
+        }
         if (map) {
             console.log("this is map", map)
             if (map.description)
                 setDescription(map.description)
+            if (map.title)
+                setTitle(map.title)
             if (map.edits) {
 
                 const fileMapType = map.edits.header.type
@@ -664,7 +671,7 @@ const MapView = () => {
                         }
                         <input type='text' name='title' className='bg-primary-GeoPurple text-white placeholder-white text-2xl w-[35rem]
                         text-center'
-                            placeholder='Enter Title...' maxLength={48} onChange={(e) => setTitle(e.target.value)} >
+                            placeholder='Enter Title...' value={title} maxLength={48} onChange={(e) => setTitle(e.target.value)} >
                         </input>
                     </div>
                     <div className='pt-3'>
@@ -741,7 +748,7 @@ const MapView = () => {
 
                     <input type='text' name='description' className='bg-primary-GeoPurple text-white placeholder-white text-2xl w-[50rem]
                         text-center'
-                        placeholder='Enter Description...' maxLength={48} onChange={(e) => setDescription(e.target.value)} >
+                        placeholder='Enter Description...' value={description} maxLength={48} onChange={(e) => setDescription(e.target.value)} >
                     </input>
                 </div>
                 <div className='px-64'>
