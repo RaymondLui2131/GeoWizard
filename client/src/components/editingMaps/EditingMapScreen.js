@@ -196,8 +196,8 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
         <div className='w-4/5 flex flex-row justify-start mt-4 items-center'>
             <div className='flex flex-row'>
                 <div className='flex flex-row ' >
-                    <button disabled={!transactions?.hasTransactionToUndo()} onClick={transactions?.undoTransaction()}><img src={undo} className={`object-contain ${!transactions?.hasTransactionToUndo() && "opacity-30"}`} alt='Undo action' /></button>
-                    <button disabled={!transactions?.hasTransactionToRedo()} onClick={transactions?.doTransaction()}><img src={redo} className={`object-contain ${!transactions?.hasTransactionToUndo() && "opacity-30"}`} alt='Redo action' /></button>
+                    <button disabled={!transactions?.hasTransactionToUndo()} onClick={() => transactions?.undoTransaction()}><img src={undo} className={`object-contain ${!transactions?.hasTransactionToUndo() && "opacity-30"}`} alt='Undo action' /></button>
+                    <button disabled={!transactions?.hasTransactionToRedo()} onClick={() => transactions?.doTransaction()}><img src={redo} className={`object-contain ${!transactions?.hasTransactionToRedo() && "opacity-30"}`} alt='Redo action' /></button>
                 </div>
 
             </div>
