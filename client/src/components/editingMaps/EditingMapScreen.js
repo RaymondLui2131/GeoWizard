@@ -50,7 +50,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
     baseColor, setValidTitle, keyTable }) => {
     const [publicStatus, setPublic] = useState(false)
     const { user } = useContext(UserContext)
-    const { map } = useContext(MapContext)
+    const { map, transactions } = useContext(MapContext)
     const [saveStatus, setSaveStatus] = useState('idle'); // 'idle', 'saving', 'completed' , 'error'
 
     const handleCheckboxChange = (event) => {
@@ -196,8 +196,8 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
         <div className='w-4/5 flex flex-row justify-start mt-4 items-center'>
             <div className='flex flex-row'>
                 <div className='flex flex-row ' >
-                    <div ><img src={undo} className='object-contain' alt='Undo action' /></div>
-                    <div ><img src={redo} className='object-contain' alt='Redo action' /></div>
+                    <button disabled={!transactions?.hasTransactionToUndo()} onClick={transactions?.undoTransaction()}><img src={undo} className={`object-contain ${!transactions?.hasTransactionToUndo() && "opacity-30"}`} alt='Undo action' /></button>
+                    <button disabled={!transactions?.hasTransactionToRedo()} onClick={transactions?.doTransaction()}><img src={redo} className={`object-contain ${!transactions?.hasTransactionToUndo() && "opacity-30"}`} alt='Redo action' /></button>
                 </div>
 
             </div>
