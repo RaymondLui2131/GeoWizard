@@ -5,10 +5,13 @@ import finland from "../../assets/finland.png"
 import { MAP_TYPES, STRING_MAPPING } from '../../constants/MapTypes'
 import { getMap } from '../../api/map_request_api'
 import { MapContext, MapActionType } from '../../api/MapContext'
-import { useNavigate } from "react-router-dom";
+import { UserContext } from '../../api/UserContext'
+import { useNavigate, useParams } from "react-router-dom";
 const ProfileMapCard = React.memo(({ map_data }) => {
-    const { map, dispatch } = useContext(MapContext)
+    const { dispatch } = useContext(MapContext)
+    const { user } = useContext(UserContext)
     const navigate = useNavigate()
+    const { id } = useParams()
     const getDatePosted = () => {
         const date = new Date(map_data?.createdAt);
         const month = date.getMonth() + 1; // Months are zero-indexed
@@ -25,10 +28,18 @@ const ProfileMapCard = React.memo(({ map_data }) => {
     const handleViewMap = () => {
         const fetchMapData = async () => {
             try {
-                const res = await getMap(map_data?._id)
+                const res = await getMap(map_data?._id) // returns Map
                 if (res) {
-                    dispatch({ type: MapActionType.VIEW, payload: res });
-                    navigate('/mapView')
+                    console.log(res)
+                    if (user?._id === id) { // if visiting own profile page; allow user to directly update it
+                        dispatch({ type: MapActionType.UPDATE, payload: { map: res.MapData.original_map, mapObj: { title: res.title, description: res.description, MapData: res.MapData, isPublic: res.isPublic }, idToUpdate: map_data?._id } });
+                        navigate('/editingMap')
+                    }
+
+                    else { // if viewing someone else's map 
+                        dispatch({ type: MapActionType.VIEW, payload: res });
+                        navigate('/mapView')
+                    }
                 }
             } catch (err) {
                 console.log(err)

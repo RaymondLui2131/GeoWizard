@@ -5,7 +5,7 @@ const User = require("../models/user_model")
 
 const getMapById = asyncHandler(async (req, res) => {
     const id = req.params.id
-    
+
     // check if username exists in the database
     const map = await Map.findById(id).populate('user_id', 'username')
 
@@ -29,17 +29,35 @@ const saveUserMap = asyncHandler(async (req, res) => {
             message: "User is not authenticated"
         });
     }
-    
-    const map_id = await createMap(req, user)
-    if (map_id.error) {
-        return res.status(400).json({
-            message: map_id.message
-        })
+
+    const createOrSave = req.body.createOrSave
+    let map_id
+    if (createOrSave === 'create') {
+        map_id = await createMap(req, user)
+        if (map_id.error) {
+            return res.status(400).json({
+                message: map_id.message
+            })
+
+        }
+
+        user.maps.push(map_id)
+        await user.save()
+    }
+
+    else {
+        map_id = await updateMap(req, user)
+        if (map_id.error) {
+            return res.status(400).json({
+                message: map_id.message
+            })
+
+        }
+
+        await user.save()
     }
 
     // add the map_id to user.maps
-    user.maps.push(map_id)
-    await user.save()
 
     return res.status(200).json({
         user_id: user._id,
@@ -61,7 +79,7 @@ const getUserMaps = asyncHandler(async (req, res) => {
 })
 
 const createMap = async (req, user) => { // used within saveUserMap
-    const { title, isPublic, mapType, description, mapInfo } = req.body
+    const { title, isPublic, mapType, description, mapInfo, createOrSave, idToUpdate } = req.body
     if (!user) {
         return {
             error: true,
@@ -104,6 +122,51 @@ const createMap = async (req, user) => { // used within saveUserMap
     }
 
     return map._id // return only the id so it can be stored by the user
+}
+
+const updateMap = async (req, user) => {
+    const { title, isPublic, mapType, description, mapInfo, createOrSave, idToUpdate } = req.body
+    if (!user) {
+        return {
+            error: true,
+            message: "User is not authenticated"
+        }
+    }
+
+    if (!(title && mapInfo)) {
+        return {
+            error: true,
+            message: "Missing required fields for map creation"
+        }
+    }
+
+    const map = await Map.findById(idToUpdate)
+    if (!map) {
+        return {
+            error: true,
+            message: "Map not found"
+        }
+    }
+
+    map.title = title
+    map.isPublic = isPublic
+    map.mapType = mapType
+    map.description = description
+
+    const map_data = await MapData.findById(map.MapData)
+    if (!map_data) {
+        return {
+            error: true,
+            message: "MapData not found"
+        }
+    }
+    map_data.original_map = mapInfo.original_map
+    map_data.edits = mapInfo.edits
+
+    await map_data.save()
+    await map.save()
+
+    return map._id
 }
 
 //Expects a mapID and returns the Map data  with MapData field that has geojson
@@ -177,7 +240,7 @@ const changeLikesMap = asyncHandler(async (req, res) => {
 const queryMaps = asyncHandler(async (req, res) => {
     console.log('req', req.query)
     const { q, page } = req.query
-    const { query, metric, time} = q
+    const { query, metric, time } = q
     const pageSize = 3;
     const skip = pageSize * (page - 1);
 
@@ -185,10 +248,10 @@ const queryMaps = asyncHandler(async (req, res) => {
 
     let mock = null
 
-    if (req.query.mock){
+    if (req.query.mock) {
         mock = true
     }
-    
+
 
     let queryObj = { isPublic: true };
     if (query) {
@@ -248,7 +311,7 @@ const queryMaps = asyncHandler(async (req, res) => {
     console.log(sortObj)
 
 
-    if (mock){
+    if (mock) {
         const publicMaps = await Map.find(queryObj)
         if (!publicMaps) {
             return res.status(404).json({ // 404 Not Found
