@@ -6,6 +6,7 @@ import star from './star.png'
 import triangle from './triangle.png'
 import drag from './drag-4.png'
 import resize from './resize.png'
+import redXSymb from './redX.png'
 
 export {
     circle,
@@ -15,5 +16,6 @@ export {
     star,
     triangle,
     drag,
-    resize
+    resize,
+    redXSymb
   };
