@@ -102,7 +102,7 @@ export const ChoroUi = (props) => {
             // console.log("edits",copyEdits)
 
 
-            // setAreaClicked(null)
+            setAreaClicked(null)
 
     }
 

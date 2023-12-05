@@ -639,11 +639,11 @@ const MapView = () => {
     }
     const handleYesClick = () => {
         console.log("Yes Click")
+        setKeyTable([])
+        setEditsList([])
         isClicked(false)
         setType(futureTypeSelected)
         setChangingMapTypeIsClicked(false)
-        setEditsList([])
-        setKeyTable([])
         transactions.clearAllTransactions()
     }
     const handleNoClick = () => {
@@ -652,7 +652,7 @@ const MapView = () => {
         setType(typeSelected)
         setChangingMapTypeIsClicked(false)
     }
-    // console.log("current type",typeSelected)
+    console.log("current edit list",editsList)
     return (
         map && (<>
             <div className='flex space-around px-28 pt-5'>

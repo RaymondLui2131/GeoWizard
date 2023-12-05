@@ -16,7 +16,6 @@ export const SymbolUi = (props) =>
     const selectedColor = props.selectedColor
     const areaClicked = props.areaClicked
     const setAreaClicked = props.setAreaClicked
-    
 
     const [counter, setCounter] = useState(0)
     function calculateBounds(center, aspectRatio, distance) {
@@ -36,6 +35,7 @@ export const SymbolUi = (props) =>
       useEffect(() => {
         if(setSelected !== '' && areaClicked != null)
             setCounter(counter + 1)
+        console.log('current area',areaClicked)
         if(areaClicked)
         {
             if(setSelected !== '')
