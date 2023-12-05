@@ -1,5 +1,5 @@
 import React, { createContext, useReducer, useMemo } from 'react'
-
+import jsTPS from './jsTPS'
 export const MapContext = createContext()
 
 export const MapActionType = {
@@ -30,7 +30,8 @@ export const mapReducer = (state, action) => {
 
 export const MapContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(mapReducer, {
-        map: null
+        map: null,
+        transactions: new jsTPS()
     })
 
     //console.log("Map State: " + state)
