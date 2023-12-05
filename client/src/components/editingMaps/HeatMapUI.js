@@ -98,7 +98,8 @@ export const HeatUi = (props) => {
     },[upper,lower])
 
     useEffect(() => {
-        if(areaClicked)
+        // console.log("heat",areaClicked)
+        if(areaClicked || areaClicked === 0)
         {
             if(setSelected !== '')
             {
@@ -106,6 +107,7 @@ export const HeatUi = (props) => {
                 let copyEdits = [...editsList]
                 copyEdits= copyEdits.filter((edit) => {return edit.featureName !== areaClicked})//removing edit entry for new one
                 copyEdits.push(newEdit)
+                console.log(copyEdits)
                 setEditsList(copyEdits)
                 setAreaClicked(null)//resetting clicked
             }

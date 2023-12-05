@@ -19,6 +19,7 @@ import index from "function.prototype.name";
 import toGeoJSON from '@mapbox/togeojson';
 import L from 'leaflet';
 import { truncate } from "lodash";
+import { feature } from "caniuse-lite";
 /* global shp */
 
 const DisplayMap = (props) => {
@@ -151,7 +152,7 @@ const EditUpload = () => {
                                 key: index,
                             })),
                         };
-
+                        // console.log("Upload",edited)
                         dispatch({ type: MapActionType.UPLOAD, payload: edited });
                         navigate('/editingMap');
                     } catch (error) {
