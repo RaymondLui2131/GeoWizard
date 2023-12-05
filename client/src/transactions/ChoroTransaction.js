@@ -12,6 +12,7 @@ export default class ChoroTransaction extends jsTPS {
         this.setEditsList = setEditsList;
         this.addChoroColor = addChoroColor;
         this.removeChoroColor = removeChoroColor;
+        
     }
 
     doTransaction() {

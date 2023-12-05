@@ -66,9 +66,9 @@ export const ChoroUi = (props) => {
     const { transactions } = useContext(MapContext)
 
     const addChoroColor = (choroColor, areaClicked, setAreaClicked, keyTable, setKeyTable, editsList, setEditsList) => {
-        if (areaClicked) {
+        
             console.log('something clicked', areaClicked)
-            console.log(transactions.toString())
+            // console.log(transactions.toString())
             let newColor = [...editsList]
             newColor = newColor.filter((edit) => edit.colorHEX === choroColor)
             // console.log("newColor",newColor)
@@ -90,37 +90,38 @@ export const ChoroUi = (props) => {
             // console.log("edits",copyEdits)
 
 
-            setAreaClicked(null)
-        }
+            // setAreaClicked(null)
+
     }
 
     const removeChoroColor = (areaToRemove, keyTable, setKeyTable, editsList, setEditsList) => {
-        let updatedEdits = [...editsList];
-
-        // Remove the edit associated with the specified areaToRemove
-        updatedEdits = updatedEdits.filter((edit) => edit.featureName !== areaToRemove);
-
-        // Get the color of the removed area
-        const removedColor = editsList.find((edit) => edit.featureName === areaToRemove)?.colorHEX;
-
-        if (removedColor) {
-            // Remove the color from the editsList
-            const remainingColors = updatedEdits.map((edit) => edit.colorHEX);
-            const colorExists = remainingColors.includes(removedColor);
-
-            if (!colorExists) {
-                // If no other areas have this color, remove it from the keyTable
-                const updatedKeyTable = keyTable.filter((item) => item.color !== removedColor);
-                setKeyTable(updatedKeyTable);
+        let removedEdit = null
+        let copylist = [...editsList]
+        copylist = copylist.filter((edit) => { // remove edit from list 
+            if (edit.featureName === areaToRemove) {
+                removedEdit = edit
+                return false
             }
-        }
+            return true
+        });
 
-        setEditsList(updatedEdits);
-    };
+        // check if no more features has the same color as the removed color
+        const colorsLeft = copylist.some(e => e.colorHEX === removedEdit?.colorHEX)
+
+        // if no more left, remove it from the key table
+        if (!colorsLeft) {
+            let newtable = [...keyTable]
+            newtable = keyTable.filter(row => row.color !== removedEdit?.colorHEX)
+            setKeyTable(newtable)
+        }
+        setEditsList(copylist)
+    }
 
     useEffect(() => {
-        let transaction = new ChoroTransaction(choroColor, areaClicked, setAreaClicked, keyTable, setKeyTable, editsList, setEditsList, addChoroColor, removeChoroColor)
-        transactions.addTransaction(transaction)
+        if (areaClicked) {
+            let transaction = new ChoroTransaction(choroColor, areaClicked, setAreaClicked, keyTable, setKeyTable, editsList, setEditsList, addChoroColor, removeChoroColor)
+            transactions.addTransaction(transaction)
+        }
     }, [areaClicked])
 
 
