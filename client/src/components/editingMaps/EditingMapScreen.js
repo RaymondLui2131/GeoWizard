@@ -744,7 +744,7 @@ const MapView = () => {
                         placeholder='Enter Description...' maxLength={48} onChange={(e) => setDescription(e.target.value)} >
                     </input>
                 </div>
-                <div className='px-16'>
+                <div className='px-64'>
                     <div className='text-2xl font-NanumSquareNeoOTF-Lt flex flex-col items-center text-center'>
 
                         {!mapTypeClicked && !changingMapTypeIsClicked
