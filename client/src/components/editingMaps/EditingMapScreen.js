@@ -714,6 +714,7 @@ const MapView = () => {
                                         color={edit.colorHLSA}
                                         editsList={editsList}
                                         setEditsList={setEditsList}
+                                        mapBounds = {[padded_NE, padded_SW]}
                                     />)
                                 : null
                             }
