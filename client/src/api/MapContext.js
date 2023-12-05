@@ -6,7 +6,8 @@ export const MapActionType = {
     UPLOAD: "UPLOAD",
     VIEW: "VIEW",
     RESET: "RESET",
-    FORK: "FORK"
+    FORK: "FORK",
+    UPDATE: "UPDATE"
 }
 
 export const mapReducer = (state, action) => {
@@ -21,12 +22,17 @@ export const mapReducer = (state, action) => {
 
         case "RESET": {
             state.transactions.clearAllTransactions()
-            return { ...state, map: null, mapObj: null }
+            return { ...state, map: null, mapObj: null, createOrSave: 'create', idToUpdate: '' }
         }
 
         case "FORK": {
             state.transactions.clearAllTransactions()
-            return { ...state, map: payload.map, mapObj: payload.mapObj }
+            return { ...state, map: payload.map, mapObj: payload.mapObj, createOrSave: 'create' }
+        }
+
+        case "UPDATE": { // called if from profile
+            state.transactions.clearAllTransactions()
+            return { ...state, map: payload.map, mapObj: payload.mapObj, createOrSave: 'save', idToUpdate: payload.idToUpdate }
         }
 
         default:
@@ -39,6 +45,8 @@ export const MapContextProvider = ({ children }) => {
     const [state, dispatch] = useReducer(mapReducer, {
         map: null,
         mapObj: null,
+        createOrSave: 'create',
+        idToUpdate: '',
         transactions: new jsTPS()
     })
 

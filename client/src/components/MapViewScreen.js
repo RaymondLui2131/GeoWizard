@@ -146,8 +146,8 @@ const TitleDisplay = (props) => {
     }
 
     const handleFork = () => {
-        console.log(map.MapData)
-        dispatch({ type: MapActionType.FORK, payload: { map: map.MapData.original_map, mapObj: map } })
+        // console.log(map.MapData)
+        dispatch({ type: MapActionType.FORK, payload: { map: map.MapData.original_map, mapObj: map} })
         navigate(`/editingMap`)
     }
 

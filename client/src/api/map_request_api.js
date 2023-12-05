@@ -11,7 +11,7 @@ const baseURL = isLocal
 const API_URL = `${baseURL}${endpoint}`;
 
 
-export const saveUserMap = async (token, title, isPublic, mapType, description, mapInfo) => {
+export const saveUserMap = async (token, title, isPublic, mapType, description, mapInfo, createOrSave, idToUpdate) => {
     try {
         const compressedMapData = geobuf_api.geojson_compress(mapInfo.original_map)
         mapInfo.original_map = compressedMapData
@@ -20,7 +20,9 @@ export const saveUserMap = async (token, title, isPublic, mapType, description, 
             isPublic: isPublic,
             mapType: mapType,
             description: description,
-            mapInfo: mapInfo
+            mapInfo: mapInfo,
+            createOrSave: createOrSave,
+            idToUpdate: idToUpdate
         }, {
             headers: {
                 Authorization: `Bearer ${token}`

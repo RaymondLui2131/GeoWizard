@@ -51,9 +51,9 @@ const hlsaToRGBA = (hlsa) => {
 
 const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBound, setValidHeatRange,
     baseColor, setValidTitle, keyTable }) => {
-    const [publicStatus, setPublic] = useState(false)
     const { user } = useContext(UserContext)
-    const { map, transactions } = useContext(MapContext)
+    const { map, mapObj, transactions, createOrSave, idToUpdate } = useContext(MapContext)
+    const [publicStatus, setPublic] = useState(mapObj?.isPublic)
     const [saveStatus, setSaveStatus] = useState('idle'); // 'idle', 'saving', 'completed' , 'error'
 
     const handleCheckboxChange = (event) => {
@@ -126,7 +126,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                     break
             }
             mapInfo.original_map = { ...map }
-            const response = await saveUserMap(user.token, title, publicStatus, map_type, description, mapInfo) // testing
+            const response = await saveUserMap(user.token, title, publicStatus, map_type, description, mapInfo, createOrSave, idToUpdate) // testing
             try {
 
                 if (response.status === 200) {
@@ -227,7 +227,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                         <button className='bg-primary-GeoOrange text-3xl font-NanumSquareNeoOTF-Lt px-14 rounded-full py-2 disabled:opacity-30'
                             onClick={handleSaveMap}
                             disabled={!(map && user)}>
-                            {saveStatus === 'idle' ? 'Save' : saveStatus === 'error' ? 'Error' : saveStatus === 'saving' ? 'Saving Map...' : 'Completed'}
+                            {saveStatus === 'idle' ? (createOrSave === 'create' ? 'Create' : 'Save') : saveStatus === 'error' ? 'Error' : saveStatus === 'creating' ? (createOrSave ? 'Saving Map...' : 'Creating Map...') : 'Completed'}
                         </button>
                     </div>
                 </div>
