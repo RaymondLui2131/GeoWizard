@@ -2,7 +2,10 @@ import tinycolor from "tinycolor2"
 import { HeatMapEdit } from '../../editMapDataStructures/HeatMapData.js';
 import { MAP_TYPES } from "../../constants/MapTypes.js";
 import { SaturationSlider } from "react-slider-color-picker";
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
+import HeatClickTransaction from "../../transactions/HeatClickTransaction.js";
+import HeatSwapTransaction from "../../transactions/HeatSwapTransaction.js";
+import { MapContext } from "../../api/MapContext.js";
 const ColorSliderComponent = (props) => {
     const hlsaColor = props.hlsaColor
     const changeHlsa = props.changeHlsa
@@ -10,11 +13,11 @@ const ColorSliderComponent = (props) => {
     const handleChangeColor = (newcolor) => {
         changeHlsa(newcolor)
     }
-    const adjusted = {...hlsaColor}
+    const adjusted = { ...hlsaColor }
     adjusted['s'] = 100
     return (
         <>
-            <SaturationSlider  handleChangeColor={handleChangeColor} color={hlsaColor} />
+            <SaturationSlider handleChangeColor={handleChangeColor} color={hlsaColor} />
         </>
     )
 }
@@ -40,13 +43,13 @@ export const HeatUi = (props) => {
     const lower = parseInt(lowerBound)
     const upper = parseInt(upperBound)
 
+    const { transactions } = useContext(MapContext)
     
     useEffect(() => {
-        if(selected === '')
-        {
+        if (selected === '') {
             const curColor = JSON.stringify(heatColor)
-            console.log("string curretn",curColor)
-            switch(curColor){
+            console.log("string curretn", curColor)
+            switch (curColor) {
                 case JSON.stringify(hexToHlsa('#ff0000')):
                     setHlsa(hexToHlsa('#ff0000'))
                     setSelected('red')
@@ -89,58 +92,85 @@ export const HeatUi = (props) => {
                     setSelected('red')
                     break
             }
-            
+
         }
-    },[])
-    useEffect(() => {
-        if(upper>lower)
-        validHeatRange(true)
-    },[upper,lower])
+    }, [])
 
     useEffect(() => {
+        if (upper > lower)
+            validHeatRange(true)
+    }, [upper, lower])
+
+    const addHeatArea = (newEdit, areaClicked, setSelected, editsList, setEditsList, setAreaClicked) => {
         // console.log("heat",areaClicked)
-        if(areaClicked || areaClicked === 0)
-        {
-            if(setSelected !== '')
-            {
-                const newEdit = new HeatMapEdit(areaClicked,heatColor)
-                let copyEdits = [...editsList]
-                copyEdits= copyEdits.filter((edit) => {return edit.featureName !== areaClicked})//removing edit entry for new one
-                copyEdits.push(newEdit)
-                console.log(copyEdits)
-                setEditsList(copyEdits)
-                setAreaClicked(null)//resetting clicked
-            }
+        if (setSelected !== '') {
+            let copyEdits = [...editsList]
+            copyEdits = copyEdits.filter((edit) => { return edit.featureName !== areaClicked })//removing edit entry for new one
+            copyEdits.push(newEdit)
+            // console.log(copyEdits)
+            setEditsList(copyEdits)
+            // setAreaClicked(null)//resetting clicked
         }
-    }, [areaClicked,editsList]
+    }
+
+    const removeHeatArea = (newEdit, editsList, setEditsList) => {
+        if (newEdit) {
+            let copyEdits = editsList.filter(edit => edit.featureName !== newEdit.featureName);
+            setEditsList(copyEdits);
+        }
+    };
+
+
+    useEffect(() => {
+        if (areaClicked || areaClicked === 0) {
+            const newEdit = new HeatMapEdit(areaClicked, heatColor) // edit to add or remove
+            const options = { newEdit, areaClicked, setSelected, editsList, setEditsList, setAreaClicked, addHeatArea, removeHeatArea }
+            const transaction = new HeatClickTransaction(options) // addHeatArea for redo, removeHeatArea for undo
+            transactions.addTransaction(transaction)
+        }
+    }, [areaClicked]
     )
-    const colorSwap = (hexString) =>
-    {
-        const hslaForm = hexToHlsa(hexString)
-        const hue = hslaForm.h
-        //updating hues
+
+    const addColorSwap = (hslaForm, hue, editsList, setEditsList, setBaseColor, setHlsa) => {
         const changedEdits = [...editsList]
         changedEdits.forEach((edit) => edit.colorHLSA.h = hue)
         setEditsList(changedEdits)
-        setHlsa(hslaForm)
-        setBaseColor(hslaForm)
+        setHlsa(hslaForm) // heatColor
+        setBaseColor(hslaForm) // baseColor
     }
 
-    const handleLower = (value) =>{
-        if(value === '')
+    const removeColorSwap = (editsList, heatColor, setBaseColor, setHlsa, setEditsList) => {
+        console.log(heatColor)
+        const changedEdits = [...editsList]
+        changedEdits.forEach((edit) => edit.colorHLSA.h = heatColor.h)
+        setEditsList(changedEdits)
+        setHlsa(heatColor)
+        setBaseColor(heatColor)
+    }
+
+    const colorSwap = (hexString) => {
+        const hslaForm = hexToHlsa(hexString)
+        const hue = hslaForm.h
+        const options = { heatColor, hslaForm, hue, editsList, setEditsList, setBaseColor, setHlsa, addColorSwap, removeColorSwap }
+        const transaction = new HeatSwapTransaction(options)
+        transactions.addTransaction(transaction)
+    }
+
+    const handleLower = (value) => {
+        if (value === '')
             setLower('0')
-        else    
+        else
             setLower(value)
     }
-    const handleUpper = (value) =>{
-        if(value === '')
+    const handleUpper = (value) => {
+        if (value === '')
             setUpper('1')
         else
             setUpper(value)
     }
-    return(
+    return (
         <>
-         <div className='invisible'>gap space</div>
+            <div className='invisible'>gap space</div>
             <div className='h-full w-96 bg-gray-50 rounded-3xl'>
                 <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}>Colors</div>
                 <div className='grid grid-cols-3 gap-3 h-2/3 pt-12 heatcolors'>
@@ -156,16 +186,16 @@ export const HeatUi = (props) => {
                     <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { colorSwap('#00fffd'); setSelected('cyan') }}
                         style={{ borderColor: selected === 'cyan' ? selectedColor : '#000000', backgroundColor: '#00fffd' }}></div>
 
-                    <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => {colorSwap('#9900ff'); setSelected('purple') }}
+                    <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { colorSwap('#9900ff'); setSelected('purple') }}
                         style={{ borderColor: selected === 'purple' ? selectedColor : '#000000', backgroundColor: '#5b00ff' }}></div>
 
                     <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { colorSwap('#ffb400'); setSelected('orange') }}
                         style={{ borderColor: selected === 'orange' ? selectedColor : '#000000', backgroundColor: '#ffb400' }}></div>
 
-                    <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => {colorSwap('#ff6e00'); setSelected('darkOrange') }}
+                    <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { colorSwap('#ff6e00'); setSelected('darkOrange') }}
                         style={{ borderColor: selected === 'darkOrange' ? selectedColor : '#000000', backgroundColor: '#ff6e00 ' }}></div>
 
-                    <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => {colorSwap('#ff00d9'); setSelected('pink') }}
+                    <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { colorSwap('#ff00d9'); setSelected('pink') }}
                         style={{ borderColor: selected === 'pink' ? selectedColor : '#000000', backgroundColor: '#ff00d9' }}></div>
 
                     <div className='w-12 h-12 rounded-full border-4 mx-auto' onClick={() => { colorSwap('#fffe00'); setSelected('yellow') }}
@@ -184,17 +214,17 @@ export const HeatUi = (props) => {
                                 <div className='flex flex-row justify-between w-full items-center'>
                                     <div className='w-1/2 '>
                                         <input className='w-4/12 border-2 border-black text-sm'
-                                        type='number' placeholder="0" value={lowerBound} onChange={(e) => { handleLower(e.target.value) }} />
+                                            type='number' placeholder="0" value={lowerBound} onChange={(e) => { handleLower(e.target.value) }} />
                                     </div>
                                     <div className='w-1/2'>
-                                        <input className='w-4/12 border-2 border-black text-sm' 
-                                        type='number' placeholder='1' value={upperBound} onChange={(e) => { handleUpper(e.target.value) }} />
+                                        <input className='w-4/12 border-2 border-black text-sm'
+                                            type='number' placeholder='1' value={upperBound} onChange={(e) => { handleUpper(e.target.value) }} />
                                     </div>
                                 </div>
                             </div>
                             {validHeatRange
                                 ? null
-                                :<div className="text-red-300">Invalid Ranges</div>
+                                : <div className="text-red-300">Invalid Ranges</div>
                             }
 
                         </>

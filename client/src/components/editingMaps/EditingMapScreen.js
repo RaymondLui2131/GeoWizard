@@ -764,7 +764,7 @@ const MapView = () => {
                                         <button className=' bg-primary-GeoOrange w-full' onClick={() => isClicked(!mapTypeClicked)}>{mapString}</button>
                                         <MapEditOptions mapType={typeSelected} setType={setType} areaClicked = {areaClicked} setAreaClicked={setAreaClicked}
                                             editsList = {editsList} setEditsList={setEditsList} setLower={setLower} setUpper = {setUpper} validHeatRange = {validHeatRange}
-                                            setValidHeatRange={setValidHeatRange} setBaseColor= {setBaseColor} heatColor = {heatColor} setHlsa = {setHlsa}
+                                            setValidHeatRange={setValidHeatRange} setBaseColor= {setBaseColor} baseColor={baseColor} heatColor = {heatColor} setHlsa = {setHlsa}
                                             keyTable={keyTable} setKeyTable={setKeyTable} mapBounds={[padded_NE, padded_SW]}
                                         />
                                     </>
