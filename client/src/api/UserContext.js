@@ -32,7 +32,8 @@ export const UserContext = createContext()
 export const UserActionType = {
     LOGIN: "LOGIN",
     LOGOUT: "LOGOUT",
-    ERROR: "ERROR"
+    ERROR: "ERROR",
+    UPDATE: "UPDATE"
 }
 
 /**
@@ -56,6 +57,11 @@ export const authReducer = (state, action) => {
         case UserActionType.ERROR: {
             return { ...state, errorMessage: payload }
         }
+
+        case UserActionType.UPDATE: {
+            return { ...state, user: payload }
+        }
+
         default:
             return state
     }

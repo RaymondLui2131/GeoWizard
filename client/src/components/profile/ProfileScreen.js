@@ -181,8 +181,9 @@ const ProfileScreen = () => {
                 value = new Date(value)
             }
             const response = await updateUserInfo(user.token, name, value);
-            if (response) {
-                console.log(response.data);
+            if (response && name === 'username') { // update username in context
+                console.log("hi")
+                dispatch({ type: UserActionType.UPDATE, payload: { ...user, username: userInfo?.username } })
             }
         }
     };
