@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext, useRef } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faLocationDot, faCakeCandles, faCircleArrowLeft, faCircleExclamation, faFire } from '@fortawesome/free-solid-svg-icons'
+import { faLocationDot, faCakeCandles, faCircleArrowLeft, faCircleExclamation, faFire, faArrowDownWideShort } from '@fortawesome/free-solid-svg-icons'
 import ProfileMapCard from './ProfileMapCard'
 import ProfileCommentCard from './ProfileCommentCard'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -22,7 +22,8 @@ const ProfileScreen = () => {
     const [commentMap, setCommentMap] = useState({}) // maps referenced by the comments
     const [sortType, setSortType] = useState("new")
     const { id } = useParams()
-
+    const [dropdownOpen, setDropdownOpen] = useState(false)
+    const dropdownRef = useRef(null)
     const [userInfo, setUserInfo] = useState({
         about: "",
         birthday: "",
@@ -34,6 +35,22 @@ const ProfileScreen = () => {
         const { name, value } = e.target
         setUserInfo({ ...userInfo, [name]: value })
     }
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+                setDropdownOpen(false);
+            }
+        };
+
+        // Bind the event listener
+        document.addEventListener('mousedown', handleClickOutside);
+        
+        // Clean up the event listener on component unmount
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -182,7 +199,6 @@ const ProfileScreen = () => {
             }
             const response = await updateUserInfo(user.token, name, value);
             if (response && name === 'username') { // update username in context
-                console.log("hi")
                 dispatch({ type: UserActionType.UPDATE, payload: { ...user, username: userInfo?.username } })
             }
         }
@@ -274,14 +290,32 @@ const ProfileScreen = () => {
 
                 <div className='grow w-3/5 h-screen'>
                     <div className='grow h-1/4 flex flex-col justify-evenly items-baseine align-middle'>
-                        <div className='flex justify-center gap-10 align-middle'>
+                        <div className='flex justify-center gap-10 items-center'>
                             <button className={`hover:text-primary-GeoBackGround text-2xl font-PyeongChangPeace-Light ${display === "posts" && 'border-b-2  border-primary-GeoBlue'}`} onClick={() => setDisplay("posts")}>Posts</button>
                             <button className={`hover:text-primary-GeoBackGround text-2xl font-PyeongChangPeace-Light ${display === "comments" && 'border-b-2  border-primary-GeoBlue'}`} onClick={() => setDisplay("comments")}>Comments</button>
+                            <div className="absolute inline-block right-16" ref={dropdownRef}>
+                                <button onClick={() => setDropdownOpen(!dropdownOpen)} id="dropdown-button" className="hover:text-primary-GeoBackGround inline-flex justify-center items-center text-xl font-PyeongChangPeace-Light">
+                                    <span className='mr-2'>Sort</span>
+                                    <FontAwesomeIcon icon={faArrowDownWideShort} />
+                                </button>
+                                <div id="dropdown-menu" className={`${!dropdownOpen && 'invisible'} origin-top-right absolute right-0 mt-2 w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5`}>
+                                    <div className="flex flex-col justify-start py-2 p-2 text-base font-PyeongChangPeace-Light" role="menu" aria-orientation="vertical" aria-labelledby="dropdown-button">
+                                        <div className="flex rounded-md px-4 py-2   hover:bg-gray-100 active:bg-blue-100 cursor-pointer items-center" onClick={() => setSortType('new')} role="menuitem">
+                                            <FontAwesomeIcon icon={faCircleExclamation} className='mr-3' />
+                                            <span>New</span>
+                                        </div>
+                                        <div onClick={() => setSortType('top')} className="flex rounded-md px-4 py-2   hover:bg-gray-100 active:bg-blue-100 cursor-pointer items-center" role="menuitem">
+                                            <FontAwesomeIcon icon={faFire} className='mr-3' />
+                                            <span>Top</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div className={`flex justify-center gap-10 align-middle ${(display === 'posts' && !userMaps.length) || (display === 'comments' && !userComments.length) ? 'opacity-0' : 'opacity-100'}`}>
+                        {/* <div className={`flex justify-center gap-10 align-middle ${(display === 'posts' && !userMaps.length) || (display === 'comments' && !userComments.length) ? 'opacity-0' : 'opacity-100'}`}>
                             <button className={`flex items-center text-2xl px-5 bg-primary-GeoBackGround rounded-2xl ${sortType === 'new' ? 'bg-opacity-70 hover:bg-opacity-80' : 'bg-opacity-20 hover:bg-opacity-30'}`} onClick={() => setSortType('new')}><FontAwesomeIcon icon={faCircleExclamation} className='mr-1' />New</button>
                             <button className={`flex items-center text-2xl px-5 bg-primary-GeoBackGround rounded-2xl ${sortType === 'top' ? 'bg-opacity-70 hover:bg-opacity-80' : 'bg-opacity-20 hover:bg-opacity-30'}`} onClick={() => setSortType('top')}><FontAwesomeIcon icon={faFire} className='mr-1' />Top</button>
-                        </div>
+                        </div> */}
                     </div>
                     <ul className='grow h-3/4 flex flex-col justify-start overflow-scroll gap-5'>
                         {display === "posts" && userMaps && generateMapCards(sortType)}
