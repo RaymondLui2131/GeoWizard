@@ -173,7 +173,7 @@ const updateMap = async (req, user) => {
 //GET
 const getMap = asyncHandler(async (req, res) => {
     const mapID = req.query.mapID;
-    console.log('getMap', mapID)
+    // console.log('getMap', mapID)
     const mapWithDetails = await Map.findById(mapID)
         .populate({
             path: 'user_id',
