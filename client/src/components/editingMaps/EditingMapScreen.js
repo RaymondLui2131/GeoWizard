@@ -1,5 +1,7 @@
-import 'leaflet/dist/leaflet.css';
-import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css'
+import 'leaflet-draw/dist/leaflet.draw.css'
+import { MapContainer, TileLayer, GeoJSON,FeatureGroup } from 'react-leaflet';
+import { EditControl } from "react-leaflet-draw"
 import { useState, useContext, useRef, useEffect } from "react";
 import L from 'leaflet';
 import { SaturationSlider, HueSlider } from 'react-slider-color-picker'
@@ -9,8 +11,6 @@ import undo from '../../assets/EditMapAssets/undoSmall.png'
 import redo from '../../assets/EditMapAssets/redoSmall.png'
 // import franceMap from '../assets/EditMapAssets/france-r.geo.json'  //To be removed
 import { MAP_TYPES, STRING_MAPPING } from '../../constants/MapTypes.js'
-import { p1, p2, p3, p4, p5, p6, p7, p8, p9 } from '../../assets/EditMapAssets/pointerImages/index.js'
-import { circle, triangle, square, star, hexagon, pentagon } from '../../assets/EditMapAssets/symbolImages/index.js'
 import { a1, a2, a3, a4, a5, a6 } from '../../assets/EditMapAssets/arrowImages/index.js'
 import { authgetUser } from '../../api/auth_request_api.js';
 import { saveUserMap, createMap } from "../../api/map_request_api.js"
@@ -28,6 +28,9 @@ import SymbolUi from './SymbolsUI.js';
 import { SymbolHeader } from '../../editMapDataStructures/SymbolsMapData.js';
 import { async } from 'regenerator-runtime';
 import { PointHeader } from '../../editMapDataStructures/PointMapData.js';
+import FlowArrow from './FlowArrow.js';
+import { FlowEdit, FlowHead, FlowHeader } from '../../editMapDataStructures/FlowMapData.js';
+import FlowUi from './FlowUi.js';
 //Note assigns saturation of 100 for satslider
 const hexToHlsa = (hexString) => {
 
@@ -115,12 +118,19 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                 }
 
                 case MAP_TYPES['POINT']:
-                    {
-                        const newPointHeader= new PointHeader(editsList.length)
-                        mapInfo.edits.header = newPointHeader
-                        mapInfo.edits.editsList = editsList
-                        break
-                    }
+                {
+                    const newPointHeader= new PointHeader(editsList.length)
+                    mapInfo.edits.header = newPointHeader
+                    mapInfo.edits.editsList = editsList
+                    break
+                }
+                case MAP_TYPES['FLOW']:
+                {
+                    const newPointHeader= new FlowHeader(editsList.length)
+                    mapInfo.edits.header = newPointHeader
+                    mapInfo.edits.editsList = editsList
+                    break
+                }
                 
                 default:
                     break
@@ -176,10 +186,15 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                 break
             }
             case MAP_TYPES['POINT']:
-                {
-                    editHeader = new PointHeader(editsList.length)
-                    break
-                }
+            {
+                editHeader = new PointHeader(editsList.length)
+                break
+            }
+            case MAP_TYPES['FLOW']:
+            {
+                editHeader = new FlowHeader(editsList.length)
+                break
+            }
             default:
                 break
         }
@@ -268,6 +283,11 @@ const MapEditOptions = (props) => {
 
     const keyTable = props.keyTable //holds list of key labels mappings in form {color: hexColor, label:label}
     const setKeyTable = props.setKeyTable
+
+    const flowColor = props.flowColor
+    const handleFlowColor = props.handleFlowColor   
+    const selectedFlowArrow = props.selectedFlowArrow
+    const setFlowArrow = props.setFlowArrow
 
     const [selected, setSelected] = useState('') //used to control current item can for any
     
@@ -383,40 +403,25 @@ const MapEditOptions = (props) => {
                 )
             }
         case MAP_TYPES['FLOW']:
-            return (
-                <>
-                    <div className='invisible'>gap space</div>
-                    <div className='h-full w-96 bg-gray-50 rounded-3xl'>
-                        <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
-                        <div className='grid grid-cols-2 gap-2  h-4/5  mx-auto'>
-                            <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'a1' ? selectedColor : '#F9FAFB' }}>
-                                <img src={a1} alt='a1' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("a1")} />
-                            </div>
-                            <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'a2' ? selectedColor : '#F9FAFB' }}>
-                                <img src={a2} alt='a2' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("a2")} />
-                            </div>
-                            <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'a3' ? selectedColor : '#F9FAFB' }}>
-                                <img src={a3} alt='a3' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("a3")} />
-                            </div>
-                            <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'a4' ? selectedColor : '#F9FAFB' }}>
-                                <img src={a4} alt='a4' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("a4")} />
-                            </div>
-                            <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'a5' ? selectedColor : '#F9FAFB' }}>
-                                <img src={a5} alt='a5' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("a5")} />
-                            </div>
-                            <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'
-                                style={{ borderColor: selected === 'a6' ? selectedColor : '#F9FAFB' }}>
-                                <img src={a6} alt='a6' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("a6")} />
-                            </div>
-                        </div>
-                    </div>
-                </>
-            )
+            {
+                const props = {
+                    setType: setType,
+                    selected: selected,
+                    setSelected: setSelected,
+                    selectedColor: selectedColor,
+                    handleFlowColor: handleFlowColor,
+                    flowColor: flowColor,
+                    areaClicked: areaClicked,
+                    setAreaClicked: setAreaClicked,
+                    editsList: editsList,
+                    setEditsList: setEditsList,
+                    selectedFlowArrow:selectedFlowArrow,
+                    setFlowArrow:setFlowArrow
+                }
+                return(
+                    <FlowUi {...props}/>
+                )
+            }
         default:
             break
     }
@@ -443,6 +448,10 @@ const MapView = () => {
     const [baseColor,setBaseColor] = useState(hexToHlsa('#ffffff'))
 
     const [keyTable, setKeyTable] = useState([])//holds list of key labels mappings in form {color: hexColor, label:label}
+
+
+    const [flowColor, setFlowColor] = useState(hexToHlsa('#aabbcc'))
+    const [selectedFlowArrow, setFlowArrow] = useState(null)
 
     const [changingMapTypeIsClicked, setChangingMapTypeIsClicked] = useState(false)
     const [futureTypeSelected, setFutureTypeSelected] = useState(MAP_TYPES['NONE'])
@@ -636,8 +645,8 @@ const MapView = () => {
     }
     const handleFlowMapClick = () => {
         if (typeSelected === MAP_TYPES['NONE'] || typeSelected === MAP_TYPES['FLOW']) {
-            isClicked(false)
             setType(MAP_TYPES['FLOW'])
+            isClicked(false)
         }
         else {
             setChangingMapTypeIsClicked(true)
@@ -660,6 +669,35 @@ const MapView = () => {
         setChangingMapTypeIsClicked(false)
     }
     console.log("current edit list",editsList)
+
+    //Flow Map Editing
+
+    const flowColorRef = useRef(flowColor)
+    useEffect(() => {
+        flowColorRef.current = flowColor
+    }, [flowColor])
+
+    const handleFlowColor = (newColor) =>{
+        setFlowColor(newColor)
+    }
+
+    const handleOnCreateFlow = (e) => {
+        // console.log(e.layer)
+        const currentColor = hlsaToRGBA(flowColorRef.current)
+        const latlngs = e.layer.getLatLngs()
+        const newFlowArrow =  new FlowEdit(e.layer._leaflet_id,latlngs,currentColor)
+        console.log(newFlowArrow)
+
+        // console.log("CURRENTLY IN FLOW", editsListRef.current)
+        const copyEdits = [...editsListRef.current]
+        copyEdits.push(newFlowArrow)
+        setEditsList(copyEdits)
+        // console.log("Adding", copyEdits)
+
+        e.layer.remove()
+    }
+    //End of Flow Map Editing
+    // console.log("current type",typeSelectedRef.current)
     return (
         map && (<>
             <div className='flex space-around px-28 pt-5'>
@@ -741,6 +779,37 @@ const MapView = () => {
                                 />)
                                 : null
                              }
+                             {typeSelected===MAP_TYPES['FLOW']
+                                ?
+                                    <>
+                                    <FeatureGroup>
+                                        <EditControl
+                                            position="topright"
+                                            onCreated={handleOnCreateFlow}
+                                            
+                                            draw={
+                                                {
+                                            polyline: {shapeOptions: {
+                                                weight: 4          // Set the line width (optional)
+                                              }},
+                                            polygon: false,
+                                            rectangle: false,
+                                            circle: false,
+                                            marker: false,
+                                            circlemarker:false
+                                            }}
+                                            edit={{
+                                            edit: false,      
+                                            remove: false     
+                                            }}
+                                        />
+                                        {editsList.map((edit) => (
+                                            <FlowArrow key={edit.id} id={edit.id} latlngs={edit.latlngs} colorRgba={edit.colorRgba} setFlowArrow={setFlowArrow} />
+                                        ))}
+                                    </FeatureGroup>
+                                    </>
+                                :null
+                             }
                              
                              
                         </MapContainer>
@@ -765,7 +834,8 @@ const MapView = () => {
                                         <MapEditOptions mapType={typeSelected} setType={setType} areaClicked = {areaClicked} setAreaClicked={setAreaClicked}
                                             editsList = {editsList} setEditsList={setEditsList} setLower={setLower} setUpper = {setUpper} validHeatRange = {validHeatRange}
                                             setValidHeatRange={setValidHeatRange} setBaseColor= {setBaseColor} baseColor={baseColor} heatColor = {heatColor} setHlsa = {setHlsa}
-                                            keyTable={keyTable} setKeyTable={setKeyTable} mapBounds={[padded_NE, padded_SW]}
+                                            keyTable={keyTable} setKeyTable={setKeyTable} mapBounds={[padded_NE, padded_SW]} flowColor = {flowColor} handleFlowColor={handleFlowColor}
+                                            selectedFlowArrow = {selectedFlowArrow} setFlowArrow = {setFlowArrow}
                                         />
                                     </>
                                 }
