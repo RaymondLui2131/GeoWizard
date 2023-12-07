@@ -1,5 +1,5 @@
 import { p1, p2, p3, p4, p5, p6, p7, p8, p9 } from '../../assets/EditMapAssets/pointerImages/index.js'
-import { MAP_TYPES, STRING_MAPPING } from '../../constants/MapTypes.js'
+import { MAP_TYPES} from '../../constants/MapTypes.js'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-geosearch/dist/geosearch.css'
 import { OpenStreetMapProvider } from 'leaflet-geosearch'
@@ -10,13 +10,14 @@ export const PointUI = (props) => {
     const setType = props.setType
     const selected = props.selected
     const setSelected = props.setSelected
-
+    const padded_NE = props.padded_NE
+    const padded_SW = props.padded_SW
     const editsList = props.editsList
     const setEditsList = props.setEditsList
-    
     const selectedColor = props.selectedColor 
     const areaClicked = props.areaClicked
     const setAreaClicked = props.setAreaClicked
+    
 
 
     const provider = new OpenStreetMapProvider()
@@ -27,6 +28,7 @@ export const PointUI = (props) => {
     const [longitude, setLongitude] = useState(null)
     const [latitude, setLatitude] = useState(null)
     const [errorMessage, setErrorMessage] = useState('')
+    const [debounceTimer, setDebounceTimer] = useState(null);
     let ref = useRef(0);
 
     function calculateBounds(center, aspectRatio, distance) {
@@ -43,35 +45,52 @@ export const PointUI = (props) => {
         return bounds;
     }
 
+
+
+
     useEffect(() => {
-        if (address.length > 2) { // Fetch suggestions if address length is greater than 2
-            const fetchSuggestions = async () => {
+        return () => {
+            if (debounceTimer) {
+                clearTimeout(debounceTimer);
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        if (address.length > 2) {
+            if (debounceTimer) {
+                clearTimeout(debounceTimer); // Clear the existing timer if it exists
+            }
+
+            const newTimer = setTimeout(async () => {
                 try {
                     const results = await provider.search({ query: address });
                     setSuggestions(results);
                 } catch (error) {
-                    setErrorMessage('Please click on a suggestion')
-                    //console.error('Error:', error);
+                    setErrorMessage('Please click on a suggestion');
+                    // console.error('Error:', error);
                 }
-            };
+            }, 500); // Set a new timer with a 500ms delay
 
-            fetchSuggestions();
+            setDebounceTimer(newTimer);
         } else {
             setSuggestions([]);
         }
     }, [address]);
 
+
     useEffect(() => {
         if(areaClicked)
         {
-            console.log(areaClicked.lat)
-            console.log(areaClicked.lng)
+            //console.log(areaClicked.lat)
+            //console.log(areaClicked.lng)
             setLatitude(areaClicked.lat)
             setLongitude(areaClicked.lng)
             setAddress('')
         }
     }, [areaClicked]
     )
+    
 
 
     const handleSelectSuggestion = (suggestion) => {
@@ -79,7 +98,6 @@ export const PointUI = (props) => {
         setLatitude(suggestion.y)
         setLongitude(suggestion.x)
         setSuggestions([]); // Clear suggestions
-        // Further actions, like setting the location on the map, can be done here
     };
 
 
@@ -95,18 +113,26 @@ export const PointUI = (props) => {
     const handleSubmit = async (event) => { //x: longitude y: latitude
         event.preventDefault()
         try {
-
+            if(!selected){
+                setErrorMessage('Please choose a point locator')
+                return
+            }
             if(!latitude || !longitude || !selected){
                 setErrorMessage('Please select a valid location or click the map')
                 return
             }
-            else if(description.length > 20){
+            if(description.length > 20){
                 setErrorMessage('Please limit description to 20 characters or less')
                 return
+            }  
+
+        
+            if(latitude > padded_NE.lat || longitude > padded_NE.lng || latitude < padded_SW.lat || longitude < padded_SW.lng ){
+                setErrorMessage('Please choose a location within the map bounds')
+                return
             }
-            else{
-                setErrorMessage('')
-            }
+
+            setErrorMessage('')
             
             if(address == '' && latitude && longitude){
                 const newEdit = new PointEdit(ref.current , description, selected, calculateBounds(areaClicked,1,100), latitude, longitude, '')
@@ -119,18 +145,24 @@ export const PointUI = (props) => {
                 handleSubmitReset()
             } 
             else{
-                const results = (await provider.search({ query: address }))[0]
-                console.log(results); // Process the results as needed
-                if(results)
-                {
-                    const newEdit = new PointEdit(ref.current , description, selected, results.bounds, results.y, results.x, results.label)
-                    console.log(newEdit)
-                    let copyEdits = [...editsList]
-                    copyEdits.push(newEdit)
-                    console.log(copyEdits)
-                    setEditsList(copyEdits)
-                    
-                    handleSubmitReset()
+                try {
+                    const results = (await provider.search({ query: address }))[0]
+                    console.log(results); // Process the results as needed
+                    if(results)
+                    {
+                        const newEdit = new PointEdit(ref.current , description, selected, results.bounds, results.y, results.x, results.label)
+                        console.log(newEdit)
+                        let copyEdits = [...editsList]
+                        copyEdits.push(newEdit)
+                        console.log(copyEdits)
+                        setEditsList(copyEdits)
+                        
+                        handleSubmitReset()
+                    }
+                }
+                catch (error) {
+                    setErrorMessage('Please click on a suggestion');
+                    //console.error('Error:', error)
                 }
             }
         } catch (error) {

@@ -7,12 +7,10 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { getMap } from '../../api/map_request_api'
-import React, { useEffect, useContext, useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { MapContext, MapActionType } from '../../api/MapContext'
 import { useNavigate } from 'react-router-dom'
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
-import geobuf_api from '../../api/geobuf_api'
 
 const HomeScreenMapCard = ({ mapObject }) => {
   const { map, dispatch } = useContext(MapContext)
@@ -102,7 +100,7 @@ const HomeScreenMapCard = ({ mapObject }) => {
       <div className='max-w-xl font-PyeongChangPeace-Light text-2xl text-primary-GeoBlue'>
         Loading...
       </div>
-    ) // Or any other placeholder for loading
+    ) 
   }
   return (
     <div className=' m-4 max-w-xl overflow-hidden rounded border-2 border-primary-GeoBlue bg-white shadow-lg'>
@@ -116,18 +114,18 @@ const HomeScreenMapCard = ({ mapObject }) => {
           {mapObject.title}
         </div>
         <p
-          style={{ minHeight: '6rem' }}
-          className='font-NanumSquareNeoOTF-Lt text-base text-gray-700'
+          style={{ minHeight: '3rem' }}
+          className='font-NanumSquareNeoOTF-Lt text-base text-gray-700 break-words'
         >
           {mapObject.description}
         </p>
       </div>
-      <div className='flex flex-row items-center justify-between px-6 pb-0 pt-4'>
+      <div className='flex flex-row items-center justify-between px-6 pb-0 pt-2'>
         <span
           onClick={handleProfile}
-          className='mb-2 mr-2 inline-block rounded-full bg-primary-GeoOrange px-3 py-1  font-NanumSquareNeoOTF-Lt  font-semibold text-white hover:cursor-pointer hover:opacity-70'
+          className='mb-2 mr-2 inline-block rounded-full bg-primary-GeoOrange px-5 py-1  font-NanumSquareNeoOTF-Lt  font-semibold text-white hover:cursor-pointer hover:opacity-70'
         >
-          Author : {mapObject.user_id.username}
+          {mapObject.user_id.username}
         </span>
         <span className='mb-2 mr-2 inline-block rounded-full px-3 py-1  font-NanumSquareNeoOTF-Lt  font-semibold text-black'>
           Created On : {formattedDate}

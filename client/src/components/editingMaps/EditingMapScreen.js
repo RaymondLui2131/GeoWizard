@@ -56,6 +56,15 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
     const [publicStatus, setPublic] = useState(mapObj?.isPublic)
     const [saveStatus, setSaveStatus] = useState('idle'); // 'idle', 'saving', 'completed' , 'error'
 
+
+    //dropdown for exporting
+    const [dropdownOpen, setDropdownOpen] = useState(false)
+    const exportButtons = [
+        'PNG',
+        'JPG',
+        'GeoJson'
+      ]
+
     const handleCheckboxChange = (event) => {
         setPublic(event.target.checked);
     };
@@ -148,7 +157,8 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
             // console.log(response)
         }
     }
-    const handleExport = async () => {
+    const handleExport = async (key) => {
+        console.log(key)
         let editHeader = new NoneMapHeader()
         switch (mapType) {
             case MAP_TYPES['HEATMAP']:
@@ -209,45 +219,98 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
         URL.revokeObjectURL(href);
     }
     return (
-        <div className='w-4/5 flex flex-row justify-start mt-4 items-center'>
-            <div className='flex flex-row'>
-                <div className='flex flex-row ' >
+        <div className='flex flex-row justify-start mt-4 pl-28 '>
+                <div className='inline-block mr-10'>
                     <button disabled={!transactions?.hasTransactionToUndo()} onClick={() => transactions?.undoTransaction()}><img src={undo} className={`object-contain ${!transactions?.hasTransactionToUndo() && "opacity-30"}`} alt='Undo action' /></button>
                     <button disabled={!transactions?.hasTransactionToRedo()} onClick={() => transactions?.doTransaction()}><img src={redo} className={`object-contain ${!transactions?.hasTransactionToRedo() && "opacity-30"}`} alt='Redo action' /></button>
                 </div>
 
-            </div>
-            <div className='flex justify-between'>
-                <div className='flex justify-evenly'>
-                    <div className='inline-block'><button className='bg-primary-GeoOrange text-3xl 
-                                                font-NanumSquareNeoOTF-Lt px-14 rounded-full py-2' onClick={() => handleExport()}>
-                        Export</button>
+                    <div className=''>
+                        <button
+                            onClick={() => setDropdownOpen(!dropdownOpen)}
+                            className={`w-52  px-4 py-2  font-NanumSquareNeoOTF-Lt text-2xl
+                            ${
+                                dropdownOpen ? 'rounded-b-none rounded-t-md' : 'rounded-md'
+                            } flex items-center justify-between bg-primary-GeoOrange text-left text-white`}
+                            >
+                            Export
+                            <span className='ml-2'>
+                                {dropdownOpen ? (
+                                <svg
+                                    className='h-4 w-4'
+                                    fill='none'
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
+                                    strokeWidth='2'
+                                    viewBox='0 0 24 24'
+                                    stroke='currentColor'
+                                >
+                                    <path d='M19 9l-7 7-7-7'></path>
+                                </svg>
+                                ) : (
+                                <svg
+                                    className='h-4 w-4'
+                                    fill='none'
+                                    strokeLinecap='round'
+                                    strokeLinejoin='round'
+                                    strokeWidth='2'
+                                    viewBox='0 0 24 24'
+                                    stroke='currentColor'
+                                >
+                                    <path d='M5 15l7-7 7 7'></path>
+                                </svg>
+                                )}
+                            </span>
+                            </button>
+                            {dropdownOpen && (
+                            <div className=' w-52 shadow-lg'>
+                                {exportButtons.map((key, index) => (
+                                <button
+                                    key={key}
+                                    className={`block w-52 px-4 py-2  bg-primary-GeoOrange text-2xl font-NanumSquareNeoOTF-Lt text-white text-left
+                                    ${
+                                        index == exportButtons.length - 1
+                                          ? ' rounded-b-md'
+                                          : 'rounded-b-none'
+                                      }`}
+                                    onClick={() => handleExport(key)}
+                                >
+                                    {key}
+                                </button>
+                                ))}
+                            </div>
+                            )}
+
+                        {/*                         
+                        <button className='bg-primary-GeoOrange text-3xl font-NanumSquareNeoOTF-Lt px-14 rounded-full py-2' onClick={() => handleExport()}>
+                        Export</button> */}
                     </div>
+
                     <div className='pl-12 inline-block pr-16'>
-                        <button className='bg-primary-GeoOrange text-3xl font-NanumSquareNeoOTF-Lt px-14 rounded-full py-2 disabled:opacity-30'
+                        <button className='bg-primary-GeoOrange text-2xl font-NanumSquareNeoOTF-Lt px-14 rounded-md py-2 disabled:opacity-30 text-white'
                             onClick={handleSaveMap}
                             disabled={!(map && user)}>
                             {saveStatus === 'idle' ? (createOrSave === 'create' ? 'Create' : 'Save') : saveStatus === 'error' ? 'Error' : saveStatus === 'creating' ? (createOrSave ? 'Saving Map...' : 'Creating Map...') : 'Completed'}
                         </button>
                     </div>
-                </div>
 
-                <label className="relative flex justify-between items-center p-2 text-3xl font-NanumSquareNeoOTF-Lt">
-                    <span className='w-24 text-left'>
-                        {publicStatus ? "Public " : "Private"}
-                    </span>
-                    <input onChange={handleCheckboxChange}
-                        checked={publicStatus} type="checkbox" className="absolute left-1/2 -translate-x-1/2 peer appearance-none rounded-md pl-12 pr-16" />
-                    <span className="w-16 h-10 flex items-center flex-shrink-0 ml-4 p-1 bg-gray-300 rounded-full duration-300 ease-in-out peer-checked:bg-green-400 after:w-8 after:h-8 after:bg-white after:rounded-full after:shadow-md after:duration-300 peer-checked:after:translate-x-6"></span>
+                <label className=" justify-between items-center p-2 text-3xl font-NanumSquareNeoOTF-Lt inline-block">
+                    <div className='flex flex-row'>
+                        <span className='w-24 text-left'>
+                            {publicStatus ? "Public " : "Private"}
+                        </span>
+                        <input onChange={handleCheckboxChange}
+                            checked={publicStatus} type="checkbox" className="absolute left-1/2 -translate-x-1/2 peer appearance-none rounded-md pl-12 pr-16" />
+                        <span className="w-16 h-10 flex items-center flex-shrink-0 ml-4 p-1 bg-gray-300 rounded-full duration-300 ease-in-out peer-checked:bg-green-400 after:w-8 after:h-8 after:bg-white after:rounded-full after:shadow-md after:duration-300 peer-checked:after:translate-x-6"></span>
+                    </div>
                 </label>
-            </div>
         </div>
     )
 }
 
 const MapEditOptions = (props) => {
-    const padded_NE = props.padded_NE
-    const padded_SW = props.padded_SW
+    const padded_NE = props.mapBounds[0]
+    const padded_SW = props.mapBounds[1]
     const type_of_map = props.mapType
     const setType = props.setType
     const areaClicked = props.areaClicked
@@ -748,7 +811,7 @@ const MapView = () => {
 
                     <input type='text' name='description' className='bg-primary-GeoPurple text-white placeholder-white text-2xl w-[50rem]
                         text-center'
-                        placeholder='Enter Description...' value={description} maxLength={48} onChange={(e) => setDescription(e.target.value)} >
+                        placeholder='Enter Description...' value={description} maxLength={100} onChange={(e) => setDescription(e.target.value)} >
                     </input>
                 </div>
                 <div className='px-64'>
@@ -816,7 +879,7 @@ const MapView = () => {
 const EditingMap = () => {
     return (
         <>
-            <div className="bg-primary-GeoPurple min-h-screen max-h-screen overflow-auto">
+            <div className="max-h-[100%] min-h-screen bg-primary-GeoPurple pb-8">
                 <MapView />
             </div>
 
