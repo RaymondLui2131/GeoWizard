@@ -32,6 +32,7 @@
     "eslint-visitor-keys": "^3.4.3",
     "geobuf": "^3.0.2",
     "geojson-precision": "^1.0.0",
+    "html2canvas": "^1.4.1",
     "js-cookie": "^3.0.5",
     "jszip": "^3.10.1",
     "leaflet": "^1.9.4",
