@@ -112,6 +112,7 @@ const FlowUi = (props) => {
             <div className='h-full w-96 bg-gray-50 rounded-3xl'>
                 <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}><div>Flow Options</div></div>
                     
+                <div className='text-sm pb-7'>Click on the top right of the map to draw arrows</div>
                 <div>Select Arrow Color</div>
 
                 <div className='flex flex-col items-center w-full mx-auto'>
@@ -120,10 +121,10 @@ const FlowUi = (props) => {
                 <div className='font-NanumSquareNeoOTF-Lt pt-5'>
                     <div>Select an Arrow to Delete</div>
                     <button onClick={handleDelete} className='bg-primary-GeoOrange text-white px-4 py-2 rounded-md'>Delete</button>
-                    <div className='font-semibold underline'>Current Arrow</div>
+                    <div className='font-semibold underline pt-3'>Current Arrow</div>
                     {arrow
                         ?<ArrowInfo arrow = {arrow}/>
-                        :null
+                        :<div className='text-base'>None Clicked</div>
                     }
                 </div>
             </div>

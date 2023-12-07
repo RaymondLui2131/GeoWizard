@@ -22,11 +22,9 @@ const FlowArrow = (props) => {
       ...props
     }).addTo(map)
     polyline.on('click', function(e) {
-      // Inside the event listener, 'this' refers to the polyline object
       var clickedPolyline = this;
       handleClick(clickedPolyline)
   });
-    // Create the arrowhead using polylineDecorator
     const arrowHead = L.polylineDecorator(polyline, {
       patterns: [
         {
@@ -44,14 +42,13 @@ const FlowArrow = (props) => {
       ]
     }).addTo(map)
 
-    // Cleanup function
     return () => {
       arrowHead.remove()
       polyline.remove()
     }
   }, [map, latlngs, colorRgba, props])
 
-  return null; // Since the Leaflet objects are directly added to the map, we return null.
+  return null; 
 };
 
 
