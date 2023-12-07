@@ -70,7 +70,7 @@ export const SymbolUi = (props) => {
                 <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}><div>Symbol Options</div></div>
                 <div className='grid grid-cols-2 gap-2  h-4/5  mx-auto symbolOptions'>
                     <div className='flex justify-center items-center w-24 h-24 mx-auto my-auto origin-center border-4'></div>
-                        style={{ borderColor: selected === 'circle' ? selectedColor : '#F9FAFB' }}>
+                        style={{ borderColor: selected === 'circle' ? selectedColor : '#F9FAFB' }}
                         <img src={circle} alt='circle' className='max-h-full max-w-auto min-h-full min-w-auto' onClick={() => setSelected("circle")} />
                     </div>
                     <div className='flex flex-col items-center w-full mx-auto'>
