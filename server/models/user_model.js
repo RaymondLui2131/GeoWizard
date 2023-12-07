@@ -55,6 +55,10 @@ const userSchema = new Schema({
     about: {
         type: String,
         default: ""
+    },
+    googleSignedIn: {
+        type: Boolean,
+        default: false
     }
 }, {
     timestamps: true // adds a timestamp for when the user is created

@@ -13,6 +13,7 @@ const LoginScreen = () => {
         userEmail: false,
         password: false,
     });
+    const [googleSignInError, setGoogleSignInError] = useState(false) // if google sign in fails because of same username or email
 
     const googleLogin = useGoogleLogin({
         onSuccess: async (codeResponse) => {
@@ -24,6 +25,7 @@ const LoginScreen = () => {
                 }
                 else {
                     dispatch({ type: UserActionType.ERROR, payload: response.data.message }) // login failed
+                    setGoogleSignInError(true)
                 }
             }
         },
@@ -56,6 +58,15 @@ const LoginScreen = () => {
         } else {
             dispatch({ type: UserActionType.ERROR, payload: response.data.message }) // login failed
         }
+    };
+
+    const handleGoogleLoginClick = async () => {
+        setGoogleSignInError(false);
+        setBlankErrors({
+            userEmail: false,
+            password: false,
+        })
+        googleLogin();
     };
 
     const handleCreateAccountClick = () => {
@@ -121,11 +132,17 @@ const LoginScreen = () => {
                     Create an Account
                 </div>
 
+                {googleSignInError ? (
+                    <div style={{ color: '#8B0000', textAlign: 'center' }}>
+                        Google Account exist with an existing Email or Username
+                    </div>
+                ) : null}
+
                 <div className="pt-8 pr-4 flex-col justify-center items-center">
                     <button onClick={handleLoginClick} className="text-yellow-200 font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300">
                         Login
                     </button>
-                    <button onClick={() => googleLogin()} className="text-yellow-200 font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300">Sign In With Google</button>
+                    <button onClick={() => handleGoogleLoginClick()} className="text-yellow-200 font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300">Sign In With Google</button>
                 </div>
             </div>
         </div>

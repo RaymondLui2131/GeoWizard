@@ -18,17 +18,19 @@ const { signToken } = require("../jwt_middleware")
 const googleLoginUser = asyncHandler(async (req, res) => {
     const { email, username, googleId } = req.body
     let user = await User.findOne({ email })
-    if (!user) {
+    const userNameExists = await User.findOne({ username })
+    if (!user && !userNameExists) {
         const salt = await bcrypt.genSalt(10)
         const hashed_password = await bcrypt.hash(googleId, salt)
         user = await User.create({
             email: email,
             username: username,
-            password: hashed_password
+            password: hashed_password,
+            googleSignedIn: true
         })
     }
 
-    if (user && (await bcrypt.compare(googleId, user.password))) {
+    if (user && userNameExists && (await bcrypt.compare(googleId, user.password))) {
         return res.status(200).json({
             _id: user.id,
             username: user.username,
