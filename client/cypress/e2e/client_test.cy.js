@@ -1,6 +1,5 @@
 import 'cypress-file-upload'
 import AuthController from '../../src/api/auth_request_api'
-import { cy } from 'date-fns/locale'
 
 describe('template spec', () => {
   it('passes', () => {
