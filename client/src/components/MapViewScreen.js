@@ -15,7 +15,7 @@ import tinycolor from 'tinycolor2';
 import { useNavigate } from "react-router-dom";
 import NotDraggableImageOverlay from './editingMaps/ImageNotDraggable.js';
 import PointMarkerNotEditable from './editingMaps/PointMarkerNotEditable.js';
-
+import FlowArrow from './editingMaps/FlowArrow.js';
 const fakeView = {
     title: 'The Title of the Map',
     author: 'anon123',
@@ -303,6 +303,13 @@ const MapDisplay = (props) => {
                                         id={edit.id}
                                         edit={edit}
                                     />)
+                                : null
+                        }
+                        {
+                            MAP_TYPES[mapType] === MAP_TYPES['FLOW']
+                                ? edits.editsList.map((edit) => (
+                                    <FlowArrow key={edit.id} id={edit.id} latlngs={edit.latlngs} colorRgba={edit.colorRgba}/>
+                                ))
                                 : null
                         }
                     </>
