@@ -518,7 +518,7 @@ const MapEditOptions = (props) => {
                     selectedColor: selectedColor,
                     handleFlowColor: handleFlowColor,
                     flowColor: flowColor,
-                    areaClicked: areaClicked,
+                    areaClicked: areaClicked,//note not actually area but the arrow object itself
                     setAreaClicked: setAreaClicked,
                     editsList: editsList,
                     setEditsList: setEditsList,
@@ -656,7 +656,7 @@ const MapView = () => {
 
     // console.log("CUrrent Edits",editsListRef.current)
 
-    console.log(geoJsonKey)
+    // console.log(geoJsonKey)
     const getFeatureStyle = (feature) => {
         if (feature) {
             return styleMapping[feature.key] || { fillColor: '#ffffff' }
@@ -776,39 +776,26 @@ const MapView = () => {
         setType(typeSelected)
         setChangingMapTypeIsClicked(false)
     }
-    console.log("current edit list",editsList)
+    // console.log("current edit list",editsList)
 
     //Flow Map Editing
 
-    const flowColorRef = useRef(flowColor)
-    useEffect(() => {
-        flowColorRef.current = flowColor
-    }, [flowColor])
+    // const flowColorRef = useRef(flowColor)
+    // useEffect(() => {
+    //     flowColorRef.current = flowColor
+    // }, [flowColor])
 
     const handleFlowColor = (newColor) =>{
         setFlowColor(newColor)
     }
-
     const handleOnCreateFlow = (e) => {
-        // console.log(e.layer)
-        const currentColor = hlsaToRGBA(flowColorRef.current)
-        const latlngs = e.layer.getLatLngs()
-        const newFlowArrow =  new FlowEdit(e.layer._leaflet_id,latlngs,currentColor)
-        console.log(newFlowArrow)
-
-        // console.log("CURRENTLY IN FLOW", editsListRef.current)
-        const copyEdits = [...editsListRef.current]
-        copyEdits.push(newFlowArrow)
-        setEditsList(copyEdits)
-        // console.log("Adding", copyEdits)
-
-        e.layer.remove()
+        setAreaClicked(e)
     }
     //End of Flow Map Editing
-    // console.log("current type",typeSelectedRef.current)
+    // console.log("currentEdits",editsList)
     return (
         map && (<>
-            <div className='flex space-around px-28 pt-5'>
+            <div className='flex justify-between px-28 pt-5'>
                 <div className='flex justify-center flex-col items-center'>
                     <div>
                         {!validTitle
@@ -930,7 +917,7 @@ const MapView = () => {
                         placeholder='Enter Description...' value={description} maxLength={100} onChange={(e) => setDescription(e.target.value)} >
                     </input>
                 </div>
-                <div className='px-64'>
+                <div className='flex justify-center w-full'>
                     <div className='text-2xl font-NanumSquareNeoOTF-Lt flex flex-col items-center text-center'>
 
                         {!mapTypeClicked && !changingMapTypeIsClicked
@@ -996,7 +983,7 @@ const MapView = () => {
 const EditingMap = () => {
     return (
         <>
-            <div className="max-h-[100%] min-h-screen bg-primary-GeoPurple pb-8">
+            <div className="max-h-[100%] min-h-screen bg-primary-GeoPurple pb-8 w-full overflow-auto">
                 <MapView />
             </div>
 

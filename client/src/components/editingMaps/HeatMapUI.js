@@ -109,7 +109,7 @@ export const HeatUi = (props) => {
             copyEdits.push(newEdit)
             // console.log(copyEdits)
             setEditsList(copyEdits)
-            // setAreaClicked(null)//resetting clicked
+            setAreaClicked(null)//resetting clicked
         }
     }
 

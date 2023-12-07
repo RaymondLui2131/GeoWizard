@@ -45,7 +45,7 @@ export const SymbolUi = (props) =>
                 copyEdits.push(newEdit)
                 console.log(copyEdits)
                 setEditsList(copyEdits)
-                setAreaClicked(null)//resetting clicked
+                setAreaClicked(null)//resetting clicked needed for map swapping
             }
             
         }
@@ -87,7 +87,7 @@ export const SymbolUi = (props) =>
                     </div>
                     <div className='flex flex-col items-center w-full mx-auto'>
                         <HueSlider handleChangeColor={handleChangeColor} color={symbColor} />
-                </div>
+                    </div>
             </div>
     </>
     )
