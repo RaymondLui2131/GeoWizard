@@ -20,15 +20,13 @@ const FlowUi = (props) => {
             const p1 = poly1
             const p2 = poly2
             console.log("p1", p1)
+            console.log("p2", p2)
+            if(p1.length !== p2.length)
+                return false
             const filtered = p1.filter((cord,index) => {
-                // console.log("Checking");
-                // console.log(cord.lat);
-                // console.log(p1[index].lat);
-                // console.log(cord.lng );
-                // console.log(p1[index].lng);
-                return (cord.lat === p1[index].lat) && (cord.lng === p1[index].lng)
+                return (cord.lat === p2[index].lat) && (cord.lng === p2[index].lng)
             })
-            if(filtered.length === p1.length && filtered.length === p2.length)
+            if(filtered.length > 0)
                 return true
             return false
         }
@@ -36,8 +34,9 @@ const FlowUi = (props) => {
         {
             console.log(selectedFlowArrow)
             const latlngs = selectedFlowArrow
-            console.log("simple equal check",equalPoly(latlngs,editsList[0].latlngs))
+            console.log("simple equal check",editsList)
             const filtered = editsList.filter((polyline) => !equalPoly(latlngs,polyline.latlngs))
+            console.log("filtered", filtered)
             setEditsList(filtered)
         }
     }
