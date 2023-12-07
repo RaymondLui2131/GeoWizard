@@ -7,6 +7,7 @@ import { circle, triangle, square, star, hexagon, pentagon, redXSymb } from '../
 import tinycolor from 'tinycolor2';
 import 'leaflet-geometryutil';
 import SymbolRemoveTransaction from '../../transactions/SymbolRemoveTransaction.js';
+import SymbolBoundsTransaction from '../../transactions/SymbolBoundsTransaction.js';
 import { MapContext } from '../../api/MapContext.js';
 const mappings = {
   'circle': circle,
@@ -20,9 +21,9 @@ const mappings = {
 function replaceWhiteWithColor(imageUrl, color) {
   return new Promise((resolve, reject) => {
     const colorObj = tinycolor(color)
-    console.log('regular color', color)
+    // console.log('regular color', color)
     const rgb = colorObj.toRgb()
-    console.log('rgb form', rgb)
+    // console.log('rgb form', rgb)
 
     const image = new Image()
     image.crossOrigin = 'Anonymous'
@@ -93,15 +94,17 @@ export const DraggableImageOverlay = (props) => {
     L.latLng(arrayBounds[0].lat, arrayBounds[1].lng), // Southeast
     arrayBounds[1] // Close the loop
   ]
-  console.log("MAX", mapBounds)
-  console.log(arrayBounds)
+
+  // console.log("MAX", mapBounds)
+  // console.log(arrayBounds)
   const map = useMap()
   const [bounds, setBounds] = useState(initialBounds);
+
   const [markerPosition, setMarkerPosition] = useState(getCenter(initialBounds));
   const [isClicked, setClicked] = useState(false)
   const [imageRend, setImage] = useState(image)
   const [northWest, setNorthWest] = useState(L.latLng(bounds[1][0], bounds[0][1]))
-  console.log(northWest)
+  // console.log(northWest)
   useEffect(() => {
     replaceWhiteWithColor(imageRend, color)
       .then(modifiedDataURL => {
@@ -118,17 +121,44 @@ export const DraggableImageOverlay = (props) => {
     return [(bounds[0][0] + bounds[1][0]) / 2, (bounds[0][1] + bounds[1][1]) / 2];
   }
 
-  const updateBounds = () => {
-    const copyEdits = [...editsList]
-    const foundMapping = copyEdits.find((edit) => edit.id === id)
-    if (foundMapping) {
-      foundMapping.bounds = bounds
-    }
-    console.log('new edits list', copyEdits)
-    // console.log()
-    setEditsList(copyEdits)
 
+  const addUpdateBounds = (foundMapping, newBounds, setBounds, editsList, setEditsList) => {
+    const copyList = [...editsList]; // Create a copy of the editsList
+    const foundIndex = copyList.findIndex(edit => edit.id === foundMapping.id);
+    if (foundIndex !== -1) {
+      copyList[foundIndex].bounds = newBounds; // Update the bounds in the copied list
+      setEditsList(copyList); // Update the state with the new copyList
+      setBounds(newBounds)
+      setMarkerPosition(getCenter(newBounds))
+      setNorthWest(L.latLng(newBounds[1][0], newBounds[0][1]))
+    }
   }
+
+  const removeUpdateBounds = (foundMapping, oldBounds, setBounds, editsList, setEditsList) => {
+    const copyList = [...editsList]; // Create a copy of the editsList
+    const foundIndex = copyList.findIndex(edit => edit.id === foundMapping.id);
+    if (foundIndex !== -1) {
+      copyList[foundIndex].bounds = oldBounds; // Update the bounds in the copied list
+      setEditsList(copyList); // Update the state with the new copyList
+      setBounds(oldBounds)
+      setMarkerPosition(getCenter(oldBounds))
+      setNorthWest(L.latLng(oldBounds[1][0], oldBounds[0][1]))
+    }
+  }
+
+  const updateBounds = () => {
+    const foundMapping = editsList.find((edit) => edit.id === id)
+    if (foundMapping) {
+      const oldBounds = [...foundMapping.bounds]
+      const newBounds = [...bounds]
+      console.log("current bounds: " + bounds)
+      const options = { foundMapping, oldBounds, newBounds, setBounds, editsList, setEditsList, addUpdateBounds, removeUpdateBounds }
+      const transaction = new SymbolBoundsTransaction(options)
+      transactions.addTransaction(transaction)
+    }
+  }
+
+
   const updateImagePosition = useCallback((newPosition) => {
     // Logic to calculate new bounds based on the new marker position
     // This needs to be adjusted based on how you want the image to move
@@ -137,8 +167,8 @@ export const DraggableImageOverlay = (props) => {
       newPosition.lat = closestPoint.lat
       newPosition.lng = closestPoint.lng
     }
-    // console.log("updating", newPosition)
-    // console.log("old", markerPosition)
+    console.log("updating", newPosition)
+    console.log("old", markerPosition)
 
     const latDiff = newPosition.lat - markerPosition[0];
     const lngDiff = newPosition.lng - markerPosition[1];
@@ -164,8 +194,8 @@ export const DraggableImageOverlay = (props) => {
   const handleCornerDrag = useCallback((cornerIndex, newLatLng) => {
     const newBounds = [...bounds]
     const center = getCenter(newBounds)
-    console.log("center", center)
-    console.log("newLat", newLatLng)
+    // console.log("center", center)
+    // console.log("newLat", newLatLng)
     newBounds[cornerIndex] = [newLatLng.lat, newLatLng.lng];
 
     if (cornerIndex === 0) {
@@ -194,6 +224,7 @@ export const DraggableImageOverlay = (props) => {
     setBounds(newBounds)
     setNorthWest(L.latLng(newBounds[1][0], newBounds[0][1]))
   }, [bounds, setBounds]);
+
   useMapEvents({
     click: (e) => {
       if (!L.latLngBounds(bounds).contains(e.latlng)) {
@@ -204,7 +235,6 @@ export const DraggableImageOverlay = (props) => {
 
   const addSymbol = (editsList, setEditsList) => {
     let copyEdits = [...editsList]
-    console.log(copyEdits)
     setEditsList(copyEdits)
   }
 

@@ -54,7 +54,7 @@ export const SymbolUi = (props) => {
         console.log('current area', areaClicked)
         if (areaClicked && selected) {
             const newEdit = new SymbolEdit(counter, selected, symbColor, calculateBounds(areaClicked, 1, 100))
-            const options = {newEdit, editsList, setEditsList, addSymbol, removeSymbol}
+            const options = { newEdit, editsList, setEditsList, addSymbol, removeSymbol }
             const transaction = new SymbolClickTransaction(options)
             transactions.addTransaction(transaction)
         }
