@@ -1,6 +1,6 @@
 import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
-import { useState, useContext, useRef, useEffect } from "react";
+import { useState, useContext, useRef, useEffect, useCallback} from "react";
 import L from 'leaflet';
 import { SaturationSlider, HueSlider } from 'react-slider-color-picker'
 import tinycolor from "tinycolor2";
@@ -28,6 +28,7 @@ import SymbolUi from './SymbolsUI.js';
 import { SymbolHeader } from '../../editMapDataStructures/SymbolsMapData.js';
 import { async } from 'regenerator-runtime';
 import { PointHeader } from '../../editMapDataStructures/PointMapData.js';
+import html2canvas from 'html2canvas';
 //Note assigns saturation of 100 for satslider
 const hexToHlsa = (hexString) => {
 
@@ -50,7 +51,7 @@ const hlsaToRGBA = (hlsa) => {
 
 
 const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBound, setValidHeatRange,
-    baseColor, setValidTitle, keyTable }) => {
+    baseColor, setValidTitle, keyTable, mapContainerRef  }) => {
     const { user } = useContext(UserContext)
     const { map, mapObj, transactions, createOrSave, idToUpdate } = useContext(MapContext)
     const [publicStatus, setPublic] = useState(mapObj?.isPublic)
@@ -62,7 +63,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
     const exportButtons = [
         'PNG',
         'JPG',
-        'GeoJson'
+        'Geowizjson'
       ]
 
     const handleCheckboxChange = (event) => {
@@ -157,8 +158,51 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
             // console.log(response)
         }
     }
+
+    const exportMapAsImage = async (fileType = 'png', fileName) => {
+        if (!mapContainerRef) {
+            console.error("Map container is not available for export.");
+            return;
+        }
+    
+        setTimeout(async () => {
+            try {
+                const canvas = await html2canvas(mapContainerRef._container, {
+                    allowTaint: false,
+                    useCORS: true, // Important for external images like map tiles
+                    //logging: true, // Useful for debugging
+                    scale: window.devicePixelRatio || 1, // Adjust for high resolution screens
+                    width: mapContainerRef._container.offsetWidth,
+                    height: mapContainerRef._container.offsetHeight,
+                    onrendered: function (canvas) {
+                        document.body.appendChild(canvas);
+                    }
+                });
+
+                const image = canvas.toDataURL(`image/${fileType}`);
+                const link = document.createElement('a');
+                link.href = image;
+                link.download = `${fileName}.${fileType}`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } catch (error) {
+                console.error("Error exporting image:", error);
+            }
+        }, 1000); // Adjust delay if needed
+    };
+
     const handleExport = async (key) => {
-        console.log(key)
+        //console.log(key)
+
+        if (key === 'PNG' || key === 'JPG') {
+            //console.log(mapContainerRef._container)
+            let fileName = "geowizardMap"
+            if (title !== '')
+                fileName = title
+            exportMapAsImage(key.toLowerCase(), fileName)
+            return
+        } 
         let editHeader = new NoneMapHeader()
         switch (mapType) {
             case MAP_TYPES['HEATMAP']:
@@ -510,6 +554,7 @@ const MapView = () => {
     const [changingMapTypeIsClicked, setChangingMapTypeIsClicked] = useState(false)
     const [futureTypeSelected, setFutureTypeSelected] = useState(MAP_TYPES['NONE'])
     const [geoJsonKey, setgeojsonKey] = useState('')
+    const [mapContainerRef, setmapContainerRef] = useState(null);
     // console.log(map)
     // const zoomLevel = 2
     // const center = [46.2276, 2.2137]
@@ -739,8 +784,10 @@ const MapView = () => {
                     </div>
                     <div className='pt-3'>
                         <MapContainer
+                            preferCanvas = {true}
                             center={center}
                             zoom={5}
+                            ref={setmapContainerRef}
                             // style={{ height: '750px', width: '900px' }}
                             className='mapContainer'
                             scrollWheelZoom={true}
@@ -868,7 +915,7 @@ const MapView = () => {
             </div>
             <BottomRow title={title} mapType={typeSelected} description={description} editsList={editsList} setValidTitle={setValidTitle}
                 lowerBound={lowerBound} upperBound={upperBound} setValidHeatRange={setValidHeatRange} baseColor={baseColor}
-                keyTable={keyTable}
+                keyTable={keyTable} mapContainerRef = {mapContainerRef}
             ></BottomRow>
         </>)
     )
