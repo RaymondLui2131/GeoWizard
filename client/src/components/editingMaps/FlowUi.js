@@ -34,9 +34,9 @@ const FlowUi = (props) => {
         {
             console.log(selectedFlowArrow)
             const latlngs = selectedFlowArrow
-            console.log("simple equal check",editsList)
+            // console.log("simple equal check",editsList)
             const filtered = editsList.filter((polyline) => !equalPoly(latlngs,polyline.latlngs))
-            console.log("filtered", filtered)
+            // console.log("filtered", filtered)
             setEditsList(filtered)
         }
     }

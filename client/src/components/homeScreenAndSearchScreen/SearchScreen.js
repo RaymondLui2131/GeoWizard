@@ -136,9 +136,9 @@ const SearchScreen = () => {
             {dropdownOpen && (
               <div className='absolute w-52 rounded-md bg-primary-GeoOrange shadow-lg '>
                 {buttonMetricKeys.map((key, index) => (
-                  <a
+                  <button
                     key={key}
-                    className={`block w-52 px-4 py-2 font-NanumSquareNeoOTF-Lt text-white 
+                    className={`block w-52 px-4 py-2 font-NanumSquareNeoOTF-Lt text-white text-left 
                                                 ${
                                                   activeMetricButton === key
                                                     ? 'bg-primary-GeoBlue'
@@ -152,7 +152,7 @@ const SearchScreen = () => {
                     onClick={() => toggleMetricButton(key)}
                   >
                     {key}
-                  </a>
+                  </button>
                 ))}
               </div>
             )}
@@ -162,7 +162,7 @@ const SearchScreen = () => {
           <div className='relative z-[80] ml-5 inline-block'>
             <button
               onClick={() => setDropdownTimeOpen(!dropdownTimeOpen)}
-              className={`w-52  px-4 py-2  font-NanumSquareNeoOTF-Lt ${
+              className={`w-52 px-4 py-2  font-NanumSquareNeoOTF-Lt ${
                 dropdownTimeOpen ? 'rounded-b-none rounded-t-md' : 'rounded-md'
               } flex items-center justify-between bg-primary-GeoOrange text-left text-white`}
             >
@@ -198,9 +198,9 @@ const SearchScreen = () => {
             {dropdownTimeOpen && (
               <div className='absolute w-52 rounded-md bg-primary-GeoOrange shadow-lg '>
                 {buttonTimeKeys.map((key, index) => (
-                  <a
+                  <button
                     key={key}
-                    className={`block w-52 px-4 py-2 font-NanumSquareNeoOTF-Lt text-white
+                    className={`block w-52 px-4 py-2 font-NanumSquareNeoOTF-Lt text-white text-left
                                                 ${
                                                   activeTimeButton === key
                                                     ? 'bg-primary-GeoBlue'
@@ -214,7 +214,7 @@ const SearchScreen = () => {
                     onClick={() => toggleTimeButton(key)}
                   >
                     {key}
-                  </a>
+                  </button>
                 ))}
               </div>
             )}

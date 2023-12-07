@@ -55,12 +55,12 @@ describe('testing HomeScreen', () => {
   })
   it('Should show dropdown when clicking Time button', () => {
     cy.contains('Time').click()
-    cy.get('a').should('contain', "Today")
+    cy.get('button').should('contain', "Today")
   })
 
   it('Should show dropdown when clicking Sort button', () => {
     cy.contains('Sort').click()
-    cy.get('a').should('contain', "Recents")
+    cy.get('button').should('contain', "Recents")
   })
 
   it('should display in search bar', () => {
@@ -200,6 +200,7 @@ describe('testing editing map page', () => {
 
   it('should export the file', () => {
     cy.contains('Export').click()
+    cy.contains('Geowizjson').click()
     cy.readFile('cypress/downloads/geowizardMap.geowizjson').should("exist");
   })
 })
