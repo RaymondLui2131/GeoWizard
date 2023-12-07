@@ -124,12 +124,12 @@ const LoginScreen = () => {
                     </div>
                 ) : null}
 
-                <div onClick={handleForgotPasswordClick} className="pl-12 pt-4 pr-72 text-align:center underline font-bold  flex flex-col justify-center items-center">
-                    Forgot Password
+                <div className="pl-12 pt-4 pr-72 text-align:center underline font-bold  flex flex-col justify-center items-center">
+                    <a onClick={handleForgotPasswordClick} class="px-2 py-1">Forget password</a>
                 </div>
 
-                <div onClick={handleCreateAccountClick} className="pl-14 pt-4 pr-72 underline font-bold flex flex-col justify-center items-center">
-                    Create an Account
+                <div className="pl-14 pt-4 pr-72 underline font-bold flex flex-col justify-center items-center">
+                    <a onClick={handleCreateAccountClick} class="px-2 py-1">Create an Account</a>
                 </div>
 
                 {googleSignInError ? (
