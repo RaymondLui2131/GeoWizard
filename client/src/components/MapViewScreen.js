@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from 'react'
+import { useState, useContext, useEffect, useRef } from 'react'
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import L from 'leaflet';
 import { ReactComponent as ThumbsIcon } from '../assets/MapViewAssets/thumpsUp.svg'
@@ -386,6 +386,9 @@ const Key = (props) => {//Note this key layout only works for color
 
 const Comment = (props) => {
     const comment = props.comment
+    const comments = props.comments
+    const setComments = props.setComments
+
     console.log("This is comment", comment)
     const navigate = useNavigate()
     const [currentLike, setLike] = useState(false)
@@ -401,13 +404,25 @@ const Comment = (props) => {
     const daysDiff = Math.floor(hoursDiff / 24);
     let formattedTimeDiff;
     if (daysDiff > 0) {
-        formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-daysDiff, 'day');
+        if(daysDiff === 1)
+            formattedTimeDiff = "1 day ago"
+        else
+            formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-daysDiff, 'day');
     } else if (hoursDiff > 0) {
-        formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-hoursDiff, 'hour');
+        if(hoursDiff === 1)
+            formattedTimeDiff = "1 hour ago"
+        else
+            formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-hoursDiff, 'hour');
     } else if (minutesDiff > 0) {
-        formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-minutesDiff, 'minute');
+        if(minutesDiff === 1)
+            formattedTimeDiff = "1 minute ago"
+        else
+            formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-minutesDiff, 'minute');
     } else {
-        formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-secondsDiff, 'second');
+        if(secondsDiff === 1)
+            formattedTimeDiff = "1 second ago"
+        else
+            formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-secondsDiff, 'second');
     }
     useEffect(() => {
         if (user) {
@@ -420,16 +435,24 @@ const Comment = (props) => {
     const handleLike = async () => {
         if (!user)//handle user not signed in later
             return
+        let endVoteNum = votes
         if (currentLike) {
             const response = changeLikesComment(user._id, comment._id, -1)
             setVotes(votes - 1)
+            endVoteNum = votes - 1
             console.log(response)
         }
         else {
             const response = changeLikesComment(user._id, comment._id, 1)
             setVotes(votes + 1)
+            endVoteNum = votes + 1
             console.log(response)
         }
+        const currentComments = [...comments]
+        const foundIndex = currentComments.findIndex((c) => c._id === comment._id)
+        if(foundIndex !== -1)
+            currentComments[foundIndex].votes = endVoteNum
+        setComments(currentComments)
         setLike(!currentLike)
     }
     if (!comment)
@@ -464,11 +487,10 @@ const Comment = (props) => {
 
 const AllComments = (props) => {
     const comments = props.comments
-    // console.log("THis is comments",comments)
-    // return null
+    const setComments = props.setComments
     if (!comments)
         return (null)
-    const comProps = comments.map((c) => <Comment {...{ key: c._id, comment: c }} />)
+    const comProps = comments.map((c) => <Comment {...{ key: c._id, comment: c, comments:comments, setComments:setComments }} />)
     return (
         <>
             {comProps}
@@ -491,14 +513,36 @@ const MapView = () => {
     const [userDislikes,] = useState(mapView?.userDislikes || [])
     const [mapType,] = useState(mapView?.mapType || '')
     const [comments, setComments] = useState(mapView?.comments || [])
-
-    const [sortSelected, setSort] = useState('time')
+    const [sortSelected, setSort] = useState('Time')
+    const commentsRef = useRef(comments)
     const [newComment, setNewComment] = useState('')
+
 
     const selectedColor = '#3b82f6'
 
-    console.log(newComment)
-    console.log("Map Type", mapType)
+    const sortComments = (sortType, comments) =>{
+        const copyComments = [...comments]
+        switch(sortType){
+            case "Time": {
+                copyComments.sort((c1, c2) => {
+                  const timeDiff = new Date(c2.createdAt) - new Date(c1.createdAt)
+                  return timeDiff !== 0 ? timeDiff : c2.votes - c1.votes
+            })
+                break;
+            }
+            case "Votes": {
+                copyComments.sort((c1, c2) => {
+                    const voteDiff = c2.votes - c1.votes
+                    return voteDiff !== 0 ? voteDiff : new Date(c2.createdAt) - new Date(c1.createdAt)
+                })
+                break
+            }
+              default:
+                break
+        }
+        return copyComments
+    }
+
     const postNewComment = async () => {
         if (!user)       //case where user not signed in
             return
@@ -507,10 +551,23 @@ const MapView = () => {
         if (response.status === 200) {
             const commentList = comments.slice()
             commentList.push(response.data.newComment)
-            setComments(commentList)
+            const sortedComments = sortComments(sortSelected, commentList)
+            setComments(sortedComments)
             setNewComment('')
         }
     }
+    const handleChangeSort = (sortSelected) =>{
+        setSort(sortSelected)
+    }
+
+   
+    useEffect(() =>{
+        const sortedComments = sortComments(sortSelected, comments)
+        setComments([...sortedComments])
+        console.log("sort used effect", sortedComments)
+    },[sortSelected])
+
+
     return (
         <>
             <div className='bg-primary-GeoPurple min-h-screen max-h-screen flex justify-between items-center flex-col overflow-auto'>
@@ -528,16 +585,41 @@ const MapView = () => {
                         }
                     </div>
 
-                    <div className='flex flex-row justify-between'>
+                    <div className='flex flex-row justify-between pt-2'>
                         <div className='text-3xl text-gray-50 mt-3 font-NanumSquareNeoOTF-Lt w-4/12'>Comments</div>
-                        <div className='flex flex-row justify-between font-NanumSquareNeoOTF-Lt items-end w-4/12'>
-                            <div className='text-gray-50 font-NanumSquareNeoOTF-Lt text-2xl'>Sort By:</div>
-                            <button className='bg-green-200 px-4 rounded-full py-2 border-2' onClick={() => setSort('likes')}
-                                style={{ borderColor: sortSelected === 'likes' ? selectedColor : '#000000' }}
+                        <div className='font-NanumSquareNeoOTF-Lt'>
+                            <label className='text-gray-50 text-2xl'>
+                                <span className='pr-3'>
+                                Sort By:
+                                </span>
+                                <select name="Selected Sort" onChange={e => handleChangeSort(e.target.value)} 
+                                className='bg-primary-GeoOrange rounded-md p-2'>
+                                    <option value="Time">Time</option>
+                                    <option value="Votes">Votes</option>
+                                </select>
+                            </label>
+                                
+                            {/* <button onClick={() => setSortDropdown(!dropDownSort)} className= {dropDownSort? 'hidden': ''}
+                            >
+                                {sortSelected}
+                            </button>
+                            <div className={'flex flex-col '+ dropDownSort? '': 'hidden'}>
+                                <button onClick={() => setSortDropdown(!dropDownSort)} 
+                                >
+                                    Time
+                                </button>
+                                <button onClick={() => setSortDropdown(!dropDownSort)} 
+                                >
+                                    Likes
+                                </button>
+                            </div> */}
+
+                            {/* <button className='bg-green-200 px-4 rounded-full py-2 border-2' onClick={() => setSort('likes')}
+                                style={{ borderColor: sortSelected === 'Likes' ? selectedColor : '#000000' }}
                             >Likes</button>
                             <button className='bg-yellow-200 px-4 rounded-full py-2 border-2' onClick={() => setSort('time')}
-                                style={{ borderColor: sortSelected === 'time' ? selectedColor : '#000000' }}
-                            >Time</button>
+                                style={{ borderColor: sortSelected === 'Time' ? selectedColor : '#000000' }}
+                            >Time</button> */}
                         </div>
                     </div>
 
@@ -554,7 +636,7 @@ const MapView = () => {
                         </div>
                     </div>
                     {mapView
-                        ? <AllComments {...{ comments: comments }} />
+                        ? <AllComments comments={comments} setComments={setComments} />
                         : null
                     }
 
