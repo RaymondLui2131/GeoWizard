@@ -3,8 +3,7 @@ import { HeatMapEdit } from '../../editMapDataStructures/HeatMapData.js';
 import { MAP_TYPES } from "../../constants/MapTypes.js";
 import { SaturationSlider } from "react-slider-color-picker";
 import { useEffect, useContext } from "react";
-import HeatClickTransaction from "../../transactions/HeatClickTransaction.js";
-import HeatSwapTransaction from "../../transactions/HeatSwapTransaction.js";
+import Transaction from "../../transactions/Transaction.js";
 import { MapContext } from "../../api/MapContext.js";
 const ColorSliderComponent = (props) => {
     const hlsaColor = props.hlsaColor
@@ -44,7 +43,7 @@ export const HeatUi = (props) => {
     const upper = parseInt(upperBound)
 
     const { transactions } = useContext(MapContext)
-    
+
     useEffect(() => {
         if (selected === '') {
             const curColor = JSON.stringify(heatColor)
@@ -101,58 +100,61 @@ export const HeatUi = (props) => {
             validHeatRange(true)
     }, [upper, lower])
 
-    const addHeatArea = (newEdit, areaClicked, setSelected, editsList, setEditsList, setAreaClicked) => {
+    const addHeatArea = (options) => {
         // console.log("heat",areaClicked)
+        const { newEdit, editsList } = options
         if (setSelected !== '') {
             let copyEdits = [...editsList]
             copyEdits = copyEdits.filter((edit) => { return edit.featureName !== areaClicked })//removing edit entry for new one
             copyEdits.push(newEdit)
             // console.log(copyEdits)
             setEditsList(copyEdits)
-            setAreaClicked(null)//resetting clicked
+            // setAreaClicked(null)//resetting clicked
         }
     }
 
-    const removeHeatArea = (newEdit, editsList, setEditsList) => {
-        if (newEdit) {
-            let copyEdits = editsList.filter(edit => edit.featureName !== newEdit.featureName);
-            setEditsList(copyEdits);
-        }
+    const removeHeatArea = (options) => {
+        const { newEdit, editsList } = options
+        const copyEdits = [...editsList]
+        setEditsList(copyEdits)
     };
 
 
     useEffect(() => {
         if (areaClicked || areaClicked === 0) {
             const newEdit = new HeatMapEdit(areaClicked, heatColor) // edit to add or remove
-            const options = { newEdit, areaClicked, setSelected, editsList, setEditsList, setAreaClicked, addHeatArea, removeHeatArea }
-            const transaction = new HeatClickTransaction(options) // addHeatArea for redo, removeHeatArea for undo
+            const options = { newEdit, editsList }
+            const transaction = new Transaction(options, addHeatArea, removeHeatArea) // addHeatArea for redo, removeHeatArea for undo
             transactions.addTransaction(transaction)
         }
     }, [areaClicked]
     )
 
-    const addColorSwap = (hslaForm, hue, editsList, setEditsList, setBaseColor, setHlsa) => {
+    const addColorSwap = (options) => {
+        const { heat, hslaForm, editsList } = options
         const changedEdits = [...editsList]
-        changedEdits.forEach((edit) => edit.colorHLSA.h = hue)
+        changedEdits.forEach((edit) => edit.colorHLSA.h = hslaForm.h)
         setEditsList(changedEdits)
         setHlsa(hslaForm) // heatColor
         setBaseColor(hslaForm) // baseColor
     }
 
-    const removeColorSwap = (editsList, heatColor, setBaseColor, setHlsa, setEditsList) => {
-        console.log(heatColor)
+    const removeColorSwap = (options) => {
+        const { heat, hslaForm, editsList } = options
+        console.log(heat)
         const changedEdits = [...editsList]
-        changedEdits.forEach((edit) => edit.colorHLSA.h = heatColor.h)
+        changedEdits.forEach((edit) => edit.colorHLSA.h = heat.h)
         setEditsList(changedEdits)
-        setHlsa(heatColor)
-        setBaseColor(heatColor)
+        setHlsa(heat)
+        setBaseColor(heat)
     }
 
     const colorSwap = (hexString) => {
         const hslaForm = hexToHlsa(hexString)
-        const hue = hslaForm.h
-        const options = { heatColor, hslaForm, hue, editsList, setEditsList, setBaseColor, setHlsa, addColorSwap, removeColorSwap }
-        const transaction = new HeatSwapTransaction(options)
+        const heat = { ...heatColor }
+        console.log(heat)
+        const options = { heat, hslaForm, editsList }
+        const transaction = new Transaction(options, addColorSwap, removeColorSwap)
         transactions.addTransaction(transaction)
     }
 
