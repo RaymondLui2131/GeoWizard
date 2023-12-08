@@ -157,8 +157,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                     // Assuming 'response.ok' is true when the request is successful
                     console.log("Save successful:", response);
                     setSaveStatus('completed');
-                    const responseMapId = response.map_id
-                    
+                    const responseMapId = response.data.map_id
                     if(idToUpdate === '')//no id in context aka new map
                     {
                         // console.log("Setting as map context",mapInfo.original_map)
