@@ -32,6 +32,7 @@ import FlowArrow from './FlowArrow.js';
 import { FlowEdit, FlowHead, FlowHeader } from '../../editMapDataStructures/FlowMapData.js';
 import FlowUi from './FlowUi.js';
 import html2canvas from 'html2canvas';
+import { MapActionType } from '../../api/MapContext.js';
 //Note assigns saturation of 100 for satslider
 const hexToHlsa = (hexString) => {
 
@@ -59,8 +60,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
     const { map, mapObj, transactions, createOrSave, idToUpdate } = useContext(MapContext)
     const [publicStatus, setPublic] = useState(mapObj?.isPublic)
     const [saveStatus, setSaveStatus] = useState('idle'); // 'idle', 'saving', 'completed' , 'error'
-
-
+    const { dispatch } = useContext(MapContext)
     //dropdown for exporting
     const [dropdownOpen, setDropdownOpen] = useState(false)
     const exportButtons = [
@@ -143,6 +143,11 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                     }
 
                 default:
+                {
+                    const noneMap= new NoneMapHeader()
+                    mapInfo.edits.header = noneMap
+                    mapInfo.edits.editsList = editsList
+                }
                     break
             }
             mapInfo.original_map = { ...map }
@@ -153,6 +158,14 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                     // Assuming 'response.ok' is true when the request is successful
                     console.log("Save successful:", response);
                     setSaveStatus('completed');
+                    const responseMapId = response.data.map_id
+                    if(idToUpdate === '')//no id in context aka new map
+                    {
+                        // console.log("Setting as map context",mapInfo.original_map)
+                        dispatch({ type: MapActionType.UPDATE, payload: { map: {...map}, mapObj: 
+                            { title: title, description: description, MapData: mapInfo, isPublic: publicStatus }, 
+                            idToUpdate: responseMapId } })
+                    }
                     setTimeout(() => setSaveStatus('idle'), 2000);
                 } else {
                     // Handle non-successful responses
