@@ -10,7 +10,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
-const ProfileMapCard = React.memo(({ map_data, res }) => {
+const ProfileMapCard = React.memo(({ map_data }) => {
     const { dispatch } = useContext(MapContext)
     const { user } = useContext(UserContext)
     const navigate = useNavigate()
@@ -29,66 +29,33 @@ const ProfileMapCard = React.memo(({ map_data, res }) => {
     }
 
     const handleViewMap = () => {
-        if (res) {
-            if (user?._id === id) { // if visiting own profile page; allow user to directly update it
-                dispatch({ type: MapActionType.UPDATE, payload: { map: res.MapData.original_map, mapObj: { title: res.title, description: res.description, MapData: res.MapData, isPublic: res.isPublic }, idToUpdate: map_data?._id } });
-                navigate('/editingMap')
+        const fetchMapData = async () => {
+            try {
+                const res = await getMap(map_data?._id) // returns Map
+                if (res) {
+                    console.log(res)
+                    if (user?._id === id) { // if visiting own profile page; allow user to directly update it
+                        dispatch({ type: MapActionType.UPDATE, payload: { map: res.MapData.original_map, mapObj: { title: res.title, description: res.description, MapData: res.MapData, isPublic: res.isPublic }, idToUpdate: map_data?._id } });
+                        navigate('/editingMap')
+                    }
+
+                    else { // if viewing someone else's map 
+                        dispatch({ type: MapActionType.VIEW, payload: res });
+                        navigate('/mapView')
+                    }
+                }
+            } catch (err) {
+                console.log(err)
             }
-
-            else { // if viewing someone else's map 
-                dispatch({ type: MapActionType.VIEW, payload: res });
-                navigate('/mapView')
-            }
-        }
-    }
-
-    const generatePreview = () => {
-        var center = [0, 0]
-        var padded_NE = [0, 0]
-        var padded_SW = [0, 0]
-        if (res) {
-            const geoJsonLayer = L.geoJSON(res.MapData.original_map)
-            const bounds = geoJsonLayer.getBounds()
-            center = bounds.getCenter()
-            //Padding for bounds
-            const currNe = bounds.getNorthEast()
-            const currSw = bounds.getSouthWest()
-            currNe.lat = currNe.lat + 5
-            currSw.lat = currSw.lat - 5
-            currNe.lng = currNe.lng + 5
-            currSw.lng = currSw.lng - 5
-            padded_NE = currNe
-            padded_SW = currSw
         }
 
-        if (!res) {
-            return <img src={finland} className='w-full h-full object-cover'></img>
-        }
-
-        return (
-            <>
-                <MapContainer
-                    center={center}
-                    zoom={6}
-                    className='w-full h-full object-cover'
-                    scrollWheelZoom={true}
-                    maxBounds={[padded_NE, padded_SW]}
-                >
-                    <TileLayer
-                        url='https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}'
-                    />
-                    {Object.keys(res).length ? (
-                        <GeoJSON data={res.MapData.original_map.features} />
-                    ) : null}
-                </MapContainer>
-            </>
-        )
+        fetchMapData()
     }
 
     return (
         <li className='w-full h-1/3 flex justify-between bg-white shadow-sleek hover:bg-opacity-90 hover:cursor-pointer' id={map_data?._id} onClick={handleViewMap}>
             <div className='w-1/3'>
-                {res && generatePreview()}
+                <img src={finland} className='w-full h-full object-cover'></img>
             </div>
             <div className='flex flex-col justify-evenly text-center items-center'>
                 <div className='flex items-center'>

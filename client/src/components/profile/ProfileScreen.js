@@ -31,7 +31,6 @@ const ProfileScreen = () => {
         username: ""
     })
 
-    const [resData, setResData] = useState({})
 
     const handleInputChange = (e) => {
         const { name, value } = e.target
@@ -89,15 +88,6 @@ const ProfileScreen = () => {
                         } else {
                             setUserMaps(mapsResponse.filter(map => map.isPublic));
                         }
-
-                        for (const map of mapsResponse) {
-                            const d = await getMap(map._id)
-                            if (d) {
-                                data[map._id] = d
-                            }
-                        }
-
-                        setResData(data)
                     }
                 } else {
                     setUserMaps([])
@@ -149,14 +139,7 @@ const ProfileScreen = () => {
             })
         }
 
-        const allLoaded = sortedMaps.every(map_data => resData[map_data._id]);
-
-        if (!allLoaded) {
-            return <p className='text-center text-3xl font-PyeongChangPeace-Light'>Loading Maps...</p>;
-        }
-
-        
-        return sortedMaps?.map((map_data) => <ProfileMapCard key={map_data._id} map_data={map_data} res={resData[map_data._id]}/>)
+        return sortedMaps?.map((map_data) => <ProfileMapCard key={map_data._id} map_data={map_data} />)
     }
 
     const generateCommentCards = () => {
