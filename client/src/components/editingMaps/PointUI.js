@@ -173,7 +173,7 @@ export const PointUI = (props) => {
     return (
         <>
             <div className='invisible'>gap space</div>
-            <div className='h-full bg-gray-50 rounded-3xl'>
+            <div className='h-full bg-gray-50 rounded-3xl w-full'>
                 <div className='bg-primary-GeoOrange rounded-t-3xl font-NanumSquareNeoOTF-Lt' onClick={() => setType(MAP_TYPES['NONE'])}><div>Point Locator Options</div></div>
                 <div className='grid grid-cols-3 gap-3  h-4/5  mx-auto'>
                     <div className='flex justify-center items-center w-20 h-24 mx-auto my-auto origin-center border-4'
@@ -219,7 +219,7 @@ export const PointUI = (props) => {
                 <div className='m-4'> 
 
                     <input
-                        className='font-NanumSquareNeoOTF-Lt flex justify-start mb-4'
+                        className='font-NanumSquareNeoOTF-Lt flex justify-start mb-4 w-full'
                         type="text"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}

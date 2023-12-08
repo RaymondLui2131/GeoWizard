@@ -1,6 +1,6 @@
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-draw/dist/leaflet.draw.css'
-import { MapContainer, TileLayer, GeoJSON,FeatureGroup } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, FeatureGroup } from 'react-leaflet';
 import { EditControl } from "react-leaflet-draw"
 import { useState, useContext, useRef, useEffect } from "react";
 import L from 'leaflet';
@@ -54,7 +54,7 @@ const hlsaToRGBA = (hlsa) => {
 
 
 const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBound, setValidHeatRange,
-    baseColor, setValidTitle, keyTable, mapContainerRef  }) => {
+    baseColor, setValidTitle, keyTable, mapContainerRef }) => {
     const { user } = useContext(UserContext)
     const { map, mapObj, transactions, createOrSave, idToUpdate } = useContext(MapContext)
     const [publicStatus, setPublic] = useState(mapObj?.isPublic)
@@ -67,7 +67,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
         'PNG',
         'JPG',
         'Geowizjson'
-      ]
+    ]
 
     const handleCheckboxChange = (event) => {
         setPublic(event.target.checked);
@@ -120,28 +120,28 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                         break
                     }
                 case MAP_TYPES['SYMBOL']:
-                {
-                    const newSymbolHeader = new SymbolHeader(editsList.length)
-                    mapInfo.edits.header = newSymbolHeader
-                    mapInfo.edits.editsList = editsList
-                    break
-                }
+                    {
+                        const newSymbolHeader = new SymbolHeader(editsList.length)
+                        mapInfo.edits.header = newSymbolHeader
+                        mapInfo.edits.editsList = editsList
+                        break
+                    }
 
                 case MAP_TYPES['POINT']:
-                {
-                    const newPointHeader= new PointHeader(editsList.length)
-                    mapInfo.edits.header = newPointHeader
-                    mapInfo.edits.editsList = editsList
-                    break
-                }
+                    {
+                        const newPointHeader = new PointHeader(editsList.length)
+                        mapInfo.edits.header = newPointHeader
+                        mapInfo.edits.editsList = editsList
+                        break
+                    }
                 case MAP_TYPES['FLOW']:
-                {
-                    const newPointHeader= new FlowHeader(editsList.length)
-                    mapInfo.edits.header = newPointHeader
-                    mapInfo.edits.editsList = editsList
-                    break
-                }
-                
+                    {
+                        const newPointHeader = new FlowHeader(editsList.length)
+                        mapInfo.edits.header = newPointHeader
+                        mapInfo.edits.editsList = editsList
+                        break
+                    }
+
                 default:
                     break
             }
@@ -174,7 +174,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
             console.error("Map container is not available for export.");
             return;
         }
-    
+
         setTimeout(async () => {
             try {
                 const canvas = await html2canvas(mapContainerRef._container, {
@@ -212,7 +212,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                 fileName = title
             exportMapAsImage(key.toLowerCase(), fileName)
             return
-        } 
+        }
         let editHeader = new NoneMapHeader()
         switch (mapType) {
             case MAP_TYPES['HEATMAP']:
@@ -235,20 +235,20 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                     break
                 }
             case MAP_TYPES['SYMBOL']:
-            {
-                editHeader = new SymbolHeader(editsList.length)
-                break
-            }
+                {
+                    editHeader = new SymbolHeader(editsList.length)
+                    break
+                }
             case MAP_TYPES['POINT']:
-            {
-                editHeader = new PointHeader(editsList.length)
-                break
-            }
+                {
+                    editHeader = new PointHeader(editsList.length)
+                    break
+                }
             case MAP_TYPES['FLOW']:
-            {
-                editHeader = new FlowHeader(editsList.length)
-                break
-            }
+                {
+                    editHeader = new FlowHeader(editsList.length)
+                    break
+                }
             default:
                 break
         }
@@ -278,23 +278,22 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
         URL.revokeObjectURL(href);
     }
     return (
-        <div className='flex flex-row justify-start mt-4 pl-28 '>
-                <div className='inline-block mr-10'>
-                    <button disabled={!transactions?.hasTransactionToUndo()} onClick={() => transactions?.undoTransaction()}><img src={undo} className={`object-contain ${!transactions?.hasTransactionToUndo() && "opacity-30"}`} alt='Undo action' /></button>
-                    <button disabled={!transactions?.hasTransactionToRedo()} onClick={() => transactions?.doTransaction()}><img src={redo} className={`object-contain ${!transactions?.hasTransactionToRedo() && "opacity-30"}`} alt='Redo action' /></button>
-                </div>
-
-                    <div className=''>
-                        <button
-                            onClick={() => setDropdownOpen(!dropdownOpen)}
-                            className={`w-52  px-4 py-2  font-NanumSquareNeoOTF-Lt text-2xl
-                            ${
-                                dropdownOpen ? 'rounded-b-none rounded-t-md' : 'rounded-md'
+        <div className='flex justify-between items-center w-full'>
+            <div className='flex'>
+                <button className={`${transactions?.hasTransactionToUndo() && 'hover:opacity-30'}`} disabled={!transactions?.hasTransactionToUndo()} onClick={() => transactions?.undoTransaction()}><img src={undo} className={`object-contain ${!transactions?.hasTransactionToUndo() && "opacity-30"}`} alt='Undo action' /></button>
+                <button className={`${transactions?.hasTransactionToRedo() && 'hover:opacity-30'}`} disabled={!transactions?.hasTransactionToRedo()} onClick={() => transactions?.doTransaction()}><img src={redo} className={`object-contain ${!transactions?.hasTransactionToRedo() && "opacity-30"}`} alt='Redo action' /></button>
+            </div>
+            <div className='flex items-center gap-5'>
+                <div className='flex flex-col items-center'>
+                    <button
+                        onClick={() => setDropdownOpen(!dropdownOpen)}
+                        className={`w-36 hover:opacity-70 px-4 py-2  font-NanumSquareNeoOTF-Lt text-2xl
+                            ${dropdownOpen ? 'rounded-b-none rounded-t-md' : 'rounded-md'
                             } flex items-center justify-between bg-primary-GeoOrange text-left text-white`}
-                            >
-                            Export
-                            <span className='ml-2'>
-                                {dropdownOpen ? (
+                    >
+                        Export
+                        <span className='ml-2'>
+                            {dropdownOpen ? (
                                 <svg
                                     className='h-4 w-4'
                                     fill='none'
@@ -306,7 +305,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                                 >
                                     <path d='M19 9l-7 7-7-7'></path>
                                 </svg>
-                                ) : (
+                            ) : (
                                 <svg
                                     className='h-4 w-4'
                                     fill='none'
@@ -318,51 +317,51 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                                 >
                                     <path d='M5 15l7-7 7 7'></path>
                                 </svg>
-                                )}
-                            </span>
-                            </button>
-                            {dropdownOpen && (
-                            <div className=' w-52 shadow-lg'>
-                                {exportButtons.map((key, index) => (
+                            )}
+                        </span>
+                    </button>
+                    {dropdownOpen && (
+                        <div className='w-36 texshadow-lg'>
+                            {exportButtons.map((key, index) => (
                                 <button
                                     key={key}
-                                    className={`block w-52 px-4 py-2  bg-primary-GeoOrange text-2xl font-NanumSquareNeoOTF-Lt text-white text-left
-                                    ${
-                                        index == exportButtons.length - 1
-                                          ? ' rounded-b-md'
-                                          : 'rounded-b-none'
-                                      }`}
+                                    className={`hover:opacity-70 block w-full py-2  bg-primary-GeoOrange text-xl font-NanumSquareNeoOTF-Lt text-white text-center
+                                    ${index == exportButtons.length - 1
+                                            ? ' rounded-b-md'
+                                            : 'rounded-b-none'
+                                        }`}
                                     onClick={() => handleExport(key)}
                                 >
                                     {key}
                                 </button>
-                                ))}
-                            </div>
-                            )}
+                            ))}
+                        </div>
+                    )}
 
-                        {/*                         
+                    {/*                         
                         <button className='bg-primary-GeoOrange text-3xl font-NanumSquareNeoOTF-Lt px-14 rounded-full py-2' onClick={() => handleExport()}>
                         Export</button> */}
-                    </div>
+                </div>
 
-                    <div className='pl-12 inline-block pr-16'>
-                        <button className='bg-primary-GeoOrange text-2xl font-NanumSquareNeoOTF-Lt px-14 rounded-md py-2 disabled:opacity-30 text-white'
-                            onClick={handleSaveMap}
-                            disabled={!(map && user)}>
-                            {saveStatus === 'idle' ? (createOrSave === 'create' ? 'Create' : 'Save') : saveStatus === 'error' ? 'Error' : saveStatus === 'creating' ? (createOrSave ? 'Saving Map...' : 'Creating Map...') : 'Completed'}
-                        </button>
-                    </div>
+                <div className=''>
+                    <button className='bg-primary-GeoOrange hover:opacity-70 text-2xl font-NanumSquareNeoOTF-Lt px-6 rounded-md py-2 disabled:opacity-30 text-white'
+                        onClick={handleSaveMap}
+                        disabled={!(map && user)}>
+                        {saveStatus === 'idle' ? (createOrSave === 'create' ? 'Create' : 'Save') : saveStatus === 'error' ? 'Error' : saveStatus === 'creating' ? (createOrSave ? 'Saving Map...' : 'Creating Map...') : 'Completed'}
+                    </button>
+                </div>
+            </div>
 
-                <label className=" justify-between items-center p-2 text-3xl font-NanumSquareNeoOTF-Lt inline-block">
-                    <div className='flex flex-row'>
-                        <span className='w-24 text-left'>
-                            {publicStatus ? "Public " : "Private"}
-                        </span>
-                        <input onChange={handleCheckboxChange}
-                            checked={publicStatus} type="checkbox" className="absolute left-1/2 -translate-x-1/2 peer appearance-none rounded-md pl-12 pr-16" />
-                        <span className="w-16 h-10 flex items-center flex-shrink-0 ml-4 p-1 bg-gray-300 rounded-full duration-300 ease-in-out peer-checked:bg-green-400 after:w-8 after:h-8 after:bg-white after:rounded-full after:shadow-md after:duration-300 peer-checked:after:translate-x-6"></span>
-                    </div>
-                </label>
+            <label className=" justify-between items-center text-3xl font-NanumSquareNeoOTF-Lt inline-block">
+                <div className='flex flex-row'>
+                    <span className='w-24 text-left'>
+                        {publicStatus ? "Public " : "Private"}
+                    </span>
+                    <input onChange={handleCheckboxChange}
+                        checked={publicStatus} type="checkbox" className="absolute left-1/2 -translate-x-1/2 peer appearance-none rounded-md pl-12 pr-16" />
+                    <span className="w-16 h-10 flex items-center flex-shrink-0 ml-4 p-1 bg-gray-300 rounded-full duration-300 ease-in-out peer-checked:bg-green-400 after:w-8 after:h-8 after:bg-white after:rounded-full after:shadow-md after:duration-300 peer-checked:after:translate-x-6"></span>
+                </div>
+            </label>
         </div>
     )
 }
@@ -392,13 +391,13 @@ const MapEditOptions = (props) => {
     const setKeyTable = props.setKeyTable
 
     const flowColor = props.flowColor
-    const handleFlowColor = props.handleFlowColor   
+    const handleFlowColor = props.handleFlowColor
     const selectedFlowArrow = props.selectedFlowArrow
     const setFlowArrow = props.setFlowArrow
 
     const [selected, setSelected] = useState('') //used to control current item can for any
-    
-  
+
+
 
     const [choroColor, setColor] = useState("#ffffff");  //Used for choro map, hex format
     const [key, setKey] = useState('')
@@ -418,53 +417,53 @@ const MapEditOptions = (props) => {
             return (null)
 
         case MAP_TYPES['HEATMAP']:
-        {
-            const props = {
-                setType : setType,
-                selected : selected,
-                setSelected : setSelected,
-                selectedColor : selectedColor,
-                areaClicked : areaClicked,
-                setAreaClicked: setAreaClicked,
-                heatColor : heatColor,
-                setHlsa : setHlsa,
-                editsList : editsList,
-                setEditsList : setEditsList,
-                setUpper: setUpper,
-                setLower:setLower,
-                hexToHlsa: hexToHlsa,
-                lowerBound: lowerBound,
-                upperBound: upperBound,
-                validHeatRange: validHeatRange,
-                setValidHeatRange: setValidHeatRange,
-                setBaseColor:setBaseColor,
+            {
+                const props = {
+                    setType: setType,
+                    selected: selected,
+                    setSelected: setSelected,
+                    selectedColor: selectedColor,
+                    areaClicked: areaClicked,
+                    setAreaClicked: setAreaClicked,
+                    heatColor: heatColor,
+                    setHlsa: setHlsa,
+                    editsList: editsList,
+                    setEditsList: setEditsList,
+                    setUpper: setUpper,
+                    setLower: setLower,
+                    hexToHlsa: hexToHlsa,
+                    lowerBound: lowerBound,
+                    upperBound: upperBound,
+                    validHeatRange: validHeatRange,
+                    setValidHeatRange: setValidHeatRange,
+                    setBaseColor: setBaseColor,
 
+                }
+                return (
+                    <>
+                        <HeatUi  {...props} />
+                    </>
+                )
             }
-            return (
-                <>
-                    <HeatUi  {...props} />
-                </>
-            )
-        }
         case MAP_TYPES['POINT']:
             {
-            const props = {
-                setType : setType,
-                selected: selected,
-                setSelected: setSelected,
-                selectedColor: selectedColor,
-                handleChangeColor: handleChangeColor,
-                symbColor:symbColor,
-                areaClicked:areaClicked,
-                setAreaClicked: setAreaClicked,
-                editsList: editsList,
-                setEditsList: setEditsList,
-                padded_NE : padded_NE,
-                padded_SW : padded_SW
-            }
-            return (
+                const props = {
+                    setType: setType,
+                    selected: selected,
+                    setSelected: setSelected,
+                    selectedColor: selectedColor,
+                    handleChangeColor: handleChangeColor,
+                    symbColor: symbColor,
+                    areaClicked: areaClicked,
+                    setAreaClicked: setAreaClicked,
+                    editsList: editsList,
+                    setEditsList: setEditsList,
+                    padded_NE: padded_NE,
+                    padded_SW: padded_SW
+                }
+                return (
                     <PointUI{...props}></PointUI>
-            )
+                )
             }
         case MAP_TYPES['CHOROPLETH']:
             {
@@ -522,11 +521,11 @@ const MapEditOptions = (props) => {
                     setAreaClicked: setAreaClicked,
                     editsList: editsList,
                     setEditsList: setEditsList,
-                    selectedFlowArrow:selectedFlowArrow,
-                    setFlowArrow:setFlowArrow
+                    selectedFlowArrow: selectedFlowArrow,
+                    setFlowArrow: setFlowArrow
                 }
-                return(
-                    <FlowUi {...props}/>
+                return (
+                    <FlowUi {...props} />
                 )
             }
         default:
@@ -552,7 +551,7 @@ const MapView = () => {
     const [upperBound, setUpper] = useState('1')
     const [validHeatRange, setValidHeatRange] = useState(true)
     const [heatColor, setHlsa] = useState(hexToHlsa('#000000')) //Used for heat map, in hlsa format
-    const [baseColor,setBaseColor] = useState(hexToHlsa('#ffffff'))
+    const [baseColor, setBaseColor] = useState(hexToHlsa('#ffffff'))
 
     const [keyTable, setKeyTable] = useState([])//holds list of key labels mappings in form {color: hexColor, label:label}
 
@@ -604,8 +603,8 @@ const MapView = () => {
                 // console.log("has map edits", fileMapType)
                 setType(MAP_TYPES[fileMapType])
                 setEditsList([...(map.edits.editsList)])
-                
-                switch(MAP_TYPES[fileMapType]){
+
+                switch (MAP_TYPES[fileMapType]) {
                     case MAP_TYPES['HEATMAP']:
                         // console.log("setting key table")
                         setHlsa(map.edits.header.basecolorHLSA)
@@ -697,14 +696,13 @@ const MapView = () => {
                 }
 
             case MAP_TYPES['POINT']: //feature will be a latlng obg
-            {
-                if(feature)
                 {
-                    // console.log(feature)
-                    setAreaClicked(feature)
+                    if (feature) {
+                        // console.log(feature)
+                        setAreaClicked(feature)
+                    }
+                    break
                 }
-                break
-            }
 
             default:
                 break
@@ -785,7 +783,7 @@ const MapView = () => {
     //     flowColorRef.current = flowColor
     // }, [flowColor])
 
-    const handleFlowColor = (newColor) =>{
+    const handleFlowColor = (newColor) => {
         setFlowColor(newColor)
     }
     const handleOnCreateFlow = (e) => {
@@ -794,22 +792,21 @@ const MapView = () => {
     //End of Flow Map Editing
     // console.log("currentEdits",editsList)
     return (
-        map && (<>
-            <div className='flex justify-between px-28 pt-5'>
-                <div className='flex justify-center flex-col items-center'>
-                    <div>
-                        {!validTitle
-                            ? <div className='text-red-300 text-center'>Need Title</div>
-                            : null
-                        }
-                        <input type='text' name='title' className='bg-primary-GeoPurple text-white placeholder-white text-2xl w-[35rem]
-                        text-center'
-                            placeholder='Enter Title...' value={title} maxLength={48} onChange={(e) => setTitle(e.target.value)} >
-                        </input>
-                    </div>
-                    <div className='pt-3'>
+        map && (<div className='mx-5 mt-5'>
+            <div className='relative'>
+                {!validTitle
+                    ? <div className='text-red-300 text-center'>Need Title</div>
+                    : null
+                }
+                <input type='text' name='title' className='font-PyeongChangPeace-Light bg-white shadow-md rounded-t-3xl px-4 py-2 text-center'
+                    placeholder='Enter Title...' value={title} maxLength={48} onChange={(e) => setTitle(e.target.value)} >
+                </input>
+            </div>
+            <div className='flex justify-between w-full gap-5'>
+                <div className='flex justify-between flex-col w-3/5 h-full'>
+                    <div className='flex'>
                         <MapContainer
-                            preferCanvas = {true}
+                            preferCanvas={true}
                             center={center}
                             zoom={5}
                             ref={setmapContainerRef}
@@ -861,120 +858,120 @@ const MapView = () => {
                                         color={edit.colorHLSA}
                                         editsList={editsList}
                                         setEditsList={setEditsList}
-                                        mapBounds = {[padded_NE, padded_SW]}
+                                        mapBounds={[padded_NE, padded_SW]}
                                     />)
                                 : null
-                             }
+                            }
 
-                            {typeSelectedRef.current===MAP_TYPES['POINT']
-                                ? editsList.map((edit) => 
-                                <PointMarker key={edit.id} 
-                                    id={edit.id} 
-                                    edit ={edit} 
-                                    editsList = {editsList}
-                                    setEditsList = {setEditsList}
-                                />)
+                            {typeSelectedRef.current === MAP_TYPES['POINT']
+                                ? editsList.map((edit) =>
+                                    <PointMarker key={edit.id}
+                                        id={edit.id}
+                                        edit={edit}
+                                        editsList={editsList}
+                                        setEditsList={setEditsList}
+                                    />)
                                 : null
-                             }
-                             {typeSelected===MAP_TYPES['FLOW']
+                            }
+                            {typeSelected === MAP_TYPES['FLOW']
                                 ?
-                                    <>
+                                <>
                                     <FeatureGroup>
                                         <EditControl
                                             position="topright"
                                             onCreated={handleOnCreateFlow}
-                                            
+
                                             draw={
                                                 {
-                                            polyline: {shapeOptions: {
-                                                weight: 4          // Set the line width (optional)
-                                              }},
-                                            polygon: false,
-                                            rectangle: false,
-                                            circle: false,
-                                            marker: false,
-                                            circlemarker:false
-                                            }}
+                                                    polyline: {
+                                                        shapeOptions: {
+                                                            weight: 4          // Set the line width (optional)
+                                                        }
+                                                    },
+                                                    polygon: false,
+                                                    rectangle: false,
+                                                    circle: false,
+                                                    marker: false,
+                                                    circlemarker: false
+                                                }}
                                             edit={{
-                                            edit: false,      
-                                            remove: false     
+                                                edit: false,
+                                                remove: false
                                             }}
                                         />
                                         {editsList.map((edit) => (
                                             <FlowArrow key={edit.id} id={edit.id} latlngs={edit.latlngs} colorRgba={edit.colorRgba} setFlowArrow={setFlowArrow} />
                                         ))}
                                     </FeatureGroup>
-                                    </>
-                                :null
-                             }
-                             
-                             
+                                </>
+                                : null
+                            }
+
+
                         </MapContainer>
                     </div>
 
-                    <input type='text' name='description' className='bg-primary-GeoPurple text-white placeholder-white text-2xl w-[50rem]
-                        text-center'
-                        placeholder='Enter Description...' value={description} maxLength={100} onChange={(e) => setDescription(e.target.value)} >
-                    </input>
-                </div>
-                <div className='flex justify-center w-full'>
-                    <div className='text-2xl font-NanumSquareNeoOTF-Lt flex flex-col items-center text-center'>
-
-                        {!mapTypeClicked && !changingMapTypeIsClicked
-                            ?
-                            <>
-                                {typeSelected == MAP_TYPES['NONE']
-                                    ? <button className='w-96 bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked)}>Select Map Type ▼ </button>
-                                    :
-                                    <>
-                                        <button className=' bg-primary-GeoOrange w-full' onClick={() => isClicked(!mapTypeClicked)}>{mapString}</button>
-                                        <MapEditOptions mapType={typeSelected} setType={setType} areaClicked = {areaClicked} setAreaClicked={setAreaClicked}
-                                            editsList = {editsList} setEditsList={setEditsList} setLower={setLower} setUpper = {setUpper} validHeatRange = {validHeatRange}
-                                            setValidHeatRange={setValidHeatRange} setBaseColor= {setBaseColor} baseColor={baseColor} heatColor = {heatColor} setHlsa = {setHlsa}
-                                            keyTable={keyTable} setKeyTable={setKeyTable} mapBounds={[padded_NE, padded_SW]} flowColor = {flowColor} handleFlowColor={handleFlowColor}
-                                            selectedFlowArrow = {selectedFlowArrow} setFlowArrow = {setFlowArrow}
-                                        />
-                                    </>
-                                }
-                            </>
-                            :
-                            <div className='w-96'>
-                                <>
-                                    <button className='w-full bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked)}>Select Map Type ▼ </button>
-                                    <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handleHeatMapClick() }}>Heatmap</button>
-                                    <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handlePointMapClick() }}>Point/Locator</button>
-                                    <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handleSymbolMapClick() }}>Symbol</button>
-                                    <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handleChoroplethMapClick() }}>Choropleth</button>
-                                    <button className='w-full bg-primary-GeoOrange' onClick={() => { setChangingMapTypeIsClicked(false); handleFlowMapClick() }}>Flow</button>
-                                </>
-                            </div>
-                        }
-
-                        {typeSelected === MAP_TYPES['NONE'] &&
-                            <div className='w-full text-xl pt-4 font-PyeongChangPeace-Light'>
-                                <p>Please select a map type to get started.</p>
-                            </div>
-                        }
-
-                        {changingMapTypeIsClicked &&
-                            <div className='w-full text-xl pt-4 font-PyeongChangPeace-Light promptBox'>
-                                <div className='testBox'> Are you sure you want to switch maps? </div>
-                                <div className="button-container">
-                                    <button data-test-id="yes-button" className='yesButton' onClick={() => { handleYesClick() }}>Yes</button>
-                                    <button data-test-id="no-button" className='noButton' onClick={() => { handleNoClick() }}>No</button>
-                                </div>
-                            </div>
-                        }
-
+                    <div className='flex flex-col h-full'>
+                        <input type='text' name='description' className='my-3 font-PyeongChangPeace-Light bg-white shadow-md rounded px-4 py-2 text-left'
+                            placeholder='Enter Description...' value={description} maxLength={100} onChange={(e) => setDescription(e.target.value)} >
+                        </input>
+                        <BottomRow title={title} mapType={typeSelected} description={description} editsList={editsList} setValidTitle={setValidTitle}
+                            lowerBound={lowerBound} upperBound={upperBound} setValidHeatRange={setValidHeatRange} baseColor={baseColor}
+                            keyTable={keyTable} mapContainerRef={mapContainerRef}
+                        ></BottomRow>
                     </div>
+                </div>
+                <div className='text-2xl font-NanumSquareNeoOTF-Lt flex flex-col items-center text-center w-2/5 h-full max-h-full max-w-full overflow-auto'>
+
+                    {!mapTypeClicked && !changingMapTypeIsClicked
+                        ?
+                        <>
+                            {typeSelected == MAP_TYPES['NONE']
+                                ? <button className='w-full bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked)}>Select Map Type ▼ </button>
+                                :
+                                <>
+                                    <button className=' bg-primary-GeoOrange w-full' onClick={() => isClicked(!mapTypeClicked)}>{mapString}</button>
+                                    <MapEditOptions mapType={typeSelected} setType={setType} areaClicked={areaClicked} setAreaClicked={setAreaClicked}
+                                        editsList={editsList} setEditsList={setEditsList} setLower={setLower} setUpper={setUpper} validHeatRange={validHeatRange}
+                                        setValidHeatRange={setValidHeatRange} setBaseColor={setBaseColor} baseColor={baseColor} heatColor={heatColor} setHlsa={setHlsa}
+                                        keyTable={keyTable} setKeyTable={setKeyTable} mapBounds={[padded_NE, padded_SW]} flowColor={flowColor} handleFlowColor={handleFlowColor}
+                                        selectedFlowArrow={selectedFlowArrow} setFlowArrow={setFlowArrow}
+                                    />
+                                </>
+                            }
+                        </>
+                        :
+                        <div className='full'>
+                            <>
+                                <button className='w-full bg-primary-GeoOrange' onClick={() => isClicked(!mapTypeClicked)}>Select Map Type ▼ </button>
+                                <button className='w-full bg-primary-GeoOrange hover:opacity-80' onClick={() => { setChangingMapTypeIsClicked(false); handleHeatMapClick() }}>Heatmap</button>
+                                <button className='w-full bg-primary-GeoOrange hover:opacity-80' onClick={() => { setChangingMapTypeIsClicked(false); handlePointMapClick() }}>Point/Locator</button>
+                                <button className='w-full bg-primary-GeoOrange hover:opacity-80' onClick={() => { setChangingMapTypeIsClicked(false); handleSymbolMapClick() }}>Symbol</button>
+                                <button className='w-full bg-primary-GeoOrange hover:opacity-80' onClick={() => { setChangingMapTypeIsClicked(false); handleChoroplethMapClick() }}>Choropleth</button>
+                                <button className='w-full bg-primary-GeoOrange hover:opacity-80' onClick={() => { setChangingMapTypeIsClicked(false); handleFlowMapClick() }}>Flow</button>
+                            </>
+                        </div>
+                    }
+
+                    {typeSelected === MAP_TYPES['NONE'] &&
+                        <div className='w-full text-xl pt-4 font-PyeongChangPeace-Light'>
+                            <p>Please select a map type to get started.</p>
+                        </div>
+                    }
+
+                    {changingMapTypeIsClicked &&
+                        <div className='w-full text-xl pt-4 font-PyeongChangPeace-Light promptBox'>
+                            <div className='testBox'> Are you sure you want to switch maps? </div>
+                            <div className="button-container">
+                                <button data-test-id="yes-button" className='yesButton' onClick={() => { handleYesClick() }}>Yes</button>
+                                <button data-test-id="no-button" className='noButton' onClick={() => { handleNoClick() }}>No</button>
+                            </div>
+                        </div>
+                    }
 
                 </div>
             </div>
-            <BottomRow title={title} mapType={typeSelected} description={description} editsList={editsList} setValidTitle={setValidTitle}
-                lowerBound={lowerBound} upperBound={upperBound} setValidHeatRange={setValidHeatRange} baseColor={baseColor}
-                keyTable={keyTable} mapContainerRef = {mapContainerRef}
-            ></BottomRow>
-        </>)
+        </div>)
     )
 }
 
