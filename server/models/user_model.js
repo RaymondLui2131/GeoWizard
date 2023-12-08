@@ -58,6 +58,7 @@ const userSchema = new Schema({
     },
     googleSignedIn: {
         type: Boolean,
+        required: true,
         default: false
     }
 }, {

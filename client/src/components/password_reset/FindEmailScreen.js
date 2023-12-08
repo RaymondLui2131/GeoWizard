@@ -1,13 +1,20 @@
 import logo from "../../assets/geowizlogo.png";
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { forgetPasswordSendEmail } from '../../api/auth_request_api.js';
 
 const FindEmailScreen = () => {
     const navigate = useNavigate();
     const [userEmail, setUserEmail] = useState(''); // state for email
+    const [emailInDb, setEmailInDb] = useState(false)
 
-    const handleNextClick= () => {
-        navigate('/resetMessage')   //For now brings you to reset password message screen
+    const handleNextClick = async () => {
+        const response = await forgetPasswordSendEmail(userEmail)
+        if (response.status == 200) {
+            navigate('/resetMessage')   //For now brings you to reset password message screen
+        } else {
+            setEmailInDb(true)
+        }
     };
 
     return (
@@ -23,6 +30,12 @@ const FindEmailScreen = () => {
                         </div>
                         <div className='pt-4 text-3xl'>Find Your Email</div>
                         <div className='pt-8 text-base'>Enter Your Recovery Email</div>
+
+                        {emailInDb ? (
+                            <div style={{ color: '#FF0000', textAlign: 'center' }}>
+                                Email Not Found!
+                            </div>
+                        ) : null}
                         
                         <div className="pl-4 pt-4 flex flex-col justify-center items-center">
                             <input
@@ -30,7 +43,6 @@ const FindEmailScreen = () => {
                                 style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
                                 value={userEmail}
                                 onChange={(e) => setUserEmail(e.target.value)}
-                                // onKeyUp={handleEmail}
                             ></input>
                         </div>
 
