@@ -7,13 +7,18 @@ const FindEmailScreen = () => {
     const navigate = useNavigate();
     const [userEmail, setUserEmail] = useState(''); // state for email
     const [emailInDb, setEmailInDb] = useState(false)
+    const [googleLoggedInAccount, setGoogleLoggedInAccount] = useState(false)
 
     const handleNextClick = async () => {
         const response = await forgetPasswordSendEmail(userEmail)
         if (response.status == 200) {
-            navigate('/resetMessage')   //For now brings you to reset password message screen
-        } else {
+            navigate('/resetMessage')   
+        } 
+        else if (response.status == 404) {
             setEmailInDb(true)
+        }
+        else if (response.status == 403) {
+            setGoogleLoggedInAccount(true)
         }
     };
 
@@ -34,6 +39,11 @@ const FindEmailScreen = () => {
                         {emailInDb ? (
                             <div style={{ color: '#FF0000', textAlign: 'center' }}>
                                 Email Not Found!
+                            </div>
+                        ) : null}
+                        {googleLoggedInAccount ? (
+                            <div style={{ color: '#FF0000', textAlign: 'center' }}>
+                                You cannot change the password for an account logged in with google
                             </div>
                         ) : null}
                         

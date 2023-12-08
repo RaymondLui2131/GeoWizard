@@ -72,11 +72,16 @@ const verifyResetToken = asyncHandler(async (req, res, next) => {
     try {
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET); 
-        if (decoded.id !== user._id.toString()) {
+        if (decoded.id !== user.id) {
             return res.status(401).json({ message: "Invalid token" });
+        }
+        if (user.passwordResetUsed){
+            return res.status(403).json({ message: "Token has been used" });
         }
 
         req.user = user;
+        user.passwordResetUsed = true;
+        await user.save();
         next();
     } catch (error) {
         res.status(401).json({ message: "Invalid or expired token" });

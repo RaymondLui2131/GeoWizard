@@ -60,7 +60,12 @@ const userSchema = new Schema({
         type: Boolean,
         required: true,
         default: false
-    }
+    },
+    passwordResetUsed: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
 }, {
     timestamps: true // adds a timestamp for when the user is created
 })

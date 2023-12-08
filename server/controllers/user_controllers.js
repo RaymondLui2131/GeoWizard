@@ -11,7 +11,7 @@ const asyncHandler = require('express-async-handler')
 const User = require("../models/user_model")
 const { signToken, signTokenForResettingPassword} = require("../jwt_middleware")
 const nodemailer = require("nodemailer"); // for sending emails
-
+const { v4: uuidv4 } = require('uuid'); // for creating a one time use link to reset passwords
 /**
  * if the user does not exist yet, register the user in the database,
  * if the user exists, login the user
@@ -202,9 +202,13 @@ const forgotPassword = asyncHandler(async (req, res) => {
             });
         }
         if (user.googleSignedIn === true){
-            
+            return res.status(403).json({
+                message: "Google signed-in users cannot change their password" 
+            });
         }
         const token = signTokenForResettingPassword(user._id)
+        user.passwordResetUsed = false
+        await user.save()
         let emailText = '' 
         if (process.env.NODE_ENV === 'production'){
             emailText = `https://geowizard-app-b802ae01ce7f.herokuapp.com/changeYourPassword/${user._id}/${user.username}/${token}`
@@ -252,9 +256,7 @@ const resetPassword = asyncHandler(async (req, res) => {
     const { id } = req.params
     const {password} = req.body
     const user = await User.findById(id);
-    console.log("HI1")
-    console.log(user.username)
-    console.log("HI2")
+
     if (!user) {
         return res.status(404).json({
             message: "User not found"
