@@ -170,6 +170,27 @@ export const checkUser = async (username) => {
     }
 }
 
+export const forgetPasswordSendEmail  = async (email) => {
+    try {
+        return await axios.post(`${API_URL}forgotPassword`, {
+            email: email
+        })
+    } catch (err) {
+        return err.response
+    }
+}
+
+export const resetThePassword = async (id,token,password) => {
+    try {
+        return await axios.put(`${API_URL}/resetPassword/${id}/${token}`, {
+            password: password,
+        })
+    } catch (err) {
+        return err.response
+    }
+}
+
+
 const api = {
     authRegisterUser,
     authgetUser,
@@ -179,7 +200,9 @@ const api = {
     postUser,
     checkEmail,
     checkUser,
-    authgetUserById
+    authgetUserById,
+    forgetPasswordSendEmail,
+    resetThePassword
 }
 
 export default api

@@ -13,6 +13,8 @@ const LoginScreen = () => {
         userEmail: false,
         password: false,
     });
+    const [googleSignInError, setGoogleSignInError] = useState(false) // if google sign in fails because of same username or email
+    const [loginFailed, setLoginFailed] = useState(false) // state for failed login
 
     const googleLogin = useGoogleLogin({
         onSuccess: async (codeResponse) => {
@@ -24,6 +26,7 @@ const LoginScreen = () => {
                 }
                 else {
                     dispatch({ type: UserActionType.ERROR, payload: response.data.message }) // login failed
+                    setGoogleSignInError(true)
                 }
             }
         },
@@ -47,6 +50,7 @@ const LoginScreen = () => {
             userEmail: false,
             password: false,
         })
+        setLoginFailed(false)
         validateInputs()
         const response = await authloginUser(userEmail, password)
         console.log(response.status)
@@ -54,8 +58,19 @@ const LoginScreen = () => {
             dispatch({ type: UserActionType.LOGIN, payload: response.data })
             navigate("/dashboard") // login successful
         } else {
+            setLoginFailed(true)
             dispatch({ type: UserActionType.ERROR, payload: response.data.message }) // login failed
         }
+    };
+
+    const handleGoogleLoginClick = async () => {
+        setGoogleSignInError(false);
+        setBlankErrors({
+            userEmail: false,
+            password: false,
+        })
+        setLoginFailed(false)
+        googleLogin();
     };
 
     const handleCreateAccountClick = () => {
@@ -113,19 +128,31 @@ const LoginScreen = () => {
                     </div>
                 ) : null}
 
-                <div onClick={handleForgotPasswordClick} className="pl-12 pt-4 pr-72 text-align:center underline font-bold  flex flex-col justify-center items-center">
-                    Forgot Password
+                <div className="pl-12 pt-4 pr-72 text-align:center underline font-bold  flex flex-col justify-center items-center">
+                    <a onClick={handleForgotPasswordClick} class="px-2 py-1">Forget password</a>
                 </div>
 
-                <div onClick={handleCreateAccountClick} className="pl-14 pt-4 pr-72 underline font-bold flex flex-col justify-center items-center">
-                    Create an Account
+                <div className="pl-14 pt-4 pr-72 underline font-bold flex flex-col justify-center items-center">
+                    <a onClick={handleCreateAccountClick} class="px-2 py-1">Create an Account</a>
                 </div>
+
+                {googleSignInError ? (
+                    <div style={{ color: '#8B0000', textAlign: 'center' }}>
+                        Google Account exist with an existing Email or Username
+                    </div>
+                ) : null}
+
+                {loginFailed && !blankErrors.password && !blankErrors.userEmail ? (
+                    <div style={{ color: '#8B0000', textAlign: 'center' }}>
+                        Incorrect Email or Password
+                    </div>
+                ) : null}
 
                 <div className="pt-8 pr-4 flex-col justify-center items-center">
                     <button onClick={handleLoginClick} className="text-yellow-200 font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300">
                         Login
                     </button>
-                    <button onClick={() => googleLogin()} className="text-yellow-200 font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300">Sign In With Google</button>
+                    <button onClick={() => handleGoogleLoginClick()} className="text-yellow-200 font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300">Sign In With Google</button>
                 </div>
             </div>
         </div>

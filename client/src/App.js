@@ -45,7 +45,7 @@ function App() {
                 <Route path="/search" element={<SearchScreen />} />
                 <Route path="/findEmail" element={<FindEmailScreen />} />
                 <Route path="/resetMessage" element={<ResetEmailMessageScreen />} />
-                <Route path="/changePassword" element={<ChangePasswordScreen />} />
+                <Route path="/changeYourPassword/:id/:userName/:token" element={<ChangePasswordScreen />} />
                 <Route path="/changePasswordSuccess" element={<ChangePasswordSuccessScreen />} />
                 <Route path="/dashboard" element={<Dashboard />} />
               </Routes>

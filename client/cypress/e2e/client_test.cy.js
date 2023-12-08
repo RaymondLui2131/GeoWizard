@@ -286,8 +286,13 @@ describe('testing reset email message screen', () => {
 
 describe('testing change password screen', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:3000/changePassword')
-  })
+    const id = 'mockUserId';
+    const userName = 'mockUserName';
+    const token = 'mockToken';
+
+    const url = `http://localhost:3000/changeYourPassword/${id}/${userName}/${token}`;
+    cy.visit(url);
+  });
 
   it('should type text into the input field', () => {
     cy.get('.cpPassword')
