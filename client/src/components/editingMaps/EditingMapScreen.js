@@ -278,7 +278,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
         URL.revokeObjectURL(href);
     }
     return (
-        <div className='flex justify-between items-center w-full'>
+        <div className='flex justify-between items-center w-full px-5'>
             <div className='flex'>
                 <button className={`${transactions?.hasTransactionToUndo() && 'hover:opacity-30'}`} disabled={!transactions?.hasTransactionToUndo()} onClick={() => transactions?.undoTransaction()}><img src={undo} className={`object-contain ${!transactions?.hasTransactionToUndo() && "opacity-30"}`} alt='Undo action' /></button>
                 <button className={`${transactions?.hasTransactionToRedo() && 'hover:opacity-30'}`} disabled={!transactions?.hasTransactionToRedo()} onClick={() => transactions?.doTransaction()}><img src={redo} className={`object-contain ${!transactions?.hasTransactionToRedo() && "opacity-30"}`} alt='Redo action' /></button>
@@ -353,7 +353,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
             </div>
 
             <label className=" justify-between items-center text-3xl font-NanumSquareNeoOTF-Lt inline-block">
-                <div className='flex flex-row'>
+                <div className='flex flex-row hover:opacity-80 hover:cursor-pointer'>
                     <span className='w-24 text-left'>
                         {publicStatus ? "Public " : "Private"}
                     </span>
@@ -798,12 +798,12 @@ const MapView = () => {
                     ? <div className='text-red-300 text-center'>Need Title</div>
                     : null
                 }
-                <input type='text' name='title' className='font-PyeongChangPeace-Light bg-white shadow-md rounded-t-3xl px-4 py-2 text-center'
+                <input type='text' name='title' className='font-PyeongChangPeace-Light bg-white rounded-t-3xl px-4 py-2 text-center'
                     placeholder='Enter Title...' value={title} maxLength={48} onChange={(e) => setTitle(e.target.value)} >
                 </input>
             </div>
             <div className='flex justify-between w-full gap-5'>
-                <div className='flex justify-between flex-col w-3/5 h-full'>
+                <div className='flex justify-between flex-col w-3/5 h-full  bg-white shadow-nimble rounded-b-2xl'>
                     <div className='flex'>
                         <MapContainer
                             preferCanvas={true}
@@ -911,8 +911,8 @@ const MapView = () => {
                         </MapContainer>
                     </div>
 
-                    <div className='flex flex-col h-full'>
-                        <input type='text' name='description' className='my-3 font-PyeongChangPeace-Light bg-white shadow-md rounded px-4 py-2 text-left'
+                    <div className='flex flex-col h-full bg-white rounded-b-2xl'>
+                        <input type='text' name='description' className='mt-4 mx-5 shadow-md font-PyeongChangPeace-Light  rounded px-4 py-2 text-left'
                             placeholder='Enter Description...' value={description} maxLength={100} onChange={(e) => setDescription(e.target.value)} >
                         </input>
                         <BottomRow title={title} mapType={typeSelected} description={description} editsList={editsList} setValidTitle={setValidTitle}
