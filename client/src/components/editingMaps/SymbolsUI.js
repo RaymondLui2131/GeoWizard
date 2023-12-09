@@ -3,7 +3,7 @@ import { circle, triangle, square, star, hexagon, pentagon } from '../../assets/
 import { MAP_TYPES } from '../../constants/MapTypes.js'
 import { HueSlider } from 'react-slider-color-picker'
 import { SymbolEdit } from '../../editMapDataStructures/SymbolsMapData.js'
-import SymbolClickTransaction from '../../transactions/SymbolClickTransaction.js'
+import Transaction from '../../transactions/Transaction.js'
 import { MapContext } from '../../api/MapContext.js'
 export const SymbolUi = (props) => {
     const setType = props.setType
@@ -35,15 +35,16 @@ export const SymbolUi = (props) => {
         return bounds;
     }
 
-    const addSymbol = (newEdit, editsList, setEditsList) => {
-        console.log(newEdit)
+    const addSymbol = (options) => {
+        const { newEdit, editsList } = options
         let copyEdits = [...editsList]
         copyEdits.push(newEdit)
         setEditsList(copyEdits)
         // setAreaClicked(null)//resetting clicked
     }
 
-    const removeSymbol = (editsList, setEditsList) => {
+    const removeSymbol = (options) => {
+        const { newEdit, editsList } = options
         let copyEdits = [...editsList]
         setEditsList(copyEdits)
     }
@@ -54,8 +55,8 @@ export const SymbolUi = (props) => {
         console.log('current area', areaClicked)
         if (areaClicked && selected) {
             const newEdit = new SymbolEdit(counter, selected, symbColor, calculateBounds(areaClicked, 1, 100))
-            const options = { newEdit, editsList, setEditsList, addSymbol, removeSymbol }
-            const transaction = new SymbolClickTransaction(options)
+            const options = { newEdit, editsList }
+            const transaction = new Transaction(options, addSymbol, removeSymbol)
             transactions.addTransaction(transaction)
         }
     }, [areaClicked]
