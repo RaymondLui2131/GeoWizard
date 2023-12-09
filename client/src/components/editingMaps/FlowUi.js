@@ -7,6 +7,41 @@ import { FlowEdit } from '../../editMapDataStructures/FlowMapData.js'
 import Transaction from '../../transactions/Transaction.js'
 import { MapContext } from '../../api/MapContext.js'
 
+const KeyRow = ({ row, keyTable, setKeyTable, editsList, setEditsList }) => {
+    const [label, setLabel] = useState('')
+
+    useEffect(() => {
+        const edit = editsList.find(e => e.colorRgba === row.color)
+        console.log(edit)
+        if (edit) {
+            setLabel(edit.label)
+        }
+    }, [])
+
+    const updateLabel = (text) => {
+        setLabel(text)
+        setKeyTable([...keyTable])
+        const edit = editsList.find(e => e.colorRgba === row.color)
+        if (edit) {
+            edit.label = text
+            setEditsList([...editsList])
+        }
+    }
+
+    return (
+        <tr className='w-full h-full'>
+            <td className='w-1/2 h-full'>
+                <div style={{ backgroundColor: row.color }} className='border-black border-2 w-1/4 h-full mx-auto'>
+
+                </div>
+            </td>
+            <td className='w-1/2'>
+                <input className='w-1/2 border-black border-2' type='text' value={label} onChange={(e) => { updateLabel(e.target.value) }} />
+            </td>
+        </tr>
+    )
+}
+
 const ArrowInfo = (props) => {
     const arrow = props.arrow
     const latlngs = arrow.latlngs
@@ -55,6 +90,8 @@ const FlowUi = (props) => {
     const setEditsList = props.setEditsList
     const selectedFlowArrow = props.selectedFlowArrow
     const setFlowArrow = props.setFlowArrow
+    const keyTable = props.keyTable
+    const setKeyTable = props.setKeyTable
     const [arrow, setArrow] = useState(null)
     //Check if 2 polylines are equa;
     const equalPoly = (poly1, poly2) => {
@@ -73,19 +110,27 @@ const FlowUi = (props) => {
     }
 
     const addArrow = (options) => {
-        const { newFlowArrow, areaClicked, editsList } = options
+        const { newFlowArrow, areaClicked, keyTable, editsList } = options
         const copyEdits = [...editsList]
+        const colorExists = copyEdits.some(edit => edit.colorRgba === newFlowArrow.colorRgba)
+        if (!colorExists) {
+            const newKeyLabel = {
+                color: newFlowArrow.colorRgba,
+                label: newFlowArrow.label
+            }
+
+            setKeyTable([...keyTable, newKeyLabel])
+        }
         copyEdits.push(newFlowArrow)
         areaClicked.layer.remove()
         setEditsList(copyEdits)
-        setArrow(newFlowArrow)
-        // setAreaClicked(null)//reseting area clicked back
+        setAreaClicked(null) //reseting area clicked back
     }
 
     const removeArrow = (options) => {
-        const { newFlowArrow, areaClicked, editsList } = options
-        const copyEdits = [...editsList]
-        setEditsList(copyEdits)
+        const { newFlowArrow, areaClicked, keyTable, editsList } = options
+        setKeyTable([...keyTable])
+        setEditsList([...editsList])
         setArrow(null)
     }
 
@@ -93,8 +138,9 @@ const FlowUi = (props) => {
         if (areaClicked) {
             const currentColor = hlsaToRGBA(flowColor)
             const latlngs = areaClicked.layer.getLatLngs()
-            const newFlowArrow = new FlowEdit(areaClicked.layer._leaflet_id, latlngs, currentColor)
-            const options = { newFlowArrow, areaClicked, editsList }
+            const label = keyTable.find(row => row.colorRgba === currentColor)
+            const newFlowArrow = new FlowEdit(areaClicked.layer._leaflet_id, latlngs, currentColor, label || '')
+            const options = { newFlowArrow, areaClicked, keyTable, editsList }
             const transaction = new Transaction(options, addArrow, removeArrow)
             transactions.addTransaction(transaction)
         }
@@ -110,27 +156,37 @@ const FlowUi = (props) => {
     }, [selectedFlowArrow])
 
     const deleteArrow = (options) => {
-        const { selectedFlowArrow, editsList } = options
-        const copyEdits = [...editsList]
-        setEditsList(copyEdits.filter((polyline) => !equalPoly(selectedFlowArrow, polyline.latlngs)))
+        const { selectedFlowArrow, keyTable, editsList } = options
+        let copyEdits = [...editsList]
+        const edit = copyEdits.find(poly => equalPoly(selectedFlowArrow, poly.latlngs))
+        copyEdits = copyEdits.filter((polyline) => !equalPoly(selectedFlowArrow, polyline.latlngs))
+        setEditsList(copyEdits)
+        const colorExists = copyEdits.some(e => e.colorRgba === edit.colorRgba)
+        if (!colorExists) {
+            setKeyTable(keyTable.filter(row => row.color !== edit.colorRgba))
+        }
         setArrow(null)
     }
 
     const undoDeleteArrow = (options) => {
-        const { selectedFlowArrow, editsList } = options
-        const copyEdits = [...editsList]
-        const polyine = copyEdits.find(poly => equalPoly(selectedFlowArrow, poly.latlngs))
-        setEditsList(copyEdits)
-        setArrow(polyine)
+        const { selectedFlowArrow, keyTable, editsList } = options
+        // const polyine = copyEdits.find(poly => equalPoly(selectedFlowArrow, poly.latlngs))
+        setEditsList([...editsList])
+        setKeyTable([...keyTable])
     }
 
     const handleDelete = () => {
         if (selectedFlowArrow) {
-            const options = { selectedFlowArrow, editsList }
+            const options = { selectedFlowArrow, keyTable, editsList }
             const transaction = new Transaction(options, deleteArrow, undoDeleteArrow)
             transactions.addTransaction(transaction)
         }
     }
+
+    const renderKeyTable = () => {
+        return keyTable?.map(row => <KeyRow row={row} keyTable={keyTable} setKeyTable={setKeyTable} editsList={editsList} setEditsList={setEditsList} />)
+    }
+
     return (
         <>
             <div className='invisible'>gap space</div>
@@ -153,9 +209,19 @@ const FlowUi = (props) => {
                     }
                 </div>
             </div>
+            <table className='w-96 mt-5 text-sm border-spacing-2 border-separate bg-white rounded-xl shadow-aesthetic'>
+                {keyTable.length !== 0 && (
+                    <>
+                        <tr>
+                            <th>Color</th>
+                            <th>Label</th>
+                        </tr>
+                        {renderKeyTable()}
+                    </>
+                )}
+            </table>
         </>
     )
-
 }
 
 export default FlowUi

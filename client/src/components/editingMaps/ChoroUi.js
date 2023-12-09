@@ -55,7 +55,7 @@ const KeyRow = (props) => {
                     <button className='text-red-600' onClick={() => handleRemove(color)}>X</button>
                 </div>
                 <div className='pl-7'>
-                    <div onClick={() => setColor(color)} className='flex w-5 h-5 border-2 border-black'
+                    <div onClick={() => setColor(color)} className='flex w-5 h-5 border-2 border-black hover:cursor-pointer'
                         style={{ backgroundColor: color }}>
                     </div>
                 </div>
