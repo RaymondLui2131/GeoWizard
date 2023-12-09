@@ -6,8 +6,7 @@ import 'leaflet/dist/leaflet.css'
 import { circle, triangle, square, star, hexagon, pentagon, redXSymb } from '../../assets/EditMapAssets/symbolImages/index.js'
 import tinycolor from 'tinycolor2';
 import 'leaflet-geometryutil';
-import SymbolRemoveTransaction from '../../transactions/SymbolRemoveTransaction.js';
-import SymbolBoundsTransaction from '../../transactions/SymbolBoundsTransaction.js';
+import Transaction from '../../transactions/Transaction.js';
 import { MapContext } from '../../api/MapContext.js';
 const mappings = {
   'circle': circle,
@@ -113,6 +112,13 @@ export const DraggableImageOverlay = (props) => {
       .catch(error => console.error('Error processing image:', error));
   }, [])
 
+  useEffect(() => {
+    console.log("hi")
+    setBounds(initialBounds)
+    setMarkerPosition(getCenter(initialBounds))
+    setNorthWest(L.latLng(initialBounds[1][0], initialBounds[0][1]))
+  }, [initialBounds])
+
 
 
   // console.log("currBounds", bounds)
@@ -121,39 +127,34 @@ export const DraggableImageOverlay = (props) => {
     return [(bounds[0][0] + bounds[1][0]) / 2, (bounds[0][1] + bounds[1][1]) / 2];
   }
 
-
-  const addUpdateBounds = (foundMapping, newBounds, setBounds, editsList, setEditsList) => {
-    const copyList = [...editsList]; // Create a copy of the editsList
-    const foundIndex = copyList.findIndex(edit => edit.id === foundMapping.id);
-    if (foundIndex !== -1) {
-      copyList[foundIndex].bounds = newBounds; // Update the bounds in the copied list
-      setEditsList(copyList); // Update the state with the new copyList
-      setBounds(newBounds)
-      setMarkerPosition(getCenter(newBounds))
-      setNorthWest(L.latLng(newBounds[1][0], newBounds[0][1]))
-    }
+  const addUpdateBounds = (options) => {
+    const { foundMapping, newBounds, editsList } = options;
+    foundMapping.bounds = newBounds
+    setEditsList([...editsList])
+    setBounds(newBounds);
+    setMarkerPosition(getCenter(newBounds))
+    setNorthWest(L.latLng(newBounds[1][0], newBounds[0][1]))
+    console.log("ADD BOUNDS: " + bounds)
   }
 
-  const removeUpdateBounds = (foundMapping, oldBounds, setBounds, editsList, setEditsList) => {
-    const copyList = [...editsList]; // Create a copy of the editsList
-    const foundIndex = copyList.findIndex(edit => edit.id === foundMapping.id);
-    if (foundIndex !== -1) {
-      copyList[foundIndex].bounds = oldBounds; // Update the bounds in the copied list
-      setEditsList(copyList); // Update the state with the new copyList
-      setBounds(oldBounds)
-      setMarkerPosition(getCenter(oldBounds))
-      setNorthWest(L.latLng(oldBounds[1][0], oldBounds[0][1]))
-    }
+  const removeUpdateBounds = (options) => {
+    const { foundMapping, oldBounds, editsList } = options;
+    foundMapping.bounds = oldBounds
+    setEditsList([...editsList])
+    setBounds(oldBounds);
+    setMarkerPosition(getCenter(oldBounds))
+    setNorthWest(L.latLng(oldBounds[1][0], oldBounds[0][1]))
+    console.log("REVERT BOUNDS: " + bounds)
   }
+
 
   const updateBounds = () => {
     const foundMapping = editsList.find((edit) => edit.id === id)
     if (foundMapping) {
       const oldBounds = [...foundMapping.bounds]
       const newBounds = [...bounds]
-      console.log("current bounds: " + bounds)
-      const options = { foundMapping, oldBounds, newBounds, setBounds, editsList, setEditsList, addUpdateBounds, removeUpdateBounds }
-      const transaction = new SymbolBoundsTransaction(options)
+      const options = { foundMapping, oldBounds, newBounds, editsList }
+      const transaction = new Transaction(options, addUpdateBounds, removeUpdateBounds)
       transactions.addTransaction(transaction)
     }
   }
@@ -233,12 +234,14 @@ export const DraggableImageOverlay = (props) => {
     }
   })
 
-  const addSymbol = (editsList, setEditsList) => {
+  const addSymbol = (options) => {
+    const { id, editsList } = options
     let copyEdits = [...editsList]
     setEditsList(copyEdits)
   }
 
-  const removeSymbol = (id, editsList, setEditsList) => {
+  const removeSymbol = (options) => {
+    const { id, editsList } = options
     let copyEdits = [...editsList]
     copyEdits = copyEdits.filter(edit => edit.id !== id)//removing edit entry for new one
     // console.log("current edits List",copyEdits)
@@ -246,8 +249,8 @@ export const DraggableImageOverlay = (props) => {
   }
 
   const handleRemove = () => {
-    const options = { id, editsList, setEditsList, removeSymbol, addSymbol }
-    const transaction = new SymbolRemoveTransaction(options)
+    const options = { id, editsList }
+    const transaction = new Transaction(options, removeSymbol, addSymbol)
     transactions.addTransaction(transaction)
   }
 
