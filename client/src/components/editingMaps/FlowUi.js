@@ -78,6 +78,7 @@ const FlowUi = (props) => {
         copyEdits.push(newFlowArrow)
         areaClicked.layer.remove()
         setEditsList(copyEdits)
+        setArrow(newFlowArrow)
         // setAreaClicked(null)//reseting area clicked back
     }
 
@@ -85,6 +86,7 @@ const FlowUi = (props) => {
         const { newFlowArrow, areaClicked, editsList } = options
         const copyEdits = [...editsList]
         setEditsList(copyEdits)
+        setArrow(null)
     }
 
     useEffect(() => {
@@ -117,7 +119,9 @@ const FlowUi = (props) => {
     const undoDeleteArrow = (options) => {
         const { selectedFlowArrow, editsList } = options
         const copyEdits = [...editsList]
+        const polyine = copyEdits.find(poly => equalPoly(selectedFlowArrow, poly.latlngs))
         setEditsList(copyEdits)
+        setArrow(polyine)
     }
 
     const handleDelete = () => {
