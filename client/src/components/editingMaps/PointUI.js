@@ -1,11 +1,12 @@
 import { p1, p2, p3, p4, p5, p6, p7, p8, p9 } from '../../assets/EditMapAssets/pointerImages/index.js'
-import { MAP_TYPES} from '../../constants/MapTypes.js'
+import { MAP_TYPES } from '../../constants/MapTypes.js'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-geosearch/dist/geosearch.css'
 import { OpenStreetMapProvider } from 'leaflet-geosearch'
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useContext } from 'react'
 import { PointEdit } from '../../editMapDataStructures/PointMapData.js'
-
+import Transaction from '../../transactions/Transaction.js'
+import { MapContext } from '../../api/MapContext.js'
 export const PointUI = (props) => {
     const setType = props.setType
     const selected = props.selected
@@ -14,14 +15,14 @@ export const PointUI = (props) => {
     const padded_SW = props.padded_SW
     const editsList = props.editsList
     const setEditsList = props.setEditsList
-    const selectedColor = props.selectedColor 
+    const selectedColor = props.selectedColor
     const areaClicked = props.areaClicked
     const setAreaClicked = props.setAreaClicked
-    
 
+    const { transactions } = useContext(MapContext)
 
     const provider = new OpenStreetMapProvider()
-    
+
     const [address, setAddress] = useState('')
     const [suggestions, setSuggestions] = useState([])
     const [description, setDescription] = useState('')
@@ -34,13 +35,13 @@ export const PointUI = (props) => {
     function calculateBounds(center, aspectRatio, distance) {
         const lat = center.lat
         const lon = center.lng
-      
-        const latDiff = distance / 2 / 111.32; 
+
+        const latDiff = distance / 2 / 111.32;
         const lonDiff = (distance / 2) / (111.32 * Math.cos((lat * Math.PI) / 180));
-      
+
         const bounds = [
-          [lat - latDiff, lon - lonDiff],
-          [lat + latDiff, lon + lonDiff / aspectRatio],
+            [lat - latDiff, lon - lonDiff],
+            [lat + latDiff, lon + lonDiff / aspectRatio],
         ]
         return bounds;
     }
@@ -80,8 +81,7 @@ export const PointUI = (props) => {
 
 
     useEffect(() => {
-        if(areaClicked)
-        {
+        if (areaClicked) {
             //console.log(areaClicked.lat)
             //console.log(areaClicked.lng)
             setLatitude(areaClicked.lat)
@@ -90,7 +90,7 @@ export const PointUI = (props) => {
         }
     }, [areaClicked]
     )
-    
+
 
 
     const handleSelectSuggestion = (suggestion) => {
@@ -101,7 +101,7 @@ export const PointUI = (props) => {
     };
 
 
-    function handleSubmitReset(){
+    function handleSubmitReset() {
         setAreaClicked(null)//resetting clicked
         setLatitude(null)
         setLongitude(null)
@@ -110,54 +110,59 @@ export const PointUI = (props) => {
         ref.current = ref.current + 1;
     }
 
+    const addPoint = (options) => {
+        const { newEdit, editsList } = options
+        const copyEdits = [...editsList]
+        copyEdits.push(newEdit)
+        setEditsList(copyEdits)
+        handleSubmitReset()
+    }
+
+    const removePoint = (options) => {
+        const { newEdit, editsList } = options
+        const copyEdits = [...editsList]
+        setEditsList(copyEdits)
+    }
+
     const handleSubmit = async (event) => { //x: longitude y: latitude
         event.preventDefault()
         try {
-            if(!selected){
+            if (!selected) {
                 setErrorMessage('Please choose a point locator')
                 return
             }
-            if(!latitude || !longitude || !selected){
+            if (!latitude || !longitude || !selected) {
                 setErrorMessage('Please select a valid location or click the map')
                 return
             }
-            if(description.length > 20){
+            if (description.length > 20) {
                 setErrorMessage('Please limit description to 20 characters or less')
                 return
-            }  
+            }
 
-        
-            if(latitude > padded_NE.lat || longitude > padded_NE.lng || latitude < padded_SW.lat || longitude < padded_SW.lng ){
+
+            if (latitude > padded_NE.lat || longitude > padded_NE.lng || latitude < padded_SW.lat || longitude < padded_SW.lng) {
                 setErrorMessage('Please choose a location within the map bounds')
                 return
             }
 
             setErrorMessage('')
-            
-            if(address == '' && latitude && longitude){
-                const newEdit = new PointEdit(ref.current , description, selected, calculateBounds(areaClicked,1,100), latitude, longitude, '')
-                console.log(newEdit)
-                let copyEdits = [...editsList]
-                copyEdits.push(newEdit)
-                console.log(copyEdits)
-                setEditsList(copyEdits)
-                
-                handleSubmitReset()
-            } 
-            else{
+
+            if (address == '' && latitude && longitude) {
+                const newEdit = new PointEdit(ref.current, description, selected, calculateBounds(areaClicked, 1, 100), latitude, longitude, '')
+                const options = { newEdit, editsList }
+                const transaction = new Transaction(options, addPoint, removePoint)
+                transactions.addTransaction(transaction)
+            }
+            else {
                 try {
                     const results = (await provider.search({ query: address }))[0]
                     console.log(results); // Process the results as needed
-                    if(results)
-                    {
-                        const newEdit = new PointEdit(ref.current , description, selected, results.bounds, results.y, results.x, results.label)
-                        console.log(newEdit)
-                        let copyEdits = [...editsList]
-                        copyEdits.push(newEdit)
-                        console.log(copyEdits)
-                        setEditsList(copyEdits)
-                        
-                        handleSubmitReset()
+                    if (results) {
+                        const newEdit = new PointEdit(ref.current, description, selected, results.bounds, results.y, results.x, results.label)
+                        const options = { newEdit, editsList }
+                        const transaction = new Transaction(options, addPoint, removePoint)
+                        transactions.addTransaction(transaction)
                     }
                 }
                 catch (error) {
@@ -216,7 +221,7 @@ export const PointUI = (props) => {
                 {/* Search input field */}
 
 
-                <div className='m-4'> 
+                <div className='m-4'>
 
                     <input
                         className='font-NanumSquareNeoOTF-Lt flex justify-start mb-4 w-full'
@@ -227,22 +232,22 @@ export const PointUI = (props) => {
                     />
 
                     <div className="flex justify-between font-NanumSquareNeoOTF-Lt">
-                    <div className=' mr-2'>Longitude: {longitude ? longitude.toFixed(3) : ''} </div>
-                    <div>Latitude: {latitude ? latitude.toFixed(3) : ''} </div>
+                        <div className=' mr-2'>Longitude: {longitude ? longitude.toFixed(3) : ''} </div>
+                        <div>Latitude: {latitude ? latitude.toFixed(3) : ''} </div>
                     </div>
 
                     <div className='font-NanumSquareNeoOTF-Bd text-red-500 mb-4'> {errorMessage ? `Error: ${errorMessage}` : ''}</div>
                 </div>
-                
+
 
                 <form onSubmit={handleSubmit} className="flex justify-between mb-2 font-NanumSquareNeoOTF-Lt">
-                        <input
-                            type="text"
-                            value={address}
-                            onChange={(e) => setAddress(e.target.value)}
-                            placeholder="Search address or click on map"
-                            className="w-full p-2 rounded-md border-2 border-gray-300" // Added padding, rounded borders, and border classes
-                        />
+                    <input
+                        type="text"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        placeholder="Search address or click on map"
+                        className="w-full p-2 rounded-md border-2 border-gray-300" // Added padding, rounded borders, and border classes
+                    />
                     <button type="submit" className=" text-l font-NanumSquareNeoOTF-Bd rounded-md px-6 bg-primary-GeoPurple border-solid border-2 border-gray-300 hover:bg-gray-300 text-white">
                         Add
                     </button>
