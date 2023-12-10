@@ -383,7 +383,7 @@ const Key = (props) => {//Note this key layout only works for color
 
     if (MAP_TYPES[mapType] === MAP_TYPES['FLOW'])
         return (
-            <>
+            header.keyTable && <>
                 <table className='w-96 h-full text-sm border-spacing-2 border-separate bg-white rounded-xl shadow-aesthetic'>
                     <colgroup>
                         <col style={{ width: '50%' }} /> 

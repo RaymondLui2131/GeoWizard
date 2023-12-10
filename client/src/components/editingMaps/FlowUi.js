@@ -6,15 +6,17 @@ import tinycolor from 'tinycolor2'
 import { FlowEdit } from '../../editMapDataStructures/FlowMapData.js'
 import Transaction from '../../transactions/Transaction.js'
 import { MapContext } from '../../api/MapContext.js'
-
-const KeyRow = ({ row, keyTable, setKeyTable, editsList, setEditsList }) => {
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircleXmark } from '@fortawesome/free-solid-svg-icons'
+const KeyRow = ({ row, keyTable, setKeyTable, editsList, setEditsList, handleFlowColor }) => {
     const [label, setLabel] = useState('')
-
+    const [hlsaColor, setHlsaColor] = useState(null)
+    const { transactions } = useContext(MapContext)
     useEffect(() => {
         const edit = editsList.find(e => e.colorRgba === row.color)
-        console.log(edit)
         if (edit) {
             setLabel(edit.label)
+            setHlsaColor(edit.colorHlsa)
         }
     }, [])
 
@@ -31,14 +33,36 @@ const KeyRow = ({ row, keyTable, setKeyTable, editsList, setEditsList }) => {
         }
     }
 
+    const removeTableEntry = (options) => {
+        const { keyTable, editsList } = options
+        setKeyTable(keyTable.filter(r => r.color !== row.color))
+        setEditsList(editsList.filter(edit => edit.colorRgba !== row.color))
+    }
+
+
+    const addTableEntry = (options) => {
+        const { keyTable, editsList } = options
+        setKeyTable([...keyTable])
+        setEditsList([...editsList])
+    }
+
+    const handleDelete = () => {
+        const options = { keyTable, editsList }
+        const transaction = new Transaction(options, removeTableEntry, addTableEntry)
+        transactions.addTransaction(transaction)
+    }
+
     return (
         <tr className='w-full h-full'>
-            <td className='w-1/2 h-full'>
-                <div style={{ backgroundColor: row.color }} className='border-black border-2 w-1/4 h-full mx-auto'>
-                    
+            <button className='w-1/5' onClick={handleDelete}>
+                <FontAwesomeIcon icon={faCircleXmark} className='h-6' />
+            </button>
+            <td className='w-2/5 h-full'>
+                <div onClick={() => handleFlowColor(hlsaColor)} style={{ backgroundColor: row.color }} className='border-black border-2 w-1/4 h-full mx-auto hover:cursor-pointer'>
+
                 </div>
             </td>
-            <td className='w-1/2'>
+            <td className='w-2/5'>
                 <input className='w-1/2 border-black border-2' type='text' value={label} onChange={(e) => { updateLabel(e.target.value) }} />
             </td>
         </tr>
@@ -142,7 +166,7 @@ const FlowUi = (props) => {
             const currentColor = hlsaToRGBA(flowColor)
             const latlngs = areaClicked.layer.getLatLngs()
             const label = keyTable.find(row => row.colorRgba === currentColor)
-            const newFlowArrow = new FlowEdit(areaClicked.layer._leaflet_id, latlngs, currentColor, label || '')
+            const newFlowArrow = new FlowEdit(areaClicked.layer._leaflet_id, latlngs, currentColor, {...flowColor}, label || '')
             const options = { newFlowArrow, areaClicked, keyTable, editsList }
             const transaction = new Transaction(options, addArrow, removeArrow)
             transactions.addTransaction(transaction)
@@ -187,7 +211,7 @@ const FlowUi = (props) => {
     }
 
     const renderKeyTable = () => {
-        return keyTable?.map(row => <KeyRow row={row} keyTable={keyTable} setKeyTable={setKeyTable} editsList={editsList} setEditsList={setEditsList} />)
+        return keyTable?.map(row => <KeyRow row={row} keyTable={keyTable} setKeyTable={setKeyTable} editsList={editsList} setEditsList={setEditsList} handleFlowColor={handleFlowColor} />)
     }
 
     return (
@@ -216,6 +240,7 @@ const FlowUi = (props) => {
                 {keyTable.length !== 0 && (
                     <>
                         <tr>
+                            <th></th>
                             <th>Color</th>
                             <th>Label</th>
                         </tr>
