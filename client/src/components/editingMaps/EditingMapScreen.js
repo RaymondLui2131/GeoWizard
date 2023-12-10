@@ -60,6 +60,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
     const { map, mapObj, transactions, createOrSave, idToUpdate } = useContext(MapContext)
     const [publicStatus, setPublic] = useState(mapObj?.isPublic)
     const [saveStatus, setSaveStatus] = useState('idle'); // 'idle', 'saving', 'completed' , 'error'
+    const [resetExport, setResetExport] = useState('Export')
     const { dispatch } = useContext(MapContext)
     //dropdown for exporting
     const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -298,7 +299,18 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
             </div>
             <div className='flex items-center gap-5'>
                 <div className='flex flex-col items-center'>
-                    <button
+                    <label className='font-NanumSquareNeoOTF-Lt text-2xl bg-primary-GeoOrange text-left text-white'>
+                        <select name="Export"
+                            className='bg-primary-GeoOrange rounded-md p-2'
+                            value={resetExport}
+                            onChange={() => {setResetExport('Export')}}>
+                            <option selected disabled hidden>Export</option>
+                            <option value="PNG" onClick={() => handleExport('PNG')}>PNG</option>
+                            <option value="JPG" onClick={() => handleExport('JPG')}>JPEG</option>
+                            <option value="GEOWIZ" onClick={() => handleExport('GEOWIZ')}>GeowizJson</option>
+                        </select>
+                    </label>
+                    {/* <button
                         onClick={() => setDropdownOpen(!dropdownOpen)}
                         className={`w-36 hover:opacity-70 px-4 py-2  font-NanumSquareNeoOTF-Lt text-2xl
                             ${dropdownOpen ? 'rounded-b-none rounded-t-md' : 'rounded-md'
@@ -349,7 +361,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                                 </button>
                             ))}
                         </div>
-                    )}
+                    )} */}
 
                     {/*                         
                         <button className='bg-primary-GeoOrange text-3xl font-NanumSquareNeoOTF-Lt px-14 rounded-full py-2' onClick={() => handleExport()}>
