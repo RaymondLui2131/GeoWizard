@@ -2,10 +2,11 @@
 
 
 export class FlowEdit {
-    constructor(id, latlngs, colorRgba, label) {
+    constructor(id, latlngs, colorRgba, colorHlsa, label) {
       this.id = id  
       this.latlngs = latlngs
       this.colorRgba = colorRgba
+      this.colorHlsa = colorHlsa
       this.label = label
     }
   }
