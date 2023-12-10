@@ -20,8 +20,11 @@ const KeyRow = ({ row, keyTable, setKeyTable, editsList, setEditsList }) => {
 
     const updateLabel = (text) => {
         setLabel(text)
-        setKeyTable([...keyTable])
+        const copyTable = [...keyTable]
         const edit = editsList.find(e => e.colorRgba === row.color)
+        const found = copyTable.find(row => row.color === edit.colorRgba)
+        found.label = label
+        setKeyTable(copyTable)
         if (edit) {
             edit.label = text
             setEditsList([...editsList])
@@ -32,7 +35,7 @@ const KeyRow = ({ row, keyTable, setKeyTable, editsList, setEditsList }) => {
         <tr className='w-full h-full'>
             <td className='w-1/2 h-full'>
                 <div style={{ backgroundColor: row.color }} className='border-black border-2 w-1/4 h-full mx-auto'>
-
+                    
                 </div>
             </td>
             <td className='w-1/2'>
