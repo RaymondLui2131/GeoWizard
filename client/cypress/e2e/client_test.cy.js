@@ -199,8 +199,8 @@ describe('testing editing map page', () => {
   })
 
   it('should export the file', () => {
-    cy.contains('Export').click()
-    cy.contains('Geowizjson').click()
+    cy.get('select[name="Export"]').select('GeowizJson')
+    cy.get('option[value="GEOWIZ"]').trigger('click',{ force: true });
     cy.readFile('cypress/downloads/geowizardMap.geowizjson').should("exist");
   })
 })
