@@ -136,7 +136,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                     }
                 case MAP_TYPES['FLOW']:
                     {
-                        const newPointHeader = new FlowHeader(editsList.length)
+                        const newPointHeader = new FlowHeader(editsList.length, keyTable)
                         mapInfo.edits.header = newPointHeader
                         mapInfo.edits.editsList = editsList
                         break
@@ -259,7 +259,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                 }
             case MAP_TYPES['FLOW']:
                 {
-                    editHeader = new FlowHeader(editsList.length)
+                    editHeader = new FlowHeader(editsList.length, keyTable)
                     break
                 }
             default:
@@ -535,7 +535,9 @@ const MapEditOptions = (props) => {
                     editsList: editsList,
                     setEditsList: setEditsList,
                     selectedFlowArrow: selectedFlowArrow,
-                    setFlowArrow: setFlowArrow
+                    setFlowArrow: setFlowArrow,
+                    keyTable: keyTable,
+                    setKeyTable: setKeyTable
                 }
                 return (
                     <FlowUi {...props} />
@@ -624,6 +626,10 @@ const MapView = () => {
                         break
                     case MAP_TYPES['CHOROPLETH']:
                         // console.log("setting key table")
+                        setKeyTable(map.edits.header.keyTable)
+                        break
+
+                    case MAP_TYPES['FLOW']:
                         setKeyTable(map.edits.header.keyTable)
                         break
                     default:
@@ -776,6 +782,7 @@ const MapView = () => {
         console.log("Yes Click")
         setKeyTable([])
         setEditsList([])
+        setAreaClicked(null)
         isClicked(false)
         setType(futureTypeSelected)
         setChangingMapTypeIsClicked(false)

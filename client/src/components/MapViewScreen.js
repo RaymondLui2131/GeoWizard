@@ -147,7 +147,7 @@ const TitleDisplay = (props) => {
 
     const handleFork = () => {
         // console.log(map.MapData)
-        dispatch({ type: MapActionType.FORK, payload: { map: map.MapData.original_map, mapObj: map} })
+        dispatch({ type: MapActionType.FORK, payload: { map: map.MapData.original_map, mapObj: map } })
         navigate(`/editingMap`)
     }
 
@@ -308,7 +308,7 @@ const MapDisplay = (props) => {
                         {
                             MAP_TYPES[mapType] === MAP_TYPES['FLOW']
                                 ? edits.editsList.map((edit) => (
-                                    <FlowArrow key={edit.id} id={edit.id} latlngs={edit.latlngs} colorRgba={edit.colorRgba}/>
+                                    <FlowArrow key={edit.id} id={edit.id} latlngs={edit.latlngs} colorRgba={edit.colorRgba} />
                                 ))
                                 : null
                         }
@@ -380,6 +380,36 @@ const Key = (props) => {//Note this key layout only works for color
                 </div>
             </>
         )
+
+    if (MAP_TYPES[mapType] === MAP_TYPES['FLOW'])
+        return (
+            <>
+                <table className='w-96 h-full text-sm border-spacing-2 border-separate bg-white rounded-xl shadow-aesthetic'>
+                    <colgroup>
+                        <col style={{ width: '50%' }} /> 
+                        <col style={{ width: '50%' }} />
+                    </colgroup>
+                    <thead>
+                        <tr className='font-PyeongChangPeace-Light text-2xl'>
+                            <th>Color</th>
+                            <th>Label</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {header?.keyTable.map((row, index) => (
+                            <tr key={index}>
+                                <td>
+                                    <div style={{ backgroundColor: row.color }} className='border-black border-2 w-10 h-10 mx-auto rounded-md'></div>
+                                </td>
+                                <td>
+                                    <div className='text-center text-xl font-PyeongChangPeace-Light'>{row.label}</div>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </>
+        )
     else
         return null
 }
@@ -404,22 +434,22 @@ const Comment = (props) => {
     const daysDiff = Math.floor(hoursDiff / 24);
     let formattedTimeDiff;
     if (daysDiff > 0) {
-        if(daysDiff === 1)
+        if (daysDiff === 1)
             formattedTimeDiff = "1 day ago"
         else
             formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-daysDiff, 'day');
     } else if (hoursDiff > 0) {
-        if(hoursDiff === 1)
+        if (hoursDiff === 1)
             formattedTimeDiff = "1 hour ago"
         else
             formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-hoursDiff, 'hour');
     } else if (minutesDiff > 0) {
-        if(minutesDiff === 1)
+        if (minutesDiff === 1)
             formattedTimeDiff = "1 minute ago"
         else
             formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-minutesDiff, 'minute');
     } else {
-        if(secondsDiff === 1)
+        if (secondsDiff === 1)
             formattedTimeDiff = "1 second ago"
         else
             formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-secondsDiff, 'second');
@@ -450,7 +480,7 @@ const Comment = (props) => {
         }
         const currentComments = [...comments]
         const foundIndex = currentComments.findIndex((c) => c._id === comment._id)
-        if(foundIndex !== -1)
+        if (foundIndex !== -1)
             currentComments[foundIndex].votes = endVoteNum
         setComments(currentComments)
         setLike(!currentLike)
@@ -490,7 +520,7 @@ const AllComments = (props) => {
     const setComments = props.setComments
     if (!comments)
         return (null)
-    const comProps = comments.map((c) => <Comment {...{ key: c._id, comment: c, comments:comments, setComments:setComments }} />)
+    const comProps = comments.map((c) => <Comment {...{ key: c._id, comment: c, comments: comments, setComments: setComments }} />)
     return (
         <>
             {comProps}
@@ -520,14 +550,14 @@ const MapView = () => {
 
     const selectedColor = '#3b82f6'
 
-    const sortComments = (sortType, comments) =>{
+    const sortComments = (sortType, comments) => {
         const copyComments = [...comments]
-        switch(sortType){
+        switch (sortType) {
             case "Time": {
                 copyComments.sort((c1, c2) => {
-                  const timeDiff = new Date(c2.createdAt) - new Date(c1.createdAt)
-                  return timeDiff !== 0 ? timeDiff : c2.votes - c1.votes
-            })
+                    const timeDiff = new Date(c2.createdAt) - new Date(c1.createdAt)
+                    return timeDiff !== 0 ? timeDiff : c2.votes - c1.votes
+                })
                 break;
             }
             case "Votes": {
@@ -537,7 +567,7 @@ const MapView = () => {
                 })
                 break
             }
-              default:
+            default:
                 break
         }
         return copyComments
@@ -556,16 +586,16 @@ const MapView = () => {
             setNewComment('')
         }
     }
-    const handleChangeSort = (sortSelected) =>{
+    const handleChangeSort = (sortSelected) => {
         setSort(sortSelected)
     }
 
-   
-    useEffect(() =>{
+
+    useEffect(() => {
         const sortedComments = sortComments(sortSelected, comments)
         setComments([...sortedComments])
         console.log("sort used effect", sortedComments)
-    },[sortSelected])
+    }, [sortSelected])
 
 
     return (
@@ -576,7 +606,7 @@ const MapView = () => {
                         ? <TitleDisplay {...{ likes: likeCount, setLikes: setLikes, map_id: map_id, title: title, author: author, userLikes: userLikes, userDislikes: userDislikes }}></TitleDisplay>
                         : null
                     }
-                    <div className='flex flex-row justify-between h-[650px]'>
+                    <div className='flex flex-row justify-between gap-10 h-[650px]'>
                         {mapView
                             ? <><MapDisplay {...{ MapData: map.MapData, mapType: mapType }} />
                                 <Key {...{ type: mapType, header: map.MapData.edits.header }} />
@@ -590,15 +620,15 @@ const MapView = () => {
                         <div className='font-NanumSquareNeoOTF-Lt'>
                             <label className='text-gray-50 text-2xl'>
                                 <span className='pr-3'>
-                                Sort By:
+                                    Sort By:
                                 </span>
-                                <select name="Selected Sort" onChange={e => handleChangeSort(e.target.value)} 
-                                className='bg-primary-GeoOrange rounded-md p-2'>
+                                <select name="Selected Sort" onChange={e => handleChangeSort(e.target.value)}
+                                    className='bg-primary-GeoOrange rounded-md p-2'>
                                     <option value="Time">Time</option>
                                     <option value="Votes">Votes</option>
                                 </select>
                             </label>
-                                
+
                             {/* <button onClick={() => setSortDropdown(!dropDownSort)} className= {dropDownSort? 'hidden': ''}
                             >
                                 {sortSelected}
