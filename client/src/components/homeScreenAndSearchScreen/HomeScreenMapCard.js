@@ -11,7 +11,7 @@ import React, { useContext, useState } from 'react'
 import { MapContext, MapActionType } from '../../api/MapContext'
 import { useNavigate } from 'react-router-dom'
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
-
+import { MAP_TYPES, STRING_MAPPING } from '../../constants/MapTypes'
 const HomeScreenMapCard = ({ mapObject }) => {
   const { map, dispatch } = useContext(MapContext)
   const navigate = useNavigate()
@@ -56,8 +56,7 @@ const HomeScreenMapCard = ({ mapObject }) => {
         <MapContainer
           center={center}
           zoom={6}
-          style={{ height: '25rem' }}
-          className='z-0 h-96 w-full'
+          style={{ height: '25rem', zIndex: 10 }}
           scrollWheelZoom={true}
           maxBounds={[padded_NE, padded_SW]}
         >
@@ -100,58 +99,59 @@ const HomeScreenMapCard = ({ mapObject }) => {
       <div className='max-w-xl font-PyeongChangPeace-Light text-2xl text-primary-GeoBlue'>
         Loading...
       </div>
-    ) 
+    )
   }
   return (
-    <div className=' m-4 max-w-xl overflow-hidden rounded border-2 border-primary-GeoBlue bg-white shadow-lg'>
-      {/* <div ref={mapRef} className="z-0 w-full h-96"></div> */}
+    <div className='relative max-w-xlgrow-0 max-h-fit rounded-md shadow-aesthetic border-2 border-primary-GeoBlue bg-white'>
+      <span className='absolute z-50 top-2 right-2  bg-primary-GeoOrange rounded-2xl px-2'>{STRING_MAPPING[MAP_TYPES[mapObject?.mapType]]}</span>
       <div>
-        {' '}
-        <MapDisplay props={{ MapData: mapObject.MapData }} />{' '}
+        <MapDisplay props={{ MapData: mapObject.MapData }} />
       </div>
-      <div className='px-6 py-4'>
-        <div className='mb-2 font-NanumSquareNeoOTF-Bd text-3xl'>
+      <div className='relative flex flex-col items-center justify-between h-full w-full pb-3'>
+        <p className='px-10 my-5 w-full font-NanumSquareNeoOTF-Bd text-3xl text-center text-ellipsis whitespace-nowrap overflow-hidden'>
           {mapObject.title}
-        </div>
-        <p
-          style={{ minHeight: '3rem' }}
-          className='font-NanumSquareNeoOTF-Lt text-base text-gray-700 break-words'
-        >
-          {mapObject.description}
         </p>
-      </div>
-      <div className='flex flex-row items-center justify-between px-6 pb-0 pt-2'>
-        <span
-          onClick={handleProfile}
-          className='mb-2 mr-2 inline-block rounded-full bg-primary-GeoOrange px-5 py-1  font-NanumSquareNeoOTF-Lt  font-semibold text-white hover:cursor-pointer hover:opacity-70'
-        >
-          {mapObject.user_id.username}
-        </span>
-        <span className='mb-2 mr-2 inline-block rounded-full px-3 py-1  font-NanumSquareNeoOTF-Lt  font-semibold text-black'>
-          Created On : {formattedDate}
-        </span>
-      </div>
-      <div className='flex flex-row items-center justify-between px-6 pb-2 pt-0 font-NanumSquareNeoOTF-Lt'>
-        <span className='mr-2 inline-block'>
-          <FontAwesomeIcon icon={faThumbsUp} /> {mapObject.likes}
-        </span>
-        <span className='mr-2 inline-block'>
-          <FontAwesomeIcon icon={faThumbsDown} /> {mapObject.dislikes}
-        </span>
-        <span className='mr-2 inline-block'>
-          <FontAwesomeIcon icon={faComment} /> {mapObject.comments.length}
-        </span>
-        <span className='inline-block'>
-          <FontAwesomeIcon icon={faEye} /> {mapObject.views}
-        </span>
 
-        <div className='px-6 py-4'>
-          <button
-            onClick={handleView}
-            className=' rounded bg-primary-GeoBlue px-4 py-2 text-white hover:bg-blue-700'
+        <p
+          className='font-NanumSquareNeoOTF-Lt text-center text-gray-700 w-full h-16 px-5 break-words overflow-scroll'
+        >
+          {mapObject.description || "No Description."}
+        </p>
+
+        <div className='flex flex-row items-center justify-between px-6 pb-0 pt-2'>
+          <span
+            onClick={handleProfile}
+            className='mb-2 mr-2 inline-block rounded-full bg-primary-GeoOrange px-5  font-NanumSquareNeoOTF-Lt  font-semibold text-white hover:cursor-pointer hover:opacity-70'
           >
-            Click To View
-          </button>
+            {mapObject.user_id.username}
+          </span>
+          <span className='mb-2 mr-2 inline-block rounded-full px-3 py-1  font-NanumSquareNeoOTF-Lt  font-semibold text-black'>
+            Created On : {formattedDate}
+          </span>
+        </div>
+
+        <div className='flex flex-row items-center justify-between px-6 pb-2 pt-0 font-NanumSquareNeoOTF-Lt'>
+          <span className='mr-2 inline-block'>
+            <FontAwesomeIcon icon={faThumbsUp} /> {mapObject.likes}
+          </span>
+          <span className='mr-2 inline-block'>
+            <FontAwesomeIcon icon={faThumbsDown} /> {mapObject.dislikes}
+          </span>
+          <span className='mr-2 inline-block'>
+            <FontAwesomeIcon icon={faComment} /> {mapObject.comments.length}
+          </span>
+          <span className='inline-block'>
+            <FontAwesomeIcon icon={faEye} /> {mapObject.views}
+          </span>
+
+          <div className='px-6'>
+            <button
+              onClick={handleView}
+              className=' rounded bg-primary-GeoBlue px-4 py-2 text-white hover:bg-blue-700'
+            >
+              Click To View
+            </button>
+          </div>
         </div>
       </div>
     </div>

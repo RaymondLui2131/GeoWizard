@@ -225,7 +225,7 @@ const HomeScreen = () => {
 
       {/* Infinite Loading */}
       <div>
-        <div className='z-0 mx-24 grid grid-cols-3 py-5'>
+        <div className='z-0 grid grid-cols-3 gap-8 mx-28 mt-10'>
           {maps.map((map, index) => {
             if (maps.length === index + 1) {
               //last book
