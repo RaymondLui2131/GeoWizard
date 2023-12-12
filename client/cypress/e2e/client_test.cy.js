@@ -119,8 +119,8 @@ describe('testing edit upload', () => {
   })
 
   it('should move to next available maps', () => {
-    cy.contains('→').click()
-    cy.get('.Finland').should('have.text', 'Edit  Finland')
+    cy.get('.next').click()
+    cy.get('.Finland').should('have.text', 'Edit Finland')
   })
 
 })
