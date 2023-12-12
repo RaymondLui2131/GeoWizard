@@ -140,7 +140,7 @@ const LoginScreen = () => {
                 <label className="flex flex-col font-NanumSquareNeoOTF-Lt gap-1">
                     Email
                     <input
-                        className="text-l px-2 font-PyeongChangPeace-Light w-96 rounded-md shadow-aesthetic py-2 border  hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none"
+                        className="caUserEmail text-l px-2 font-PyeongChangPeace-Light w-96 rounded-md shadow-aesthetic py-2 border  hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none"
                         value={userEmail}
                         onChange={(e) => setUserEmail(e.target.value)}
 
@@ -187,7 +187,7 @@ const LoginScreen = () => {
                     Password
                     <input
                         type="password"
-                        className="text-l px-2 font-PyeongChangPeace-Light w-96 rounded-md shadow-aesthetic py-2 border  hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none"
+                        className="caPassword text-l px-2 font-PyeongChangPeace-Light w-96 rounded-md shadow-aesthetic py-2 border  hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none"
 
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -205,7 +205,7 @@ const LoginScreen = () => {
                     Confirm Password
                     <input
                         type="password"
-                        className="text-l px-2 font-PyeongChangPeace-Light w-96 rounded-md shadow-aesthetic py-2 border  hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none"
+                        className="caComfirmPassword text-l px-2 font-PyeongChangPeace-Light w-96 rounded-md shadow-aesthetic py-2 border  hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none"
 
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
