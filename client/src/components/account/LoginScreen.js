@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useGoogleLogin } from '@react-oauth/google'
 import { authloginUser, googleLoginUser } from '../../api/auth_request_api.js';
 import { UserContext, UserActionType } from "../../api/UserContext.js"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const LoginScreen = () => {
     const { errorMessage, dispatch } = useContext(UserContext)
     const navigate = useNavigate();
@@ -149,7 +150,9 @@ const LoginScreen = () => {
                         Sign In
                     </button>
                     <h2 className="w-[85%] text-center border-b-2 border-b-gray-200  leading-[0.1em]"><span className="bg-white px-4 font-PyeongChangPeace-Light">or</span></h2>
-                    <button onClick={() => handleGoogleLoginClick()} className="text-white text-xl bg-primary-GeoPurple font-PyeongChangPeace-Bold rounded-full shadow-aesthetic hover:opacity-70 w-[60%] px-2 py-3 whitespace-nowrap">Sign In With Google</button>
+                    <button onClick={() => handleGoogleLoginClick()} className="text-black border border-gray-400 text-xl bg-white font-PyeongChangPeace-Bold rounded-full shadow-aesthetic hover:opacity-70 w-[60%] px-2 py-3 whitespace-nowrap flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 488 512"><path d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z" /></svg>
+                        Sign In With Google</button>
                 </div>
             </div>
         </div>
