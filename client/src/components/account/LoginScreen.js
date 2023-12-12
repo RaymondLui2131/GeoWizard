@@ -57,7 +57,7 @@ const LoginScreen = () => {
         console.log(response.status)
         if (response.status == 200) {
             dispatch({ type: UserActionType.LOGIN, payload: response.data })
-            navigate("/dashboard") // login successful
+            navigate("/") // login successful
         } else {
             setLoginFailed(true)
             dispatch({ type: UserActionType.ERROR, payload: response.data.message }) // login failed
