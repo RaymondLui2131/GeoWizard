@@ -90,3 +90,14 @@ export const getMapById = async (id) => {
     }
 }
 
+export const addView = async (id) => {
+    try {
+        return await axios.put(`${API_URL}addView`, {
+            map_id: id
+        })
+    } catch (err) {
+        return err.response
+    }
+}
+
+

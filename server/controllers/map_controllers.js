@@ -233,6 +233,31 @@ const changeLikesMap = asyncHandler(async (req, res) => {
 
 })
 
+/**
+ * 
+ * @desc Increment View Count
+ * @route PUT /maps/addView
+ */
+const addView = asyncHandler(async (req, res) => {
+    const {map_id} = req.body
+    const map = await Map.findById(map_id);
+
+    if (!map) {
+        return res.status(404).json({
+            message: "Map not found"
+        });
+    }
+    try{
+        map.views = map.views + 1
+        await map.save()
+    } catch (error){
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+    return res.status(200).json({
+        message: "View has incremented successfully"
+    })
+})
+
 
 //Gets Maps that are public
 //GET
@@ -361,6 +386,7 @@ module.exports = {
     queryMaps,
     changeLikesMap,
     getUserMaps,
-    getMapById
+    getMapById,
+    addView
 }
 
