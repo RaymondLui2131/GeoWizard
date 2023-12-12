@@ -7,7 +7,7 @@ import { UserContext, UserActionType } from "../../api/UserContext.js"
 
 const LoginScreen = () => {
     const navigate = useNavigate();
-    const {errorMessage, dispatch } = useContext(UserContext)
+    const { errorMessage, dispatch } = useContext(UserContext)
     const [userName, setUserName] = useState(''); // state for username
     const [userEmail, setUserEmail] = useState(''); // state for email
     const [password, setPassword] = useState(''); // state for password
@@ -44,7 +44,7 @@ const LoginScreen = () => {
         password: password
     }
 
-    const handleCreateAccountClick= () => {
+    const handleCreateAccountClick = () => {
         setBlankErrors({
             userName: false,
             userEmail: false,
@@ -56,21 +56,21 @@ const LoginScreen = () => {
         setUserInDb(false)
         setValidEmail(false)
 
-        if (validateInputs() === false){
+        if (validateInputs() === false) {
             return;
         }
 
-        if (isValidEmail(userEmail) === false){
+        if (isValidEmail(userEmail) === false) {
             setValidEmail(true)
             return;
         }
 
 
         if (password !== confirmPassword) {
-            setPasswordMismatch(true); 
-            return; 
+            setPasswordMismatch(true);
+            return;
         }
-              
+
         const loginUser = async () => {
             const response = await authloginUser(userEmail, password)
             if (response.status == 200) {
@@ -80,14 +80,14 @@ const LoginScreen = () => {
             }
         }
 
-        const postCreatedAccount = async () =>{
+        const postCreatedAccount = async () => {
             try {
                 const response = await postUser(userData);
                 if (response.status === 200) {
                     loginUser();
-                    navigate('/createAccountSuccess'); 
+                    navigate('/createAccountSuccess');
                 }
-                else if (response.status === 400){
+                else if (response.status === 400) {
                     console.log("Error in posting an account")
                 }
             } catch (error) {
@@ -110,7 +110,7 @@ const LoginScreen = () => {
             }
         };
 
-        const checkUniqueUser = async () =>{
+        const checkUniqueUser = async () => {
             try {
                 const uniqueUserresponse = await checkUser(userData.username);
                 if (uniqueUserresponse.status === 409) {
@@ -130,27 +130,22 @@ const LoginScreen = () => {
     };
 
     return (
-        <div className="min-h-screen max-h-screen bg-primary-GeoPurple">
-            <div className="flex flex-col justify-center items-center">
-                <div className="pt-12 flex items-center">
-                    <img src={logo} className="mr-6 h-9 sm:h-20" alt="Flowbite Logo" />
+        <div className="min-h-screen max-h-screen bg-primary-GeoPurple py-10 overflow-scroll">
+            <div className="flex flex-col gap-5 rounded-xl shadow-aesthetic py-10 justify-between items-center w-2/5 bg-white mx-auto">
+                <div className="flex items-center gap-3 justify-center w-full">
+                    <img src={logo} className="h-9 sm:h-20" alt="Flowbite Logo" />
                     <span className="text-purple-800 font-bold self-center text-5xl font-PyeongChangPeace-Light whitespace-nowrap">GeoWizard</span>
                 </div>
 
-
-                <div className="pl-2 pr-80 font-bold pt-4 flex flex-col justify-center items-center">
+                <label className="flex flex-col font-NanumSquareNeoOTF-Lt gap-1">
                     Email
-                </div>
-                
-                <div className="pl-4 pt-4 flex flex-col justify-center items-center">
-                <input
-                    className="caUserEmail text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
-                    style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
-                    value={userEmail}
-                    onChange={(e) => setUserEmail(e.target.value)}
+                    <input
+                        className="caUserEmail text-l px-2 font-PyeongChangPeace-Light w-96 rounded-md shadow-aesthetic py-2 border  hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none"
+                        value={userEmail}
+                        onChange={(e) => setUserEmail(e.target.value)}
 
-                ></input>
-                </div>
+                    ></input>
+                </label>
 
                 {blankErrors.userEmail ? (
                     <div style={{ color: '#8B0000', textAlign: 'center' }}>
@@ -166,19 +161,16 @@ const LoginScreen = () => {
                     </div>
                 ) : null}
 
-                <div className="pl-2 font-bold pt-4 pr-72 flex flex-col justify-center items-center">
+                <label className="flex flex-col font-NanumSquareNeoOTF-Lt gap-1">
                     UserName
-                </div>
-                
-                <div className="pl-4 pt-4 flex flex-col justify-center items-center">
-                <input
-                    className="caUserName text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
-                    style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
-                    value={userName}
-                    onChange={(e) => setUserName(e.target.value)}
+                    <input
+                        className="text-l px-2 font-PyeongChangPeace-Light w-96 rounded-md shadow-aesthetic py-2 border  hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none"
 
-                ></input>
-                </div>
+                        value={userName}
+                        onChange={(e) => setUserName(e.target.value)}
+
+                    ></input>
+                </label>
 
 
                 {blankErrors.userName ? (
@@ -191,20 +183,17 @@ const LoginScreen = () => {
                     </div>
                 ) : null}
 
-                <div className="font-bold pt-4 pr-72 flex flex-col justify-center items-center">
+                <label className="flex flex-col font-NanumSquareNeoOTF-Lt gap-1">
                     Password
-                </div>
+                    <input
+                        type="password"
+                        className="caPassword text-l px-2 font-PyeongChangPeace-Light w-96 rounded-md shadow-aesthetic py-2 border  hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none"
 
-                <div className="pl-4 pt-4 flex flex-col justify-center items-center">
-                <input
-                    type="password"
-                    className="caPassword text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
-                    style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
 
-                ></input>
-                </div>
+                    ></input>
+                </label>
 
                 {blankErrors.password ? (
                     <div style={{ color: '#8B0000', textAlign: 'center' }}>
@@ -212,21 +201,17 @@ const LoginScreen = () => {
                     </div>
                 ) : null}
 
-                <div className="pl-16 font-bold pt-4 pr-72 flex flex-col justify-center items-center">
+                <label className="flex flex-col font-NanumSquareNeoOTF-Lt gap-1">
                     Confirm Password
-                </div>
+                    <input
+                        type="password"
+                        className="caComfirmPassword text-l px-2 font-PyeongChangPeace-Light w-96 rounded-md shadow-aesthetic py-2 border  hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none"
 
-                
-                <div className="pl-4 pt-4 flex flex-col justify-center items-center">
-                <input
-                    type="password"
-                    className="caComfirmPassword text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
-                    style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
 
-                ></input>
-                </div>
+                    ></input>
+                </label>
 
                 {blankErrors.confirmPassword ? (
                     <div style={{ color: '#8B0000', textAlign: 'center' }}>
@@ -238,10 +223,15 @@ const LoginScreen = () => {
                     </div>
                 ) : null}
 
-                <div className = "pt-8 pr-4 flex-col justify-center items-center">
-                    <button onClick={handleCreateAccountClick} className = "text-yellow-200 font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300">
+                <div className="w-full flex justify-center mt-2">
+                    <button onClick={handleCreateAccountClick} className="text-white text-xl bg-primary-GeoPurple font-PyeongChangPeace-Bold w-[60%] px-2 py-3 rounded-full shadow-aesthetic hover:opacity-70">
                         Create Account
                     </button>
+                </div>
+
+                <div className="font-NanumSquareNeoOTF-Lt flex justify-center items-center gap-2 w-full">
+                    Already on GeoWizard?
+                    <a className="hover:underline hover:cursor-pointer text-[#0a66c2]" onClick={() => navigate('/login')}>Sign in</a>
                 </div>
             </div>
         </div>

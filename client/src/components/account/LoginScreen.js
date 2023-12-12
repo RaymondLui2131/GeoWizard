@@ -84,7 +84,7 @@ const LoginScreen = () => {
 
     return (
         <div data-test-id="login-div" className="min-h-screen py-10 max-h-screen  bg-primary-GeoPurple">
-            <div className="flex flex-col justify-between gap-5 items-center rounded-xl py-10 shadow-aesthetic w-[40%] mx-auto bg-white">
+            <div className="flex flex-col justify-between gap-5 items-center rounded-xl py-10 shadow-aesthetic w-[40%] mx-auto bg-white overflow-scroll">
                 <div className=" flex items-center gap-3 justify-center w-full">
                     <img src={logo} className="h-9 sm:h-20" alt="Flowbite Logo" />
                     <span className="text-purple-800 font-bold self-center text-5xl font-PyeongChangPeace-Light whitespace-nowrap">GeoWizard</span>
@@ -93,7 +93,7 @@ const LoginScreen = () => {
                 <label data-test-id="LoginEmailSection" className="flex flex-col font-NanumSquareNeoOTF-Lt gap-1">
                     Email
                     <input
-                        className="text-l px-2 font-PyeongChangPeace-Light w-96 rounded-md shadow-aesthetic py-2 border  hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
+                        className="text-l px-2 font-PyeongChangPeace-Light w-96 rounded-md shadow-aesthetic py-2 border  hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none"
                         type="email"
                         value={userEmail}
                         onChange={(e) => setuserEmail(e.target.value)}
