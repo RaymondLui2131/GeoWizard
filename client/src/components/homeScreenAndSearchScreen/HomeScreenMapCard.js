@@ -13,6 +13,7 @@ import { MapContext, MapActionType } from '../../api/MapContext'
 import { useNavigate } from 'react-router-dom'
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
 import { MAP_TYPES, STRING_MAPPING } from '../../constants/MapTypes'
+import { addView } from '../../api/map_request_api';
 const HomeScreenMapCard = ({ mapObject }) => {
   const { map, dispatch } = useContext(MapContext)
   const navigate = useNavigate()
@@ -74,20 +75,28 @@ const HomeScreenMapCard = ({ mapObject }) => {
   }
 
   function handleView() {
-    //console.log("view");
-    //console.log(mapObject._id);
 
     async function dispatchMapData() {
       try {
         //console.log(mapObject);
         const data = mapObject
         dispatch({ type: MapActionType.VIEW, payload: data })
-        //console.log(map)
+        const response = await addView(mapObject._id)
+        if (response.status == 200) {
+          console.log("200")
+        } 
+        else if (response.status == 404) {
+          console.log("404")
+        }
+        else if (response.status == 403) {
+          console.log("403")
+        }
         navigate('/mapView')
       } catch (error) {
         console.error('Error loading map data:', error)
       }
     }
+
     dispatchMapData()
   }
 
