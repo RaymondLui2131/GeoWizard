@@ -9,7 +9,8 @@ import { useState, useContext } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { UserContext, UserActionType } from '../api/UserContext'
 import { SearchContext, SearchActionType } from '../api/SearchContext'
-
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
 const Banner = () => {
   const { user, dispatch } = useContext(UserContext)
   const { searchQuery, searchDispatch } = useContext(SearchContext)
@@ -45,17 +46,17 @@ const Banner = () => {
   return (
     <header>
       <nav className='bg-white border-gray-200 px-4 lg:px-6 py-2 dark:bg-gray-800'>
-        <div className='flex flex-wrap justify-between items-center mx-auto  px-20'>
+        <div className='flex justify-between items-center mx-auto w-full px-20'>
           <a className='flex items-center'>
-            <img src={logo} className='mr-6 h-9 sm:h-20' alt='Flowbite Logo' />
+            <img src={logo} className='mr-6 h-9 sm:h-20 hover:cursor-pointer' alt='Flowbite Logo' onClick={() => navigate("/")}/>
             <span className='self-center text-5xl font-PyeongChangPeace-Light whitespace-nowrap text-primary-GeoPurple dark:text-white'>
               GeoWizard
             </span>
           </a>
 
-          <div className='flex items-center'>
+          <div className='flex items-center relative'>
             <input
-              className='text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none'
+              className='text-l font-PyeongChangPeace-Light w-96 rounded-full py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none'
               placeholder='Search for maps'
               style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
               value={searchTerm}
@@ -68,10 +69,9 @@ const Banner = () => {
             ></input>
             <button
               onClick={handleSearch}
-              className='text-l font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300 text-gray-600'
+              className='absolute right-0 px-5 bg-gray-200 h-[90%] mr-[2px] rounded-r-full'
             >
-              {' '}
-              Search
+              <FontAwesomeIcon icon={faMagnifyingGlass}/>
             </button>
           </div>
         </div>
@@ -96,14 +96,14 @@ const Banner = () => {
             {!user && (
               <button
                 onClick={handleLogin}
-                className='text-l font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300 text-gray-600'
+                className='text-l font-PyeongChangPeace-Bold rounded-lg shadow-lg bg-primary-GeoPurple text-white ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:opacity-70'
               >
                 Login
               </button>
             )}
 
             {user && (
-              <div className='text-l font-PyeongChangPeace-Bold ml-10 py-2 px-6 text-gray-600'>
+              <div className='text-xl font-PyeongChangPeace-Bold ml-10 py-2 px-6 text-gray-200'>
                 Welcome {user.username}!{' '}
               </div>
             )}
@@ -111,7 +111,7 @@ const Banner = () => {
             {!user && (
               <button
                 onClick={handleSignUp}
-                className='text-l font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 bg-primary-GeoPurple border-solid border-2 border-gray-300 hover:bg-gray-300 text-white'
+                className='text-l font-PyeongChangPeace-Bold rounded-lg shadow-lg ml-10 py-2 px-6 bg-primary-GeoPurple border-solid border-2 border-gray-300 hover:opacity-70 text-white'
               >
                 Sign Up
               </button>
@@ -120,7 +120,7 @@ const Banner = () => {
             {user && (
               <button
                 onClick={handleLogOut}
-                className='text-l font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 bg-primary-GeoPurple border-solid border-2 border-gray-300 hover:bg-gray-300 text-white'
+                className='text-l font-PyeongChangPeace-Bold rounded-lg shadow-lg ml-10 py-2 px-6 bg-primary-GeoPurple border-solid border-2 border-gray-300 hover:opacity-70 text-white'
               >
                 Log Out
               </button>
