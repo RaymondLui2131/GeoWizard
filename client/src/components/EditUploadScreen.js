@@ -80,6 +80,7 @@ const DisplayMap = (props) => {
     )
 }
 
+
 DisplayMap.propTypes = {
     index: PropTypes.number.isRequired,
     arr: PropTypes.array.isRequired
