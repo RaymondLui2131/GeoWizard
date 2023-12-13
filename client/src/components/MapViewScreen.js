@@ -154,7 +154,7 @@ const TitleDisplay = (props) => {
     return (
         <>
             <div className='flex flex-row justify-between'>
-                <div className='flex flex-col items-center'>
+                <div className='group flex flex-col items-center relative'>
                     {currentLike === 'green'
                         ? <ThumbsGreen className='fill-green-950 h-10 w-10' onClick={() => handleLike('green')} />
                         : <ThumbsIcon className='fill-green-950  h-10 w-10' onClick={() => handleLike('green')} />
@@ -167,6 +167,8 @@ const TitleDisplay = (props) => {
                         ? <ThumbsRed className='tansform -scale-y-100 fill-red-950  h-10 w-10' onClick={() => handleLike('red')} />
                         : <ThumbsIcon className='tansform -scale-y-100 fill-red-950  h-10 w-10' onClick={() => handleLike('red')} />
                     }
+                    {!user && <span className="group-hover:opacity-100 transition-opacity bg-gray-800 px-1 text-sm text-gray-100 whitespace-nowrap rounded-md absolute left-1/2 
+                            -translate-x-1/2 translate-y-full opacity-0 m-4 mx-auto">You must be logged in to vote</span>}
                 </div>
 
                 <div className='flex flex-col w-2/3 items-center text-primary-GeoBlue'>
@@ -495,12 +497,14 @@ const Comment = (props) => {
     return (
         <>
             <div className='flex flex-row justify-between border-2 rounded-full bg-gray-50 mb-1 mt-2'>
-                <div className='w-1/12 h-24 flex flex-col justify-center items-center'>
+                <div className='group w-1/12 h-24 flex flex-col justify-center items-center relative'>
                     {currentLike
                         ? <ThumbsGreen className='fill-green-950 h-5 w-5' onClick={() => handleLike()} />
                         : <ThumbsIcon className='fill-green-950  h-5 w-5' onClick={() => handleLike()} />
                     }
                     <div className='font-NanumSquareNeoOTF-Lt'>{votes}</div>
+                    {!user && <span className="group-hover:opacity-100 transition-opacity bg-gray-800 px-1 text-sm text-gray-100 whitespace-nowrap rounded-md absolute left-1/2 
+                    -translate-x-1/2 translate-y-full opacity-0 m-4 mx-auto">You must be logged in to like a comment</span>}
                 </div>
 
                 <div className='w-10/12 h-24 flex flex-col pt-2 overflow-auto whitespace-normal'>
@@ -660,9 +664,12 @@ const MapView = () => {
                             <input type="text" name="newComment" placeholder='Enter new comment...' value={newComment} onChange={(e) => setNewComment(e.target.value)}
                                 className='w-full bg-gray-50 font-NanumSquareNeoOTF-Lt' />
                         </div>
-                        <div className='w-1/12 h-11 flex flex-col  justify-center items-center '>
-                            <button className='bg-primary-GeoBlue text-2x1 font-NanumSquareNeoOTF-Lt w-full h-full rounded-full' onClick={() => postNewComment()}
-                            >Post</button>
+                        <div className='group w-1/12 h-11 flex flex-col justify-center items-center relative'>
+                            <button disabled={!user} className={`bg-primary-GeoBlue text-2x1 font-NanumSquareNeoOTF-Lt w-full h-full rounded-full ${!user && "opacity-30"}`} onClick={() => postNewComment()}
+                            >Post
+                            </button>
+                            {!user && <span className="group-hover:opacity-100 transition-opacity bg-gray-800 px-1 text-sm text-gray-100 whitespace-nowrap rounded-md absolute left-1/2 
+                            -translate-x-1/2 translate-y-full opacity-0 m-4 mx-auto">You must be logged in to post a comment</span>}
                         </div>
                     </div>
                     {mapView

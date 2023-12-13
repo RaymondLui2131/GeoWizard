@@ -20,6 +20,7 @@ import { faFileArrowUp, faChevronLeft, faChevronRight } from "@fortawesome/free-
 
 const DisplayMap = (props) => {
     const { dispatch } = useContext(MapContext)
+    const {user} = useContext(UserContext)
     const navigate = useNavigate();
     const index = props.index
     const mapArr = props.arr
@@ -61,16 +62,24 @@ const DisplayMap = (props) => {
     }
     return (
         <>
-            <div className="h-full hover:opacity-70 hover:cursor-pointer shadow-aesthetic relative" onClick={() => handleExistingMapsClick(countryNames[index])}>
-                <img src={mapArr[index]} className="h-64 w-[28rem] rounded-lg relative" />
+            <div className="h-full hover:opacity-70 hover:cursor-pointer shadow-aesthetic relative group">
+                <button disabled={!user} className={`${editClassName}`} onClick={() => handleExistingMapsClick(countryNames[index])}>
+                    <img  src={mapArr[index]} className={`h-64 w-[28rem] rounded-lg relative `} />
+                </button>
                 {/* <div className={editClassName}>Edit {" " + countryNames[index]}</div> */}
-                <span className={`${editClassName} absolute top-2 w-fit bg-primary-GeoOrange px-2 font-PyeongChangPeace-Light rounded-lg left-0 right-0 mx-auto opacity-70`}>
+                <span className={`${editClassName +'Label'} absolute top-2 w-fit bg-primary-GeoOrange px-2 font-PyeongChangPeace-Light rounded-lg left-0 right-0 mx-auto opacity-70`}>
                     {`Edit ${countryNames[index]}`}
                 </span>
+                {!user && (
+                    <span className="group-hover:opacity-100 transition-opacity bg-gray-800 px-1 text-sm text-gray-100 whitespace-nowrap py-1 rounded-md absolute left-1/2 -translate-x-1/2 translate-y-full opacity-0 m-4 mx-auto">
+                        You must be logged in to edit a map
+                    </span>
+                )}
             </div>
         </>
     )
 }
+
 
 DisplayMap.propTypes = {
     index: PropTypes.number.isRequired,
@@ -294,6 +303,7 @@ const EditUpload = () => {
                                 <button className="hover:opacity-70 px-5" onClick={() => arrowOnclick(0)}>
                                     <FontAwesomeIcon className="h-10" icon={faChevronLeft} />
                                 </button>
+                                
                                 <DisplayMap {...{ index: mapIndex, arr: mapArrayObj }} />
                                 <DisplayMap {...{ index: mapIndex + 1, arr: mapArrayObj }} />
                                 <button className="next hover:opacity-70 px-5" onClick={() => arrowOnclick(1)}>
