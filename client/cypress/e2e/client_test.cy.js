@@ -120,7 +120,9 @@ describe('testing edit upload', () => {
     })
     cy.visit("http://localhost:3000/editUpload")
   })
-
+  afterEach(() => {
+    cy.clearCookie('token')
+  })
   it('should move to editing page', () => {
 
     cy.get('.France').click()
@@ -133,9 +135,7 @@ describe('testing edit upload', () => {
     cy.get('.FinlandLabel').should('have.text', 'Edit Finland')
   })
 
-  afterEach(() => {
-    cy.clearCookie('token');
-  });
+
 })
 describe('testing editing map page', () => {
   beforeEach(() => {
