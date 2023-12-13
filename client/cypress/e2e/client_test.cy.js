@@ -120,9 +120,10 @@ describe('testing edit upload', () => {
     })
     cy.visit("http://localhost:3000/editUpload")
   })
+
   afterEach(() => {
-    cy.clearCookie('token')
-  })
+    cy.clearCookie('token');
+  });
   it('should move to editing page', () => {
 
     cy.get('.France').click()
