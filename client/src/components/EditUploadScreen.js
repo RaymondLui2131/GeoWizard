@@ -65,9 +65,9 @@ const DisplayMap = (props) => {
     return (
         <>
             <div className="h-full hover:opacity-70 hover:cursor-pointer shadow-aesthetic relative group">
-                <img src={mapArr[index]} className="h-64 w-[28rem] rounded-lg relative " onClick={() => handleExistingMapsClick(countryNames[index])} />
+                <img src={mapArr[index]} className={`${editClassName} h-64 w-[28rem] rounded-lg relative `} onClick={() => handleExistingMapsClick(countryNames[index])} />
                 {/* <div className={editClassName}>Edit {" " + countryNames[index]}</div> */}
-                <span className={`${editClassName} absolute top-2 w-fit bg-primary-GeoOrange px-2 font-PyeongChangPeace-Light rounded-lg left-0 right-0 mx-auto opacity-70`}>
+                <span className={`${editClassName +'Label'} absolute top-2 w-fit bg-primary-GeoOrange px-2 font-PyeongChangPeace-Light rounded-lg left-0 right-0 mx-auto opacity-70`}>
                     {`Edit ${countryNames[index]}`}
                 </span>
                 {!user && (

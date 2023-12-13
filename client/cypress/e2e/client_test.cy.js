@@ -108,7 +108,17 @@ describe('testing HomeScreen', () => {
 
 describe('testing edit upload', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:3000/editUpload')
+    cy.setCookie('token', '123')
+    cy.intercept('GET', '/users/me', {
+      statusCode: 200,
+      body: {
+        _id: 'id',
+        username: 'testuser',
+        email: 'test@example.com',
+        token: "123"
+      }
+    })
+    cy.visit("http://localhost:3000/editUpload")
   })
 
   it('should move to editing page', () => {
@@ -120,9 +130,12 @@ describe('testing edit upload', () => {
 
   it('should move to next available maps', () => {
     cy.get('.next').click()
-    cy.get('.Finland').should('have.text', 'Edit Finland')
+    cy.get('.FinlandLabel').should('have.text', 'Edit Finland')
   })
 
+  afterEach(() => {
+    cy.clearCookie('token');
+  });
 })
 describe('testing editing map page', () => {
   beforeEach(() => {
