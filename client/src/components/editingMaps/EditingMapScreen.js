@@ -294,14 +294,14 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
     return (
         <div className='flex justify-between items-center w-full px-5'>
             <div className='flex'>
-                <button className={`${transactions?.hasTransactionToUndo() && 'hover:opacity-30'}`} disabled={!transactions?.hasTransactionToUndo()} onClick={() => transactions?.undoTransaction()}><img src={undo} className={`object-contain ${!transactions?.hasTransactionToUndo() && "opacity-30"}`} alt='Undo action' /></button>
-                <button className={`${transactions?.hasTransactionToRedo() && 'hover:opacity-30'}`} disabled={!transactions?.hasTransactionToRedo()} onClick={() => transactions?.doTransaction()}><img src={redo} className={`object-contain ${!transactions?.hasTransactionToRedo() && "opacity-30"}`} alt='Redo action' /></button>
+                <button className={`${transactions?.hasTransactionToUndo() && 'hover:opacity-70'}`} disabled={!transactions?.hasTransactionToUndo()} onClick={() => transactions?.undoTransaction()}><img src={undo} className={`object-contain ${!transactions?.hasTransactionToUndo() && "opacity-30"}`} alt='Undo action' /></button>
+                <button className={`${transactions?.hasTransactionToRedo() && 'hover:opacity-70'}`} disabled={!transactions?.hasTransactionToRedo()} onClick={() => transactions?.doTransaction()}><img src={redo} className={`object-contain ${!transactions?.hasTransactionToRedo() && "opacity-30"}`} alt='Redo action' /></button>
             </div>
             <div className='flex items-center gap-5'>
                 <div className='flex flex-col items-center'>
-                    <label className='font-NanumSquareNeoOTF-Lt text-2xl bg-primary-GeoOrange text-left text-white'>
+                    <label className='font-NanumSquareNeoOTF-Lt text-2xl bg-primary-GeoOrange text-left text-white rounded-md hover:cursor-pointer hover:opacity-70'>
                         <select name="Export"
-                            className='bg-primary-GeoOrange rounded-md p-2'
+                            className='bg-primary-GeoOrange rounded-md p-2 hover:cursor-pointer hover:opacity-70 '
                             value={resetExport}
                             onChange={() => {setResetExport('Export')}}>
                             <option selected disabled hidden>Export</option>
