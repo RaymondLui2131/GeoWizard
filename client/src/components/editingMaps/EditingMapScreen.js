@@ -97,9 +97,16 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                     {
                         const lower = parseFloat(lowerBound)
                         const upper = parseFloat(upperBound)
+                        console.log("Lower",lower)
+                        console.log("Upper",upper)
                         if (!upper || !lower) {
-                            setValidHeatRange(false)
-                            return
+                            if((lower === 0 && upper) || (upper === 0 && lower)) //handles case where lower/upper ==0 and higher/lower is valid.
+                                setValidHeatRange(true)
+                            else
+                            {
+                                setValidHeatRange(false)
+                                return
+                            }
                         }
                         if (upper < lower) //handle invalid upper
                         {

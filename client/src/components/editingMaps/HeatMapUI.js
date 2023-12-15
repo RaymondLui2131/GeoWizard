@@ -170,6 +170,7 @@ export const HeatUi = (props) => {
         else
             setUpper(value)
     }
+    console.log("HeatUi", validHeatRange)
     return (
         <>
             <div className='invisible'>gap space</div>
