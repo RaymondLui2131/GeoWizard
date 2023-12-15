@@ -13,11 +13,16 @@ import { MapContext, MapActionType } from '../../api/MapContext'
 import { useNavigate } from 'react-router-dom'
 import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet'
 import { MAP_TYPES, STRING_MAPPING } from '../../constants/MapTypes'
-import { addView } from '../../api/map_request_api';
+import { addView } from '../../api/map_request_api'
+import tinycolor from 'tinycolor2'
+import FlowArrow from '../editingMaps/FlowArrow.js';
+import NotDraggableImageOverlay from '../editingMaps/ImageNotDraggable.js';
+import PointMarkerNotEditable from '../editingMaps/PointMarkerNotEditable.js';
+
 const HomeScreenMapCard = ({ mapObject }) => {
   const { map, dispatch } = useContext(MapContext)
   const navigate = useNavigate()
-  //console.log(mapObject)
+  console.log(mapObject)
 
   const date = new Date(mapObject.createdAt)
   const day = date.getDate().toString().padStart(2, '0')
@@ -25,52 +30,145 @@ const HomeScreenMapCard = ({ mapObject }) => {
   const year = date.getFullYear()
   const formattedDate = `${month}/${day}/${year}`
   const [isLoading, setIsLoading] = useState(true) // Loading flag
+  const [mapView,] = useState(map || null); //REPLACE WITH MAP CONTEXT
+  const [mapType,] = useState(mapView?.mapType || '')
+
+
+  const possibleNames = ['name', 'nom', 'nombre', 'title', 'label', 'id']
+  const hlsaToRGBA = (hlsa) => {
+    const color = tinycolor(hlsa)
+    const rgba = color.toRgb()
+    const rgbaString = `rgba(${rgba.r}, ${rgba.g}, ${rgba.b}, ${rgba.a})`;
+    // console.log("Input", hlsa)
+    // console.log("COnversion",rgbaString)
+    return rgbaString
+  }
 
   const MapDisplay = (props) => {
-    //const mapData = mapObject.MapData
-    //console.log('mapdata:', props.props.MapData)
     //console.log(props)
-    const mapData = props.props.MapData
-    //console.log(mapData)
+    const mapData = props.MapData
+    const edits = mapData.edits
+    const mapType = props.mapType
+    //console.log(mapType)
     var center = [0, 0]
     var padded_NE = [0, 0]
     var padded_SW = [0, 0]
     if (mapData) {
-      const geoJsonLayer = L.geoJSON(mapData.original_map)
-      const bounds = geoJsonLayer.getBounds()
-      center = bounds.getCenter()
-      //Padding for bounds
-      const currNe = bounds.getNorthEast()
-      const currSw = bounds.getSouthWest()
-      currNe.lat = currNe.lat + 5
-      currSw.lat = currSw.lat - 5
-      currNe.lng = currNe.lng + 5
-      currSw.lng = currSw.lng - 5
-      padded_NE = currNe
-      padded_SW = currSw
+        const geoJsonLayer = L.geoJSON(mapData.original_map)
+        const bounds = geoJsonLayer.getBounds()
+        center = bounds.getCenter()
+        //Padding for bounds
+        const currNe = bounds.getNorthEast()
+        const currSw = bounds.getSouthWest()
+        currNe.lat = currNe.lat + 5
+        currSw.lat = currSw.lat - 5
+        currNe.lng = currNe.lng + 5
+        currSw.lng = currSw.lng - 5
+        padded_NE = currNe
+        padded_SW = currSw
     }
 
     if (!mapData) {
-      return <div>placeholder</div>
+        return (<div>Loading</div>)
+    }
+    const styleMapping = {}
+    edits.editsList.forEach((edit) => {
+        switch (MAP_TYPES[mapType]) {
+
+            case MAP_TYPES['HEATMAP']: {
+                //console.log("Adding", edit.featureName)
+                styleMapping[edit.featureName] = { fillColor: hlsaToRGBA(edit.colorHLSA), fillOpacity: 0.7 };
+                break;
+            }
+            case MAP_TYPES['CHOROPLETH']:
+                {
+                    // console.log("Adding", edit.featureName)
+                    styleMapping[edit.featureName] = { fillColor: edit.colorHEX, fillOpacity: 0.7 }
+                    break
+                }
+            default:
+                break;
+        }
+    })
+    //console.log(styleMapping)
+    const getFeatureStyleView = (feature) => {
+        const foundName = possibleNames.find(propertyName => propertyName in feature.properties)
+        if (feature) {
+            return styleMapping[feature.key] || { fillColor: '#ffffff' }
+        }
+        return {}
     }
     return (
-      <>
-        <MapContainer
-          center={center}
-          zoom={6}
-          style={{ height: '20rem', zIndex: 10 }}
-          scrollWheelZoom={true}
-          maxBounds={[padded_NE, padded_SW]}
-        >
-          <TileLayer
-            url='https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}'
-            attribution='Tiles © Esri &mdash; Esri, DeLorme, NAVTEQ'
-          />
-          {Object.keys(mapData).length ? (
-            <GeoJSON data={mapData.original_map.features} />
-          ) : null}
-        </MapContainer>
-      </>
+        <>
+            <MapContainer
+                center={center}
+                zoom={6}
+                style={{ height: '650px' }}
+                className='z-0 h-96 w-full'
+                scrollWheelZoom={true}
+                maxBounds={[padded_NE, padded_SW]}>
+                <TileLayer
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                />
+                {Object.keys(mapData).length
+                    ?
+                    <>
+                        <GeoJSON
+                            data={mapData.original_map.features}
+                            pointToLayer={(feature, latlng) => {
+                                if (feature.properties && feature.properties.iconUrl) {
+                                    const icon = L.icon({
+                                        iconUrl: feature.properties.iconUrl,
+                                        iconSize: [32, 32],
+                                    });
+                                    const marker = L.marker(latlng, { icon });
+                                    return marker;
+                                }
+                                return L.circleMarker(latlng);
+                            }}
+                            onEachFeature={(feature, layer) => {
+                                if (feature.geometry.type === 'Point') {
+                                    return;
+                                }
+                                if (MAP_TYPES[mapType] === MAP_TYPES['CHOROPLETH'] || MAP_TYPES[mapType] === MAP_TYPES['HEATMAP']) {
+                                    const featureStyle = getFeatureStyleView(feature)
+                                    layer.setStyle(featureStyle)
+                                }
+
+                            }} />
+                        {
+                            MAP_TYPES[mapType] === MAP_TYPES['SYMBOL']
+                                ? edits.editsList.map((edit) =>
+                                    <NotDraggableImageOverlay key={edit.id} id={edit.id} image={edit.symbol}
+                                        initialBounds={edit.bounds}
+                                        color={edit.colorHLSA}
+                                    />)
+                                : null
+                        }
+                        {
+                            MAP_TYPES[mapType] === MAP_TYPES['POINT']
+                                ? edits.editsList.map((edit) =>
+                                    <PointMarkerNotEditable
+                                        key={edit.id}
+                                        id={edit.id}
+                                        edit={edit}
+                                    />)
+                                : null
+                        }
+                        {
+                            MAP_TYPES[mapType] === MAP_TYPES['FLOW']
+                                ? edits.editsList.map((edit) => (
+                                    <FlowArrow key={edit.id} id={edit.id} latlngs={edit.latlngs} colorRgba={edit.colorRgba} />
+                                ))
+                                : null
+                        }
+                    </>
+                    : null
+                }
+
+            </MapContainer>
+        </>
     )
   }
 
@@ -115,7 +213,7 @@ const HomeScreenMapCard = ({ mapObject }) => {
     <div className='relative max-w-xlgrow-0 max-h-fit rounded-md shadow-intense border-2 border-primary-GeoBlue bg-white'>
       <span className='absolute z-50 top-2 right-2  bg-primary-GeoOrange rounded-2xl px-2'>{STRING_MAPPING[MAP_TYPES[mapObject?.mapType]]}</span>
       <div>
-        <MapDisplay props={{ MapData: mapObject.MapData }} />
+        <MapDisplay {...{ MapData: mapObject.MapData, mapType: mapObject.mapType}} />
       </div>
       <div className='relative flex flex-col items-center justify-between h-full w-full pb-6'>
         <p className='group px-10 my-2 w-full font-NanumSquareNeoOTF-Bd text-3xl text-center text-ellipsis whitespace-nowrap overflow-hidden'>

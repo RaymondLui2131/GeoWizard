@@ -16,9 +16,9 @@ const mappings = {
 function replaceWhiteWithColor(imageUrl,color) {
   return new Promise((resolve, reject) => {
       const colorObj = tinycolor(color)
-      console.log('regular color' ,color)
+      //console.log('regular color' ,color)
       const rgb = colorObj.toRgb()
-      console.log('rgb form',rgb)
+      //console.log('rgb form',rgb)
 
       const image = new Image()
       image.crossOrigin = 'Anonymous'

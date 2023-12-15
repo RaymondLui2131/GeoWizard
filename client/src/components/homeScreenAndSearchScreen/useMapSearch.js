@@ -48,7 +48,8 @@ export default function useMapSearch(query, pageNumber) {
                     // Check if mapObject has MapData and original_map before decompression
                     //console.log(m)
                     if (m.MapData && m.MapData.original_map) {
-                        m.MapData.original_map = geobuf_api.geojson_decompress(m.MapData.original_map);
+                        m.MapData.original_map = geobuf_api.geojson_decompress(m.MapData.original_map)
+                        //console.log(m)
                     }
                     return <HomeScreenMapCard key={m._id} mapObject={m} />;
                 })])]

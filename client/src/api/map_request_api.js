@@ -34,10 +34,14 @@ export const saveUserMap = async (token, title, isPublic, mapType, description, 
     }
 }
 
-export const getUserMaps = async (userData) => {
+export const getUserMaps = async (userData, page, limit , isPublic, sortType) => {
     try {
         const response = await axios.post(`${API_URL}getUserMaps`, {
-            userData: userData
+            userData: userData,
+            page: page,
+            limit: limit,
+            isPublic: isPublic,
+            sortType: sortType
         })
 
         return response.data
