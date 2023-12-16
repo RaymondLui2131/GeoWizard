@@ -47,7 +47,6 @@ export const HeatUi = (props) => {
     useEffect(() => {
         if (selected === '') {
             const curColor = JSON.stringify(heatColor)
-            console.log("string curretn", curColor)
             switch (curColor) {
                 case JSON.stringify(hexToHlsa('#ff0000')):
                     setHlsa(hexToHlsa('#ff0000'))
@@ -94,6 +93,51 @@ export const HeatUi = (props) => {
 
         }
     }, [])
+    useEffect(() => {
+        const curColor = JSON.stringify(heatColor)
+            switch (curColor) {
+                case JSON.stringify(hexToHlsa('#ff0000')):
+                    setHlsa(hexToHlsa('#ff0000'))
+                    setSelected('red')
+                    break
+                case JSON.stringify(hexToHlsa('#00ff00')):
+                    setHlsa(hexToHlsa('#00ff00'))
+                    setSelected('green')
+                    break
+                case JSON.stringify(hexToHlsa('#0019ff')):
+                    setHlsa(hexToHlsa('#0019ff'))
+                    setSelected('blue')
+                    break
+                case JSON.stringify(hexToHlsa('#00fffd')):
+                    setHlsa(hexToHlsa('#00fffd'))
+                    setSelected('cyan')
+                    break
+                case JSON.stringify(hexToHlsa('#9900ff')):
+                    setHlsa(hexToHlsa('#9900ff'))
+                    setSelected('purple')
+                    break
+                case JSON.stringify(hexToHlsa('#ffb400')):
+                    setHlsa(hexToHlsa('#ffb400'))
+                    setSelected('orange')
+                    break
+                case JSON.stringify(hexToHlsa('#ff6e00')):
+                    setHlsa(hexToHlsa('#ff6e00'))
+                    setSelected('darkorange')
+                    break
+                case JSON.stringify(hexToHlsa('#ff00d9')):
+                    setHlsa(hexToHlsa('#ff00d9'))
+                    setSelected('pink')
+                    break
+                case JSON.stringify(hexToHlsa('#fffe00')):
+                    setHlsa(hexToHlsa('#fffe00'))
+                    setSelected('yellow')
+                    break
+                default:
+                    setHlsa(hexToHlsa('#ff0000'))
+                    setSelected('red')
+                    break
+            }
+    }, [editsList])
 
     useEffect(() => {
         if (upper > lower)

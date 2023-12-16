@@ -311,7 +311,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                             className='bg-primary-GeoOrange rounded-md p-2 hover:cursor-pointer hover:opacity-70 '
                             value={resetExport}
                             onChange={() => {setResetExport('Export')}}>
-                            <option selected disabled hidden>Export</option>
+                            <option value="Export" disabled hidden>Export</option>
                             <option value="PNG" onClick={() => handleExport('PNG')}>PNG</option>
                             <option value="JPG" onClick={() => handleExport('JPG')}>JPEG</option>
                             <option value="GEOWIZ" onClick={() => handleExport('GEOWIZ')}>GeowizJson</option>
