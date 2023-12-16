@@ -65,31 +65,55 @@ const saveUserMap = asyncHandler(async (req, res) => {
 const getUserMaps = asyncHandler(async (req, res) => {
   const { userData, page, limit, isPublic, sortType } = req.body;
   const mapIds = userData.maps;
-  const startIndex = page * limit;
-  const endIndex = startIndex + limit;
   const query = { _id: { $in: mapIds } };
 
   if (!isPublic) {
     query.isPublic = true; // Fetch only public maps
   }
 
-  //   let sortCriteria = {};
-  //   if (sortType === "top") {
-  //     sortCriteria = { views: -1 }; // Sort by highest views
-  //   } else if (sortType === "new") {
-  //     sortCriteria = { createdAt: -1 }; // Sort by newest createdAt
-  //   }
+  try {
+    const maps = await Map.find(query);
+    const resData = {};
 
-  //   const totalCount = await Map.countDocuments(query);
+    for (const map of maps) {
+      const mapWithDetails = await Map.findById(map._id)
+        .populate({
+          path: "user_id",
+          select: "_id username",
+        })
+        .populate({
+          path: "MapData",
+          select: "original_map edits",
+        })
+        .populate({
+          path: "comments",
+          select: "_id text user_id votes usersVoted createdAt",
+          populate: [
+            {
+              path: "user_id",
+              model: "User",
+              select: "_id username",
+            },
+          ],
+        });
 
-  //   const maps = await Map.find(query).sort(sortCriteria).skip(startIndex).limit(limit);
-  const maps = await Map.find(query);
+      if (mapWithDetails) {
+        resData[map._id] = mapWithDetails;
+      } else {
+        return res.status(500).json({
+          message: "getUserMaps failed",
+        });
+      }
+    }
 
-  if (maps) {
-    return res.status(200).json(maps);
-  } else {
+    return res.status(200).json({
+      maps: maps,
+      resData: resData,
+    });
+  } catch (error) {
     return res.status(500).json({
-      message: "getUserMaps failed",
+      message: "An error occurred",
+      error: error.message,
     });
   }
 });
