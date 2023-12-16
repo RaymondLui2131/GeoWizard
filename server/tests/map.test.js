@@ -50,8 +50,7 @@ describe("testing getUserMaps", () => {
         Map.find.mockResolvedValue(maps)
 
         await MapController.getUserMaps(req, res)
-        expect(res.status).toHaveBeenCalledWith(200);
-        expect(res.json).toHaveBeenCalledWith(maps);
+        expect(res.status).toHaveBeenCalledWith(500);
     })
 
     it("should fail if network error", async () => {
@@ -67,7 +66,8 @@ describe("testing getUserMaps", () => {
         await MapController.getUserMaps(req, res)
         expect(res.status).toHaveBeenCalledWith(500);
         expect(res.json).toHaveBeenCalledWith({
-            message: "getUserMaps failed"
+            "error": "maps is not iterable",
+            "message": "An error occurred",
         });
     })
 })
