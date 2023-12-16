@@ -251,7 +251,7 @@ const ProfileScreen = () => {
     const checkUniqueUser = async () => {
       try {
         const uniqueUserresponse = await checkUser(userInfo.username);
-        if (uniqueUserresponse.status === 409) {
+        if (name === "username" && uniqueUserresponse.status === 409) {
           setUserInDb(true);
           return;
         } else if (uniqueUserresponse.status === 200) {
