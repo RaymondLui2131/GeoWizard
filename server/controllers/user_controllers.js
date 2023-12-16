@@ -166,7 +166,7 @@ const checkUniqueEmail = asyncHandler(async (req, res) => {
 
 /**
  * 
- * @desc Checks if email is already in the db
+ * @desc Checks if user is already in the db
  * @route GET /users/checkUniqueUser
  */
 const checkUniqueUser = asyncHandler(async (req, res) => {

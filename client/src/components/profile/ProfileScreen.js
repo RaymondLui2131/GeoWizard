@@ -11,7 +11,7 @@ import {
 import ProfileMapCard from "./ProfileMapCard";
 import ProfileCommentCard from "./ProfileCommentCard";
 import { useNavigate, useParams } from "react-router-dom";
-import { authgetUserById, updateUserInfo } from "../../api/auth_request_api";
+import { authgetUserById, updateUserInfo, checkUser } from "../../api/auth_request_api"
 import { getUserMaps, getMap } from "../../api/map_request_api";
 import { getUserComments } from "../../api/comment_request_api";
 import { getMapById } from "../../api/map_request_api";
@@ -37,6 +37,7 @@ const ProfileScreen = () => {
   const [done, setDone] = useState(false);
   const [totalPages, setTotalPages] = useState(0);
   const dropdownRef = useRef(null);
+  const [userInDb, setUserInDb] = useState(false); // check if user is unqiue
   const [userInfo, setUserInfo] = useState({
     about: "",
     birthday: "",
@@ -274,20 +275,31 @@ const ProfileScreen = () => {
 
   const handleSaveInfo = async (e) => {
     const { name } = e;
-    if (user) {
-      let value = userInfo[name];
-      if (value === "birthday" && typeof value !== Date) {
-        value = new Date(value);
-      }
-      const response = await updateUserInfo(user.token, name, value);
-      if (response && name === "username") {
-        // update username in context
-        dispatch({
-          type: UserActionType.UPDATE,
-          payload: { ...user, username: userInfo?.username },
-        });
-      }
+    setUserInDb(false)
+    const checkUniqueUser = async () => {
+        try {
+            const uniqueUserresponse = await checkUser(userInfo.username);
+            if (uniqueUserresponse.status === 409) {
+                setUserInDb(true);
+                return;
+            }
+            else if (uniqueUserresponse.status === 200) {
+                if (user) {
+                    let value = userInfo[name];
+                    if (value === 'birthday' && typeof value !== Date) {
+                        value = new Date(value)
+                    }
+                    const response = await updateUserInfo(user.token, name, value);
+                    if (response && name === 'username') { // update username in context
+                        dispatch({ type: UserActionType.UPDATE, payload: { ...user, username: userInfo?.username } })
+                    }
+                }
+            }
+        } catch (error) {
+            console.error('Error finding an username:', error);
+        }
     }
+    checkUniqueUser()
   };
 
   return (
@@ -368,6 +380,12 @@ const ProfileScreen = () => {
                   onBlur={() => handleSaveInfo({ name: "birthday" })}
                 />
               </div>
+
+                {userInDb ? (
+                    <div style={{ color: '#8B0000', textAlign: 'center' }}>
+                        Username is already used! Please pick another username
+                    </div>
+                ) : null}
             </div>
 
             <div className="bg-gray-50 h-1/3 flex justify-evenly items-center rounded-b-2xl">
