@@ -124,7 +124,7 @@ const EditUpload = () => {
         }
         const file_type = selected_file.name.split('.').pop().toLowerCase()
         console.log(file_type)
-        const options = { tolerance: 0.01, highQuality: true }
+        const options = { tolerance: 0.0001, highQuality: true }
         const reader = new FileReader()
         const parser = new DOMParser();
         const JSZip = require('jszip');
