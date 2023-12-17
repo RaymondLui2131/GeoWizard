@@ -135,7 +135,7 @@ const LoginScreen = () => {
 
                 {googleSignInError ? (
                     <div style={{ color: '#8B0000', textAlign: 'center' }}>
-                        Google Account exist with an existing Email or Username
+                        Google Account exist with an existing email or username
                     </div>
                 ) : null}
 

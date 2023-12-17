@@ -30,8 +30,8 @@ const googleLoginUser = asyncHandler(async (req, res) => {
             googleSignedIn: true
         })
     }
-
-    if (user && userNameExists && (await bcrypt.compare(googleId, user.password))) {
+    user = await User.findOne({ email })
+    if (user && (await bcrypt.compare(googleId, user.password))) {
         return res.status(200).json({
             _id: user.id,
             username: user.username,
