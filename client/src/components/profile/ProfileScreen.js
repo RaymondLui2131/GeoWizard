@@ -245,7 +245,8 @@ const ProfileScreen = () => {
     return max_like;
   };
 
-  const handleSaveInfo = async (e) => {
+
+  const handleSaveUsername = async (e) => {
     const { name } = e;
     setUserInDb(false);
     const checkUniqueUser = async () => {
@@ -257,9 +258,6 @@ const ProfileScreen = () => {
         } else if (uniqueUserresponse.status === 200) {
           if (user) {
             let value = userInfo[name];
-            if (value === "birthday" && typeof value !== Date) {
-              value = new Date(value);
-            }
             const response = await updateUserInfo(user.token, name, value);
             if (response && name === "username") {
               // update username in context
@@ -274,7 +272,19 @@ const ProfileScreen = () => {
         console.error("Error finding an username:", error);
       }
     };
-    checkUniqueUser();
+
+    checkUniqueUser()
+  }
+
+  const handleSaveInfo = async (e) => {
+    const { name } = e;
+    if (user) {
+      let value = userInfo[name];
+      if (value === 'birthday' && typeof value !== Date) {
+        value = new Date(value)
+      }
+      await updateUserInfo(user.token, name, value);
+    }
   };
 
   return (
@@ -303,14 +313,13 @@ const ProfileScreen = () => {
                   @
                 </span>
                 <EditText
-                  className={`text-black text-4xl font-PyeongChangPeace-Light ${
-                    user?._id !== id
-                      ? "hover:bg-none"
-                      : "hover:bg-gray-100 hover:cursor-pointer"
-                  }`}
+                  className={`text-black text-4xl font-PyeongChangPeace-Light ${user?._id !== id
+                    ? "hover:bg-none"
+                    : "hover:bg-gray-100 hover:cursor-pointer"
+                    }`}
                   name="username"
                   value={userInfo?.username}
-                  onSave={(e) => handleSaveInfo(e)}
+                  onSave={(e) => handleSaveUsername(e)}
                   onChange={handleInputChange}
                   readonly={user?._id !== id}
                 />
@@ -318,11 +327,10 @@ const ProfileScreen = () => {
               <div className="flex items-center gap-1 justify-start">
                 <FontAwesomeIcon icon={faLocationDot} />
                 <EditText
-                  className={`text-black text-base font-PyeongChangPeace-Light ${
-                    user?._id !== id
-                      ? "hover:bg-none"
-                      : "hover:bg-gray-100 hover:cursor-pointer"
-                  }`}
+                  className={`text-black text-base font-PyeongChangPeace-Light ${user?._id !== id
+                    ? "hover:bg-none"
+                    : "hover:bg-gray-100 hover:cursor-pointer"
+                    }`}
                   name="location"
                   value={userInfo?.location}
                   placeholder="No Location."
@@ -334,11 +342,10 @@ const ProfileScreen = () => {
               <div className="flex items-center  gap-1 justify-start  text-black text-base font-PyeongChangPeace-Light">
                 <FontAwesomeIcon icon={faCakeCandles} />
                 <DatePicker
-                  className={`w-24 ${
-                    user?._id !== id
-                      ? "hover:bg-none"
-                      : "hover:bg-gray-100 hover:cursor-pointer"
-                  }`}
+                  className={`w-24 ${user?._id !== id
+                    ? "hover:bg-none"
+                    : "hover:bg-gray-100 hover:cursor-pointer"
+                    }`}
                   selected={
                     userInfo?.birthday ? new Date(userInfo.birthday) : null
                   }
@@ -391,11 +398,10 @@ const ProfileScreen = () => {
           <div className="h-1/2 flex flex-col justify-end px-12">
             <div className="h-[65%] text-sm rounded-2xl px-5 py-3 mb-4 overflow-scroll bg-gray-50 shadow-warm font-PyeongChangPeace-Light">
               <EditTextarea
-                className={`${
-                  user?._id !== id
-                    ? "hover:none"
-                    : "hover:bg-gray-100 hover:cursor-pointer"
-                }`}
+                className={`${user?._id !== id
+                  ? "hover:none"
+                  : "hover:bg-gray-100 hover:cursor-pointer"
+                  }`}
                 name="about"
                 value={userInfo?.about}
                 placeholder="No Description."
@@ -412,17 +418,15 @@ const ProfileScreen = () => {
           <div className="grow h-1/4 flex flex-col justify-evenly items-baseine align-middle">
             <div className="flex justify-center gap-10 items-center">
               <button
-                className={`hover:text-primary-GeoBackGround text-2xl font-PyeongChangPeace-Light ${
-                  display === "posts" && "border-b-2  border-primary-GeoBlue"
-                }`}
+                className={`hover:text-primary-GeoBackGround text-2xl font-PyeongChangPeace-Light ${display === "posts" && "border-b-2  border-primary-GeoBlue"
+                  }`}
                 onClick={() => setDisplay("posts")}
               >
                 Posts
               </button>
               <button
-                className={`hover:text-primary-GeoBackGround text-2xl font-PyeongChangPeace-Light ${
-                  display === "comments" && "border-b-2  border-primary-GeoBlue"
-                }`}
+                className={`hover:text-primary-GeoBackGround text-2xl font-PyeongChangPeace-Light ${display === "comments" && "border-b-2  border-primary-GeoBlue"
+                  }`}
                 onClick={() => setDisplay("comments")}
               >
                 Comments
@@ -440,9 +444,8 @@ const ProfileScreen = () => {
                 </button>
                 <div
                   id="dropdown-menu"
-                  className={`${
-                    !dropdownOpen && "invisible"
-                  } origin-top-right absolute right-0 mt-2 w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5`}
+                  className={`${!dropdownOpen && "invisible"
+                    } origin-top-right absolute right-0 mt-2 w-32 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5`}
                 >
                   <div
                     className="flex flex-col justify-start py-2 p-2 text-base font-PyeongChangPeace-Light"
