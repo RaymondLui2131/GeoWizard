@@ -606,6 +606,7 @@ const MapView = () => {
     let padded_NE
     let padded_SW
     if (map) {
+        console.log(map)
         geoJsonLayer = L.geoJSON(map);
         bounds = geoJsonLayer.getBounds();
         center = bounds.getCenter();

@@ -11,7 +11,11 @@ import {
 import ProfileMapCard from "./ProfileMapCard";
 import ProfileCommentCard from "./ProfileCommentCard";
 import { useNavigate, useParams } from "react-router-dom";
-import { authgetUserById, updateUserInfo, checkUser } from "../../api/auth_request_api"
+import {
+  authgetUserById,
+  updateUserInfo,
+  checkUser,
+} from "../../api/auth_request_api";
 import { getUserMaps, getMap } from "../../api/map_request_api";
 import { getUserComments } from "../../api/comment_request_api";
 import { getMapById } from "../../api/map_request_api";
@@ -25,7 +29,7 @@ const ProfileScreen = () => {
   const navigate = useNavigate();
   const [userData, setUserData] = useState(null); // user for current profile
   const [userMaps, setUserMaps] = useState([]); // list of maps owned by the user
-  const [count, setCount] = useState(0);
+  const [resData, setResData] = useState({});
   const [userComments, setUserComments] = useState([]); // list of comments owned by the user
   const [display, setDisplay] = useState("posts");
   const [commentMap, setCommentMap] = useState({}); // maps referenced by the comments
@@ -48,39 +52,10 @@ const ProfileScreen = () => {
   const itemsPerPage = 4;
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  
 
   const handlePageChange = async (selectedPage) => {
     // setDone(false);
     setCurrentPage(selectedPage.selected);
-    // if (userMaps[selectedPage.selected * itemsPerPage] !== undefined) {
-    //   setDone(true);
-    //   return;
-    // }
-    // try {
-    //   // Fetch more maps based on the current page
-    //   const res = await getUserMaps(
-    //     userData,
-    //     selectedPage.selected,
-    //     itemsPerPage,
-    //     isPublic,
-    //     sortType
-    //   );
-    //   // Handle the fetched maps (update state, etc.)
-    //   if (res) {
-    //     const mapsArray = [...userMaps];
-    //     res.maps.forEach((map, index) => {
-    //       const mapIndex = selectedPage.selected * itemsPerPage + index;
-    //       mapsArray[mapIndex] = map;
-    //     });
-    //     setUserMaps(mapsArray);
-    //   }
-    // } catch (error) {
-    //   // Handle error
-    //   console.error("Error fetching maps:", error);
-    // } finally {
-    //   setDone(true);
-    // }
   };
 
   const handleInputChange = (e) => {
@@ -122,6 +97,7 @@ const ProfileScreen = () => {
 
   useEffect(() => {
     const fetchAdditionalData = async () => {
+      setDone(false);
       if (userData) {
         setUserInfo({
           about: userData.about,
@@ -140,22 +116,15 @@ const ProfileScreen = () => {
             sortType
           );
           if (mapsResponse) {
-            // const totalCount = mapsResponse.totalCount;
-            // const mapsArray = Array.from({ length: totalCount }); // Create fixed size array
-
-            // // Populate the array with maps at their respective indexes
-            // mapsResponse.maps.forEach((map, index) => {
-            //   const mapIndex = currentPage * itemsPerPage + index;
-            //   mapsArray[mapIndex] = map;
-            // });
-            // setUserMaps(mapsArray); // Set userMaps to the populated array
-            setUserMaps(mapsResponse);
-            setTotalPages(Math.ceil(mapsResponse.length / itemsPerPage));
+            setUserMaps(mapsResponse.maps);
+            setResData(mapsResponse.resData);
+            setTotalPages(Math.ceil(mapsResponse.maps.length / itemsPerPage));
           }
         } else {
           setUserMaps([]);
         }
       }
+      setDone(true);
     };
     fetchAdditionalData();
   }, [userData]);
@@ -185,7 +154,7 @@ const ProfileScreen = () => {
   }, [userData]);
 
   const generateMapCards = (sortType) => {
-    if (!userMaps.length) {
+    if (!userMaps?.length) {
       return (
         <p className="text-center text-3xl font-PyeongChangPeace-Light">
           No Posts
@@ -195,11 +164,9 @@ const ProfileScreen = () => {
 
     let sortedMaps;
     if (sortType === "top") {
-      const filteredUserMaps = userMaps?.filter((map) => map !== undefined);
-      sortedMaps = filteredUserMaps?.slice().sort((a, b) => b.likes - a.likes);
+      sortedMaps = userMaps?.slice().sort((a, b) => b.likes - a.likes);
     } else {
-      const filteredUserMaps = userMaps?.filter((map) => map !== undefined);
-      sortedMaps = filteredUserMaps?.slice().sort((a, b) => {
+      sortedMaps = userMaps?.slice().sort((a, b) => {
         const dateA = new Date(a.createdAt);
         const dateB = new Date(b.createdAt);
         return dateB - dateA;
@@ -209,8 +176,13 @@ const ProfileScreen = () => {
     console.log(startIndex, endIndex);
     const subset = sortedMaps?.slice(startIndex, endIndex);
     console.log(subset);
+
     return subset?.map((map_data) => (
-      <ProfileMapCard key={map_data._id} map_data={map_data} />
+      <ProfileMapCard
+        key={map_data._id}
+        map_data={map_data}
+        res={resData[map_data._id]}
+      />
     ));
   };
 
@@ -275,31 +247,34 @@ const ProfileScreen = () => {
 
   const handleSaveInfo = async (e) => {
     const { name } = e;
-    setUserInDb(false)
+    setUserInDb(false);
     const checkUniqueUser = async () => {
-        try {
-            const uniqueUserresponse = await checkUser(userInfo.username);
-            if (uniqueUserresponse.status === 409) {
-                setUserInDb(true);
-                return;
+      try {
+        const uniqueUserresponse = await checkUser(userInfo.username);
+        if (name === "username" && uniqueUserresponse.status === 409) {
+          setUserInDb(true);
+          return;
+        } else if (uniqueUserresponse.status === 200) {
+          if (user) {
+            let value = userInfo[name];
+            if (value === "birthday" && typeof value !== Date) {
+              value = new Date(value);
             }
-            else if (uniqueUserresponse.status === 200) {
-                if (user) {
-                    let value = userInfo[name];
-                    if (value === 'birthday' && typeof value !== Date) {
-                        value = new Date(value)
-                    }
-                    const response = await updateUserInfo(user.token, name, value);
-                    if (response && name === 'username') { // update username in context
-                        dispatch({ type: UserActionType.UPDATE, payload: { ...user, username: userInfo?.username } })
-                    }
-                }
+            const response = await updateUserInfo(user.token, name, value);
+            if (response && name === "username") {
+              // update username in context
+              dispatch({
+                type: UserActionType.UPDATE,
+                payload: { ...user, username: userInfo?.username },
+              });
             }
-        } catch (error) {
-            console.error('Error finding an username:', error);
+          }
         }
-    }
-    checkUniqueUser()
+      } catch (error) {
+        console.error("Error finding an username:", error);
+      }
+    };
+    checkUniqueUser();
   };
 
   return (
@@ -381,11 +356,11 @@ const ProfileScreen = () => {
                 />
               </div>
 
-                {userInDb ? (
-                    <div style={{ color: '#8B0000', textAlign: 'center' }}>
-                        Username is already used! Please pick another username
-                    </div>
-                ) : null}
+              {userInDb ? (
+                <div style={{ color: "#8B0000", textAlign: "center" }}>
+                  Username is already used! Please pick another username
+                </div>
+              ) : null}
             </div>
 
             <div className="bg-gray-50 h-1/3 flex justify-evenly items-center rounded-b-2xl">
@@ -500,22 +475,30 @@ const ProfileScreen = () => {
             </div>
           </div>
           <ul className="grow h-3/4 w-full flex flex-col overflow-scroll gap-5">
-            {display === "posts" && (
+            {!done ? (
+              <p className="text-center text-3xl font-PyeongChangPeace-Light">
+                Loading maps...
+              </p>
+            ) : (
               <>
-                {generateMapCards(sortType)}
-                <ReactPaginate
-                  pageCount={totalPages}
-                  onPageChange={handlePageChange}
-                  forcePage={currentPage}
-                  breakLabel={"..."}
-                  className="flex text-lg gap-5 items-center justify-center"
-                  activeLinkClassName="bg-primary-GeoBackGround rounded-md px-1"
-                />
+                {display === "posts" && (
+                  <>
+                    {generateMapCards(sortType)}
+                    <ReactPaginate
+                      pageCount={totalPages}
+                      onPageChange={handlePageChange}
+                      forcePage={currentPage}
+                      breakLabel={"..."}
+                      className="flex text-lg gap-5 items-center justify-center"
+                      activeLinkClassName="bg-primary-GeoBackGround rounded-md px-1"
+                    />
+                  </>
+                )}
+                {display === "comments" &&
+                  userComments &&
+                  generateCommentCards(sortType)}
               </>
             )}
-            {display === "comments" &&
-              userComments &&
-              generateCommentCards(sortType)}
           </ul>
         </div>
       </div>
