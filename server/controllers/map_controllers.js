@@ -347,14 +347,13 @@ const addView = asyncHandler(async (req, res) => {
 const queryMaps = asyncHandler(async (req, res) => {
   console.log("req", req.query);
   const { q, page } = req.query;
-  const { query, metric, time } = q;
+  const { query, metric, time, type} = q;
   const pageSize = 3;
   const skip = pageSize * (page - 1);
 
   console.log(q, page);
 
   let mock = null;
-
   if (req.query.mock) {
     mock = true;
   }
@@ -365,6 +364,20 @@ const queryMaps = asyncHandler(async (req, res) => {
       { title: { $regex: query, $options: "i" } },
       { description: { $regex: query, $options: "i" } },
     ];
+  }
+
+
+  const mapTypeKeys = {
+    'Heatmap' : 'HEATMAP',
+    'Point/Locator Map' : 'POINT',
+    'Symbol Map' : 'SYMBOL',
+    'Choropleth Map' : 'CHOROPLETH',
+    'Flow Map': 'FLOW'
+}
+
+  if (type != ''){
+    const mapTypeQuery = mapTypeKeys[type]
+    queryObj.mapType = mapTypeQuery;
   }
 
   if (time != "") {
