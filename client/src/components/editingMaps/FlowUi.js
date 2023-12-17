@@ -23,9 +23,9 @@ const KeyRow = ({ row, keyTable, setKeyTable, editsList, setEditsList, handleFlo
     const updateLabel = (text) => {
         setLabel(text)
         const copyTable = [...keyTable]
-        const edit = editsList.find(e => e.colorRgba === row.color)
-        const found = copyTable.find(row => row.color === edit.colorRgba)
-        found.label = label
+        const edit = editsList.find(e => e.colorRgba === row.color) // find edit
+        const found = copyTable.find(row => row.color === edit.colorRgba) // find row in table
+        found.label = text
         setKeyTable(copyTable)
         if (edit) {
             edit.label = text
