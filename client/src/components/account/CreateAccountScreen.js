@@ -103,7 +103,7 @@ const LoginScreen = () => {
                     return;
                 }
                 else if (uniqueEmailresponse.status === 200) {
-                    postCreatedAccount();
+                    checkUniqueUser();
                 }
             } catch (error) {
                 console.error('Error finding an email:', error);
@@ -126,7 +126,6 @@ const LoginScreen = () => {
         };
 
         checkUniqueEmail()
-        checkUniqueUser()
     };
 
     return (
