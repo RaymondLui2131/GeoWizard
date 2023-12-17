@@ -55,12 +55,12 @@ describe('testing HomeScreen', () => {
   })
   it('Should show dropdown when clicking Time button', () => {
     cy.contains('Time').click()
-    cy.get('a').should('contain', "Today")
+    cy.get('button').should('contain', "Today")
   })
 
   it('Should show dropdown when clicking Sort button', () => {
     cy.contains('Sort').click()
-    cy.get('a').should('contain', "Recents")
+    cy.get('button').should('contain', "Recents")
   })
 
   it('should display in search bar', () => {
@@ -108,9 +108,22 @@ describe('testing HomeScreen', () => {
 
 describe('testing edit upload', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:3000/editUpload')
+    cy.setCookie('token', '123')
+    cy.intercept('GET', '/users/me', {
+      statusCode: 200,
+      body: {
+        _id: 'id',
+        username: 'testuser',
+        email: 'test@example.com',
+        token: "123"
+      }
+    })
+    cy.visit("http://localhost:3000/editUpload")
   })
 
+  afterEach(() => {
+    cy.clearCookie('token');
+  });
   it('should move to editing page', () => {
 
     cy.get('.France').click()
@@ -119,9 +132,10 @@ describe('testing edit upload', () => {
   })
 
   it('should move to next available maps', () => {
-    cy.contains('→').click()
-    cy.get('.Finland').should('have.text', 'Edit  Finland')
+    cy.get('.next').click()
+    cy.get('.FinlandLabel').should('have.text', 'Edit Finland')
   })
+
 
 })
 describe('testing editing map page', () => {
@@ -199,7 +213,8 @@ describe('testing editing map page', () => {
   })
 
   it('should export the file', () => {
-    cy.contains('Export').click()
+    cy.get('select[name="Export"]').select('GeowizJson')
+    cy.get('option[value="GEOWIZ"]').trigger('click',{ force: true });
     cy.readFile('cypress/downloads/geowizardMap.geowizjson').should("exist");
   })
 })
@@ -285,8 +300,13 @@ describe('testing reset email message screen', () => {
 
 describe('testing change password screen', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:3000/changePassword')
-  })
+    const id = 'mockUserId';
+    const userName = 'mockUserName';
+    const token = 'mockToken';
+
+    const url = `http://localhost:3000/changeYourPassword/${id}/${userName}/${token}`;
+    cy.visit(url);
+  });
 
   it('should type text into the input field', () => {
     cy.get('.cpPassword')

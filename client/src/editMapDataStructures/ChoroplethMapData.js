@@ -1,8 +1,9 @@
 //Stores color information for a feature. Color is in Hexformat
 export class ChoroEdit {
-    constructor(featureName, colorHEX) {
+    constructor(featureName, colorHEX, label) {
       this.featureName = featureName;   //feature is labeled with key
       this.colorHEX = colorHEX;
+      this.label = label
     }
   }
 

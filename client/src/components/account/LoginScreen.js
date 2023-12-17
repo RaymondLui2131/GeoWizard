@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { useGoogleLogin } from '@react-oauth/google'
 import { authloginUser, googleLoginUser } from '../../api/auth_request_api.js';
 import { UserContext, UserActionType } from "../../api/UserContext.js"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const LoginScreen = () => {
     const { errorMessage, dispatch } = useContext(UserContext)
     const navigate = useNavigate();
@@ -13,6 +14,8 @@ const LoginScreen = () => {
         userEmail: false,
         password: false,
     });
+    const [googleSignInError, setGoogleSignInError] = useState(false) // if google sign in fails because of same username or email
+    const [loginFailed, setLoginFailed] = useState(false) // state for failed login
 
     const googleLogin = useGoogleLogin({
         onSuccess: async (codeResponse) => {
@@ -24,6 +27,7 @@ const LoginScreen = () => {
                 }
                 else {
                     dispatch({ type: UserActionType.ERROR, payload: response.data.message }) // login failed
+                    setGoogleSignInError(true)
                 }
             }
         },
@@ -47,15 +51,27 @@ const LoginScreen = () => {
             userEmail: false,
             password: false,
         })
+        setLoginFailed(false)
         validateInputs()
         const response = await authloginUser(userEmail, password)
         console.log(response.status)
         if (response.status == 200) {
             dispatch({ type: UserActionType.LOGIN, payload: response.data })
-            navigate("/dashboard") // login successful
+            navigate("/")
         } else {
+            setLoginFailed(true)
             dispatch({ type: UserActionType.ERROR, payload: response.data.message }) // login failed
         }
+    };
+
+    const handleGoogleLoginClick = async () => {
+        setGoogleSignInError(false);
+        setBlankErrors({
+            userEmail: false,
+            password: false,
+        })
+        setLoginFailed(false)
+        googleLogin();
     };
 
     const handleCreateAccountClick = () => {
@@ -67,25 +83,22 @@ const LoginScreen = () => {
     };
 
     return (
-        <div data-test-id="login-div" className="min-h-screen max-h-screen bg-primary-GeoPurple">
-            <div className="flex flex-col justify-center items-center">
-                <div className="pt-12 flex items-center">
-                    <img src={logo} className="mr-6 h-9 sm:h-20" alt="Flowbite Logo" />
+        <div data-test-id="login-div" className="min-h-screen py-10 max-h-screen  bg-primary-GeoPurple">
+            <div className="flex flex-col justify-between gap-5 items-center rounded-xl py-10 shadow-aesthetic w-[40%] mx-auto bg-white overflow-scroll">
+                <div className=" flex items-center gap-3 justify-center w-full">
+                    <img src={logo} className="h-9 sm:h-20" alt="Flowbite Logo" />
                     <span className="text-purple-800 font-bold self-center text-5xl font-PyeongChangPeace-Light whitespace-nowrap">GeoWizard</span>
                 </div>
 
-                <div className="pl-2 pr-80 font-bold pt-4 flex flex-col justify-center items-center">
+                <label data-test-id="LoginEmailSection" className="flex flex-col font-NanumSquareNeoOTF-Lt gap-1">
                     Email
-                </div>
-
-                <div data-test-id="LoginEmailSection" className="pl-4 pt-4 flex flex-col justify-center items-center">
                     <input
-                        className="text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
-                        style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
+                        className="text-l px-2 font-PyeongChangPeace-Light w-96 rounded-md shadow-aesthetic py-2 border  hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none"
+                        type="email"
                         value={userEmail}
                         onChange={(e) => setuserEmail(e.target.value)}
                     ></input>
-                </div>
+                </label>
 
                 {blankErrors.userEmail ? (
                     <div style={{ color: '#8B0000', textAlign: 'center' }}>
@@ -93,19 +106,16 @@ const LoginScreen = () => {
                     </div>
                 ) : null}
 
-                <div className="font-bold pt-4 pr-72 flex flex-col justify-center items-center">
-                    Password
-                </div>
 
-                <div className="pl-4 pt-4 flex flex-col justify-center items-center">
+                <label className="flex flex-col font-NanumSquareNeoOTF-Lt gap-1">
+                    Password
                     <input
                         type="password"
-                        className="text-l font-PyeongChangPeace-Light w-96 rounded-md py-2 border-solid border-2 border-gray-300 hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
-                        style={{ paddingLeft: '1rem', paddingRight: '1rem' }}
+                        className="text-l px-2 font-PyeongChangPeace-Light w-96 rounded-md shadow-aesthetic py-2 border hover:border-primary-GeoPurple focus:border-primary-GeoPurple focus:outline-none "
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                     ></input>
-                </div>
+                </label>
 
                 {blankErrors.password ? (
                     <div style={{ color: '#8B0000', textAlign: 'center' }}>
@@ -113,19 +123,36 @@ const LoginScreen = () => {
                     </div>
                 ) : null}
 
-                <div onClick={handleForgotPasswordClick} className="pl-12 pt-4 pr-72 text-align:center underline font-bold  flex flex-col justify-center items-center">
-                    Forgot Password
+                <div className="flex w-96 items-center justify-between text-[#0a66c2]">
+                    <div className="text-align:center hover:underline font-NanumSquareNeoOTF-Lt flex flex-col justify-center items-center hover:cursor-pointer">
+                        <a onClick={handleForgotPasswordClick}>Forgot password?</a>
+                    </div>
+
+                    <div className="hover:underline font-NanumSquareNeoOTF-Lt flex flex-col justify-center items-center hover:cursor-pointer">
+                        <a onClick={handleCreateAccountClick}>Create an Account</a>
+                    </div>
                 </div>
 
-                <div onClick={handleCreateAccountClick} className="pl-14 pt-4 pr-72 underline font-bold flex flex-col justify-center items-center">
-                    Create an Account
-                </div>
+                {googleSignInError ? (
+                    <div style={{ color: '#8B0000', textAlign: 'center' }}>
+                        Google Account exist with an existing email or username
+                    </div>
+                ) : null}
 
-                <div className="pt-8 pr-4 flex-col justify-center items-center">
-                    <button onClick={handleLoginClick} className="text-yellow-200 font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300">
-                        Login
+                {loginFailed && !blankErrors.password && !blankErrors.userEmail ? (
+                    <div style={{ color: '#8B0000', textAlign: 'center' }}>
+                        Incorrect Email or Password
+                    </div>
+                ) : null}
+
+                <div className="flex flex-col gap-5 w-full items-center">
+                    <button onClick={handleLoginClick} className="text-white text-xl bg-primary-GeoPurple font-PyeongChangPeace-Bold w-[60%] px-2 py-3 rounded-full shadow-aesthetic hover:opacity-70">
+                        Sign In
                     </button>
-                    <button onClick={() => googleLogin()} className="text-yellow-200 font-PyeongChangPeace-Bold rounded-md ml-10 py-2 px-6 border-solid border-2 border-gray-300 hover:bg-gray-300">Sign In With Google</button>
+                    <h2 className="w-[85%] text-center border-b-2 border-b-gray-200  leading-[0.1em]"><span className="bg-white px-4 font-PyeongChangPeace-Light">or</span></h2>
+                    <button onClick={() => handleGoogleLoginClick()} className="text-black border border-gray-400 text-xl bg-white font-PyeongChangPeace-Bold rounded-full shadow-aesthetic hover:opacity-70 w-[60%] px-2 py-3 whitespace-nowrap flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24" width="24" viewBox="0 0 488 512"><path d="M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z" /></svg>
+                        Sign In With Google</button>
                 </div>
             </div>
         </div>

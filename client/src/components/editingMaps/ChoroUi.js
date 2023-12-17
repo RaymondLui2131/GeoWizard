@@ -2,8 +2,7 @@ import { MAP_TYPES } from "../../constants/MapTypes"
 import { HexColorPicker } from "react-colorful"
 import { useState, useEffect, useContext } from "react"
 import { ChoroEdit } from "../../editMapDataStructures/ChoroplethMapData"
-import ChoroTransaction from "../../transactions/ChoroTransaction"
-import ChoroTableTransaction from "../../transactions/ChoroTableTransaction"
+import Transaction from "../../transactions/Transaction"
 import { MapContext } from "../../api/MapContext"
 const KeyRow = (props) => {
     const color = props.color
@@ -15,30 +14,39 @@ const KeyRow = (props) => {
     const [label, setLabel] = useState(props.label)
     const { transactions } = useContext(MapContext)
 
-    const removeTableEntry = (color, keyTable, editsList, setKeyTable, setEditsList) => {
+    const removeTableEntry = (options) => {
+        const { color, keyTable, editsList } = options
         const filtered = keyTable.filter((row) => row.color !== color)
         const filterEdits = editsList.filter((edit) => edit.colorHEX !== color) //remove coloring of features after removing key
         // console.log("filtered list",filtered)
         setKeyTable(filtered)
-        setEditsList(filterEdits)  
+        setEditsList(filterEdits)
     }
 
-    const addTableEntry = (color, keyTable, editsList, setKeyTable, setEditsList) => {
-         setKeyTable(keyTable)
-         setEditsList(editsList)
+    const addTableEntry = (options) => {
+        const { color, keyTable, editsList } = options
+        setKeyTable(keyTable)
+        setEditsList(editsList)
     }
 
     const handleRemove = (color) => {
-        const transaction = new ChoroTableTransaction(color, keyTable, editsList, setKeyTable, setEditsList, removeTableEntry, addTableEntry)
+        const options = { color, keyTable, editsList }
+        const transaction = new Transaction(options, removeTableEntry, addTableEntry)
         transactions.addTransaction(transaction)
     }
 
     const handleUpdateLabel = (text) => {
         const currKeyTable = [...keyTable]
+        const copyEdits = [...editsList]
         const found = currKeyTable.find((row) => row.color === color)
+        const foundEdit = copyEdits.find(edit => edit.colorHEX === found.color)
         found.label = text
         setKeyTable(currKeyTable)
         setLabel(text)
+        if (foundEdit) {
+            foundEdit.label = found.label
+            setEditsList(copyEdits)
+        }
     }
     return (
         <>
@@ -47,7 +55,7 @@ const KeyRow = (props) => {
                     <button className='text-red-600' onClick={() => handleRemove(color)}>X</button>
                 </div>
                 <div className='pl-7'>
-                    <div onClick={() => setColor(color)} className='flex w-5 h-5 border-2 border-black'
+                    <div onClick={() => setColor(color)} className='flex w-5 h-5 border-2 border-black hover:cursor-pointer'
                         style={{ backgroundColor: color }}>
                     </div>
                 </div>
@@ -77,61 +85,46 @@ export const ChoroUi = (props) => {
     const setEditsList = props.setEditsList
     const { transactions } = useContext(MapContext)
 
-    const addChoroColor = (choroColor, areaClicked, setAreaClicked, keyTable, setKeyTable, editsList, setEditsList) => {
-        
-            console.log('something clicked', areaClicked)
-            // console.log(transactions.toString())
-            let newColor = [...editsList]
-            newColor = newColor.filter((edit) => edit.colorHEX === choroColor)
-            // console.log("newColor",newColor)
-            if (newColor.length === 0) {  //New Color
-                const newKeyLabel = {
-                    color: choroColor,
-                    label: '',
-                }
-                const newTable = [...keyTable]
-                newTable.push(newKeyLabel)
-                setKeyTable(newTable)
+    const addChoroColor = (options) => {
+        const { newEdit, keyTable, editsList } = options
+        console.log('something clicked', areaClicked)
+        let newColor = [...editsList]
+        newColor = newColor.filter((edit) => edit.colorHEX === newEdit.colorHEX) // find if color entry exists
+        // console.log("newColor",newColor)
+        if (newColor.length === 0) {  // if color entry not exist, add to keytable
+            const newKeyLabel = {
+                color: choroColor,
+                label: newEdit.label,
             }
-            const newEdit = new ChoroEdit(areaClicked, choroColor)
-            let copyEdits = [...editsList]
-            copyEdits = copyEdits.filter((edit) => edit.featureName !== areaClicked)
-            copyEdits.push(newEdit)
+            const newTable = [...keyTable]
+            newTable.push(newKeyLabel)
+            setKeyTable(newTable)
+        }
+        // const label = keyTable.find(row => row.color === choroColor)
+        // const newEdit = new ChoroEdit(areaClicked, choroColor, label || '') // no label yet
+        let copyEdits = [...editsList]
+        copyEdits = copyEdits.filter((edit) => edit.featureName !== areaClicked)
+        copyEdits.push(newEdit)
 
-            setEditsList(copyEdits)
-            // console.log("edits",copyEdits)
-
-
-            // setAreaClicked(null)
-
+        setEditsList(copyEdits)
+        // console.log("edits",copyEdits)
+        // setAreaClicked(null)
     }
 
-    const removeChoroColor = (areaToRemove, keyTable, setKeyTable, editsList, setEditsList) => {
-        let removedEdit = null
-        let copylist = [...editsList]
-        copylist = copylist.filter((edit) => { // remove edit from list 
-            if (edit.featureName === areaToRemove) {
-                removedEdit = edit
-                return false
-            }
-            return true
-        });
-
-        // check if no more features has the same color as the removed color
-        const colorsLeft = copylist.some(e => e.colorHEX === removedEdit?.colorHEX)
-
-        // if no more left, remove it from the key table
-        if (!colorsLeft) {
-            let newtable = [...keyTable]
-            newtable = keyTable.filter(row => row.color !== removedEdit?.colorHEX)
-            setKeyTable(newtable)
-        }
-        setEditsList(copylist)
+    const removeChoroColor = (options) => {
+        const { newEdit, keyTable, editsList } = options
+        const oldList = [...editsList]
+        const oldTable = [...keyTable]
+        setEditsList(oldList)
+        setKeyTable(oldTable)
     }
 
     useEffect(() => {
         if (areaClicked) {
-            let transaction = new ChoroTransaction(choroColor, areaClicked, setAreaClicked, keyTable, setKeyTable, editsList, setEditsList, addChoroColor, removeChoroColor)
+            const label = keyTable.find(row => row.color === choroColor)
+            const newEdit = new ChoroEdit(areaClicked, choroColor, label || '') // no label yet
+            const options = { newEdit, keyTable, editsList }
+            const transaction = new Transaction(options, addChoroColor, removeChoroColor)
             transactions.addTransaction(transaction)
         }
     }, [areaClicked])

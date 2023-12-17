@@ -9,8 +9,9 @@
 const bcrypt = require("bcryptjs")
 const asyncHandler = require('express-async-handler')
 const User = require("../models/user_model")
-const { signToken } = require("../jwt_middleware")
-
+const { signToken, signTokenForResettingPassword} = require("../jwt_middleware")
+const nodemailer = require("nodemailer"); // for sending emails
+const { v4: uuidv4 } = require('uuid'); // for creating a one time use link to reset passwords
 /**
  * if the user does not exist yet, register the user in the database,
  * if the user exists, login the user
@@ -18,16 +19,18 @@ const { signToken } = require("../jwt_middleware")
 const googleLoginUser = asyncHandler(async (req, res) => {
     const { email, username, googleId } = req.body
     let user = await User.findOne({ email })
-    if (!user) {
+    const userNameExists = await User.findOne({ username })
+    if (!user && !userNameExists) {
         const salt = await bcrypt.genSalt(10)
         const hashed_password = await bcrypt.hash(googleId, salt)
         user = await User.create({
             email: email,
             username: username,
-            password: hashed_password
+            password: hashed_password,
+            googleSignedIn: true
         })
     }
-
+    user = await User.findOne({ email })
     if (user && (await bcrypt.compare(googleId, user.password))) {
         return res.status(200).json({
             _id: user.id,
@@ -163,7 +166,7 @@ const checkUniqueEmail = asyncHandler(async (req, res) => {
 
 /**
  * 
- * @desc Checks if email is already in the db
+ * @desc Checks if user is already in the db
  * @route GET /users/checkUniqueUser
  */
 const checkUniqueUser = asyncHandler(async (req, res) => {
@@ -184,6 +187,93 @@ const checkUniqueUser = asyncHandler(async (req, res) => {
     })
 })
 
+/**
+ * 
+ * @desc forgotPassword
+ * @route POST /users/forgotPassword
+ */
+const forgotPassword = asyncHandler(async (req, res) => {
+    const { email  } = req.body;
+    try {
+        let user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+        if (user.googleSignedIn === true){
+            return res.status(403).json({
+                message: "Google signed-in users cannot change their password" 
+            });
+        }
+        const token = signTokenForResettingPassword(user._id)
+        user.passwordResetUsed = false
+        await user.save()
+        let emailText = '' 
+        if (process.env.NODE_ENV === 'production'){
+            emailText = `https://geowizard-app-b802ae01ce7f.herokuapp.com/changeYourPassword/${user._id}/${user.username}/${token}`
+        }
+        else {
+            emailText = `http://localhost:3000/changeYourPassword/${user._id}/${user.username}/${token}`
+        }
+
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'geowizard416@gmail.com',
+                pass: 'gagi fqci aeqz kkns'
+            }
+        });
+
+        const mailOptions = {
+            from: 'geowizard416@gmail.com',
+            to: email,
+            subject: 'Resetting GeoWizard Password',
+            text: emailText
+        };
+
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log(error);
+            } else {
+                console.log('Email sent: ' + info.response);
+            }
+        });
+
+        return res.status(200).json({ message: "Email Was Sent" });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+/**
+ * 
+ * @desc Reset password to the new password
+ * @route PUT /users/resetPassword/:id/:token
+ */
+const resetPassword = asyncHandler(async (req, res) => {
+    const { id } = req.params
+    const {password} = req.body
+    const user = await User.findById(id);
+
+    if (!user) {
+        return res.status(404).json({
+            message: "User not found"
+        });
+    }
+    try{
+        const salt = await bcrypt.genSalt(10)
+        const hashedPassword = await bcrypt.hash(password, salt)
+        user.password = hashedPassword
+        await user.save()
+    } catch (error){
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+    return res.status(200).json({
+        message: "Password has been changed successfully"
+    })
+})
 
 const getUserById = asyncHandler(async (req, res) => {
 
@@ -249,5 +339,7 @@ module.exports = {
     checkUniqueEmail,
     checkUniqueUser,
     getUserById,
-    updateUserInfo
+    updateUserInfo,
+    forgotPassword,
+    resetPassword
 }

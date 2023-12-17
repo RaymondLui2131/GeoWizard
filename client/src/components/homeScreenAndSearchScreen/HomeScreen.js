@@ -137,9 +137,9 @@ const HomeScreen = () => {
             {dropdownOpen && (
               <div className='absolute w-52 rounded-md bg-primary-GeoOrange shadow-lg '>
                 {buttonMetricKeys.map((key, index) => (
-                  <a
+                  <button
                     key={key}
-                    className={`block w-52 px-4 py-2 font-NanumSquareNeoOTF-Lt text-white 
+                    className={`block w-52 px-4 py-2 font-NanumSquareNeoOTF-Lt text-white text-left 
                                                 ${
                                                   activeMetricButton === key
                                                     ? 'bg-primary-GeoBlue'
@@ -153,7 +153,7 @@ const HomeScreen = () => {
                     onClick={() => toggleMetricButton(key)}
                   >
                     {key}
-                  </a>
+                  </button>
                 ))}
               </div>
             )}
@@ -199,9 +199,9 @@ const HomeScreen = () => {
             {dropdownTimeOpen && (
               <div className='absolute w-52 rounded-md bg-primary-GeoOrange shadow-lg '>
                 {buttonTimeKeys.map((key, index) => (
-                  <a
+                  <button
                     key={key}
-                    className={`block w-52 px-4 py-2 font-NanumSquareNeoOTF-Lt text-white
+                    className={`block w-52 px-4 py-2 font-NanumSquareNeoOTF-Lt text-white text-left
                                                 ${
                                                   activeTimeButton === key
                                                     ? 'bg-primary-GeoBlue'
@@ -215,7 +215,7 @@ const HomeScreen = () => {
                     onClick={() => toggleTimeButton(key)}
                   >
                     {key}
-                  </a>
+                  </button>
                 ))}
               </div>
             )}
@@ -225,7 +225,7 @@ const HomeScreen = () => {
 
       {/* Infinite Loading */}
       <div>
-        <div className='z-0 mx-24 grid grid-cols-3 py-5'>
+        <div className='z-0 grid grid-cols-3 gap-8 mx-28 mt-10'>
           {maps.map((map, index) => {
             if (maps.length === index + 1) {
               //last book
@@ -239,6 +239,13 @@ const HomeScreen = () => {
             }
           })}
         </div>
+
+        {maps.length === 0 && (
+          <div className='px-28 py-5 font-PyeongChangPeace-Light text-2xl text-primary-GeoBlue'>
+            No results found
+          </div>
+        )}
+        
         <div className=' mx-24 py-5 font-PyeongChangPeace-Light text-2xl text-primary-GeoBlue'>
           {loading && 'Loading...'}
         </div>
