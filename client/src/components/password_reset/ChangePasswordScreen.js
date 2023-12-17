@@ -15,6 +15,7 @@ const ChangePasswordScreen = () => {
         confirmPassword: false
     });
     const [changePasswordFailed, setChangePasswordFailed] = useState(false) // state for failed password change
+    const [passwordReqsFailed, setPasswordReqsFailed] = useState(false)
 
     const validateInputs = () => {
         let newErrors = {};
@@ -24,7 +25,16 @@ const ChangePasswordScreen = () => {
         return Object.keys(newErrors).length === 0;
     };
 
+    const validateReqs = () => {
+        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}[\]:;<>,.?~-]).{8,}$/;
+        if (!passwordRegex.test(password)) {
+            return false;
+        }
+        return true;
+    };
+
     const handleChangePasswordClick= async () => {
+        setPasswordReqsFailed(false)
         setPasswordMismatch(false)
         setChangePasswordFailed(false)
         setBlankErrors({
@@ -37,6 +47,10 @@ const ChangePasswordScreen = () => {
         if (password !== confirmPassword) {
             setPasswordMismatch(true); 
             return; 
+        }
+        if (validateReqs() === false){
+            setPasswordReqsFailed(true)
+            return;
         }
         const response = await resetThePassword(id,token,password)
         if (response.status == 200) {
@@ -113,6 +127,12 @@ const ChangePasswordScreen = () => {
                         {changePasswordFailed ? (
                             <div style={{ color: '#FF0000', textAlign: 'center' }}>
                                 Password change failed. Your token may have expired or is invalid
+                            </div>
+                        ) : null}
+
+                        {passwordReqsFailed ? (
+                            <div style={{ color: '#FF0000', textAlign: 'center' }}>
+                                Password doesn't meet requirements
                             </div>
                         ) : null}
 
