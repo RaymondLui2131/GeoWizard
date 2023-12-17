@@ -545,6 +545,7 @@ const MapView = () => {
     const [author,] = useState(mapView?.user_id?.username || '')
     const [userLikes,] = useState(mapView?.userLikes || [])
     const [userDislikes,] = useState(mapView?.userDislikes || [])
+    const [description,] = useState(mapView?.description || '')
     const [mapType,] = useState(mapView?.mapType || '')
     const [comments, setComments] = useState(mapView?.comments || [])
     const [sortSelected, setSort] = useState('Time')
@@ -618,7 +619,14 @@ const MapView = () => {
                             : null
                         }
                     </div>
-
+                    <div className='flex flex-col justify-between pt-2'>
+                        <div className='text-3xl text-gray-50 mt-3 font-NanumSquareNeoOTF-Lt w-4/12'>Description</div>
+                        <p
+                            className='my-3 font-NanumSquareNeoOTF-Lt  text-gray-700 shadow-warm w-full h-20 break-words overflow-scroll bg-white pl-3 pt-2'
+                            >
+                            {description || "No Description."}
+                        </p>
+                    </div>
                     <div className='flex flex-row justify-between pt-2'>
                         <div className='text-3xl text-gray-50 mt-3 font-NanumSquareNeoOTF-Lt w-4/12'>Comments</div>
                         <div className='font-NanumSquareNeoOTF-Lt'>
