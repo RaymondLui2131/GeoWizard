@@ -71,7 +71,7 @@ export const PointUI = (props) => {
                     setErrorMessage('Please click on a suggestion');
                     // console.error('Error:', error);
                 }
-            }, 500); // Set a new timer with a 500ms delay
+            }, 100); // Set a new timer with a 500ms delay
 
             setDebounceTimer(newTimer);
         } else {

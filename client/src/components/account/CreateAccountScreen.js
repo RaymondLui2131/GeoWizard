@@ -16,6 +16,7 @@ const LoginScreen = () => {
     const [emailInDb, setEmailInDb] = useState(false); // check if email is unqiue
     const [userInDb, setUserInDb] = useState(false); // check if user is unqiue
     const [validEmail, setValidEmail] = useState(false); // check if email is valid
+    const [passwordReqsFailed, setPasswordReqsFailed] = useState(false)
     const [blankErrors, setBlankErrors] = useState({    // check if input slots are empty
         userName: false,
         userEmail: false,
@@ -32,6 +33,14 @@ const LoginScreen = () => {
 
         setBlankErrors(newErrors);
         return Object.keys(newErrors).length === 0;
+    };
+
+    const validateReqs = () => {
+        const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+{}[\]:;<>,.?~-]).{8,}$/;
+        if (!passwordRegex.test(password)) {
+            return false;
+        }
+        return true;
     };
 
     function isValidEmail(email) {
@@ -71,6 +80,11 @@ const LoginScreen = () => {
             return;
         }
 
+        if (validateReqs() === false){
+            setPasswordReqsFailed(true)
+            return;
+        }
+
         const loginUser = async () => {
             const response = await authloginUser(userEmail, password)
             if (response.status == 200) {
@@ -103,7 +117,7 @@ const LoginScreen = () => {
                     return;
                 }
                 else if (uniqueEmailresponse.status === 200) {
-                    postCreatedAccount();
+                    checkUniqueUser();
                 }
             } catch (error) {
                 console.error('Error finding an email:', error);
@@ -126,7 +140,6 @@ const LoginScreen = () => {
         };
 
         checkUniqueEmail()
-        checkUniqueUser()
     };
 
     return (
@@ -222,6 +235,18 @@ const LoginScreen = () => {
                         Passwords do not match!
                     </div>
                 ) : null}
+
+                {passwordReqsFailed ? (
+                    <div style={{ color: '#8B0000', textAlign: 'center' }}>
+                        Password doesn't meet requirements
+                    </div>
+                ) : null}
+
+                <div className="font-NanumSquareNeoOTF-Lt font-bold pt-4 text-center">
+                    <div style={{ color: '#FF0000' }}>
+                        Make sure your password has at least 8 characters, including an uppercase character, a number, and a special character.
+                    </div>
+                </div>
 
                 <div className="w-full flex justify-center mt-2">
                     <button onClick={handleCreateAccountClick} className="text-white text-xl bg-primary-GeoPurple font-PyeongChangPeace-Bold w-[60%] px-2 py-3 rounded-full shadow-aesthetic hover:opacity-70">
