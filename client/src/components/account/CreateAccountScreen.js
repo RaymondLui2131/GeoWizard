@@ -210,7 +210,7 @@ const LoginScreen = () => {
 
                 {blankErrors.password ? (
                     <div style={{ color: '#8B0000', textAlign: 'center' }}>
-                        Please input an username!
+                        Please input a password!
                     </div>
                 ) : null}
 
