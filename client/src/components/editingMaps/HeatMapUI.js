@@ -94,42 +94,34 @@ export const HeatUi = (props) => {
         }
     }, [])
     useEffect(() => {
-        const curColor = JSON.stringify(heatColor)
-            switch (curColor) {
-                case JSON.stringify(hexToHlsa('#ff0000')):
-                    setHlsa(hexToHlsa('#ff0000'))
+        const curHue = Math.floor(heatColor.h)
+        console.log("Curr Hue",curHue)
+            switch (curHue) {//switch case by hue color 
+                case 0:
                     setSelected('red')
                     break
-                case JSON.stringify(hexToHlsa('#00ff00')):
-                    setHlsa(hexToHlsa('#00ff00'))
+                case 120:
                     setSelected('green')
                     break
-                case JSON.stringify(hexToHlsa('#0019ff')):
-                    setHlsa(hexToHlsa('#0019ff'))
+                case 234:
                     setSelected('blue')
                     break
-                case JSON.stringify(hexToHlsa('#00fffd')):
-                    setHlsa(hexToHlsa('#00fffd'))
+                case 179:
                     setSelected('cyan')
                     break
-                case JSON.stringify(hexToHlsa('#9900ff')):
-                    setHlsa(hexToHlsa('#9900ff'))
+                case 276:
                     setSelected('purple')
                     break
-                case JSON.stringify(hexToHlsa('#ffb400')):
-                    setHlsa(hexToHlsa('#ffb400'))
+                case 42:
                     setSelected('orange')
                     break
-                case JSON.stringify(hexToHlsa('#ff6e00')):
-                    setHlsa(hexToHlsa('#ff6e00'))
-                    setSelected('darkorange')
+                case 25:
+                    setSelected('darkOrange')
                     break
-                case JSON.stringify(hexToHlsa('#ff00d9')):
-                    setHlsa(hexToHlsa('#ff00d9'))
+                case 308:
                     setSelected('pink')
                     break
-                case JSON.stringify(hexToHlsa('#fffe00')):
-                    setHlsa(hexToHlsa('#fffe00'))
+                case 59:
                     setSelected('yellow')
                     break
                 default:

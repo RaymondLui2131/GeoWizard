@@ -124,7 +124,7 @@ const EditUpload = () => {
         }
         const file_type = selected_file.name.split('.').pop().toLowerCase()
         console.log(file_type)
-        const options = { tolerance: 0.01, highQuality: true }
+        const options = { tolerance: 0.0001, highQuality: true }
         const reader = new FileReader()
         const parser = new DOMParser();
         const JSZip = require('jszip');
@@ -177,60 +177,98 @@ const EditUpload = () => {
                 break;
             case 'json':
                 reader.onload = (e) => {
-                    const geojson = JSON.parse(e.target.result)//REMEMBER TO COMPRESS AFTER HANDLING OTHER FILE FORMATS
-                    const compressed = simplify(geojson, options);
-                    const edited = {
-                        type: compressed.type,
-                        features: compressed.features.map((feature, index) => ({
-                            ...feature,
-                            key: index,
-                        })),
+                    try{
+                        const geojson = JSON.parse(e.target.result)//REMEMBER TO COMPRESS AFTER HANDLING OTHER FILE FORMATS
+                        const compressed = simplify(geojson, options);
+                        const edited = {
+                            type: compressed.type,
+                            features: compressed.features.map((feature, index) => ({
+                                ...feature,
+                                key: index,
+                            })),
+                        }
+                        if(!edited || !edited.features ||(edited.features.length === 0))
+                        {
+                            setMapErrorMessage(true);
+                            return;
+                        }
+                        else
+                        {
+                            dispatch({ type: MapActionType.UPLOAD, payload: edited })
+                            navigate('/editingMap');
+                        }
                     }
-                    dispatch({ type: MapActionType.UPLOAD, payload: edited })
+                    catch (error){
+                        setMapErrorMessage(true);
+                            return;
+                    }        
                 }
-
                 dispatch({ type: MapActionType.RESET })
                 reader.readAsText(selected_file)
-                navigate('/editingMap')   //For now brings you back to / change later
                 break
             case 'kml':
                 reader.onload = (e) => {
-                    const kmlDocument = parser.parseFromString(e.target.result, "text/xml");
-                    const geojson = toGeoJSON.kml(kmlDocument);
-                    const compressed = simplify(geojson, options);
-                    const edited = {
-                        type: compressed.type,
-                        features: compressed.features.map((feature, index) => ({
-                            ...feature,
-                            properties: {
-                                ...feature.properties,
-                                iconUrl: feature.properties.icon, // Store the icon URL
-                            },
-                            key: index,
-                        })),
-                    };
-                    dispatch({ type: MapActionType.UPLOAD, payload: edited });
+                    try{
+                        const kmlDocument = parser.parseFromString(e.target.result, "text/xml");
+                        const geojson = toGeoJSON.kml(kmlDocument);
+                        const compressed = simplify(geojson, options);
+                        const edited = {
+                            type: compressed.type,
+                            features: compressed.features.map((feature, index) => ({
+                                ...feature,
+                                properties: {
+                                    ...feature.properties,
+                                    iconUrl: feature.properties.icon, // Store the icon URL
+                                },
+                                key: index,
+                            })),
+                        };
+                        console.log("Upload",edited)
+                        if(!edited || !edited.features ||(edited.features.length === 0))
+                        {
+                            setMapErrorMessage(true);
+                            return;
+                        }
+                        else
+                        {
+                            dispatch({ type: MapActionType.UPLOAD, payload: edited })
+                            navigate('/editingMap');
+                        }
+                    }
+                    catch(error){
+                        setMapErrorMessage(true);
+                    }
                 };
-
                 dispatch({ type: MapActionType.RESET });
                 reader.readAsText(selected_file);
-                navigate('/editingMap');
                 break;
             case 'geowizjson': //custum format similar to geojson
                 reader.onload = (e) => {
-                    const wizjson = JSON.parse(e.target.result)
-                    // console.log("whats uploaded",wizjson)
-                    const edited = {
-                        features: [...wizjson.features],
-                        description: wizjson.description,
-                        edits: { ...wizjson.edits },
-                        title: wizjson.title
+                    try{
+                        const wizjson = JSON.parse(e.target.result)
+                        const edited = {
+                            features: [...wizjson.features],
+                            description: wizjson.description,
+                            edits: { ...wizjson.edits },
+                            title: wizjson.title
+                        }
+                        // console.log("this is wat got dispactached", edited)
+                        if(!edited || !edited.features ||(edited.features.length === 0))
+                        {
+                            setMapErrorMessage(true);
+                            return;
+                        }
+                        else
+                        {
+                            dispatch({ type: MapActionType.UPLOAD, payload: edited })
+                            navigate('/editingMap');
+                        }
                     }
-                    console.log("this is wat got dispactached", edited)
-                    dispatch({ type: MapActionType.UPLOAD, payload: edited })
+                    catch(error){
+                        setMapErrorMessage(true);
+                    }
                 }
                 reader.readAsText(selected_file)
-                navigate('/editingMap')
                 break
             default:
                 setMapErrorMessage(true)

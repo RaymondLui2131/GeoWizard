@@ -66,7 +66,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
     const [dropdownOpen, setDropdownOpen] = useState(false)
     const exportButtons = [
         'PNG',
-        'JPG',
+        'JPEG',
         'Geowizjson'
     ]
 
@@ -190,12 +190,11 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
         }
     }
 
-    const exportMapAsImage = async (fileType = 'png', fileName) => {
+    const exportMapAsImage = async (fileType, fileName) => {
         if (!mapContainerRef) {
             console.error("Map container is not available for export.");
             return;
         }
-
         setTimeout(async () => {
             try {
                 const canvas = await html2canvas(mapContainerRef._container, {
@@ -210,7 +209,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                     }
                 });
 
-                const image = canvas.toDataURL(`image/${fileType}`);
+                const image = canvas.toDataURL(`image/${fileType.toLowerCase()}`);
                 const link = document.createElement('a');
                 link.href = image;
                 link.download = `${fileName}.${fileType}`;
@@ -226,7 +225,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
     const handleExport = async (key) => {
         //console.log(key)
 
-        if (key === 'PNG' || key === 'JPG') {
+        if (key === 'PNG' || key === 'JPEG') {
             //console.log(mapContainerRef._container)
             let fileName = "geowizardMap"
             if (title !== '')
@@ -313,7 +312,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                             onChange={(e) => {handleExport(e.target.value);setResetExport('Export')}}>
                             <option value="Export" disabled hidden>Export</option>
                             <option value="PNG" >PNG</option>
-                            <option value="JPG">JPEG</option>
+                            <option value="JPEG">JPEG</option>
                             <option value="GEOWIZ">GeowizJson</option>
                         </select>
                     </label>

@@ -11,10 +11,11 @@ import { SearchContext } from '../../api/SearchContext.js'
 const SearchScreen = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const [dropdownTimeOpen, setDropdownTimeOpen] = useState(false)
+  const [dropdownMapTypeOpen, setDropdownMapTypeOpen] = useState(false)
 
   const [activeMetricButton, setActiveMetricButton] = useState('')
   const [activeTimeButton, setActiveTimeButton] = useState('')
-
+  const [activeMapTypeButton, setActiveMapTypeButton] = useState('')
 
   const buttonMetricKeys = [
     'Recents',
@@ -31,6 +32,15 @@ const SearchScreen = () => {
     'All The Time',
   ]
 
+  const mapTypeKeys = [
+    'Heatmap',
+    'Point/Locator Map',
+    'Symbol Map',
+    'Choropleth Map',
+    'Flow Map',
+  ]
+
+
   const toggleMetricButton = (buttonKey) => {
     // If the clicked button is already active, deactivate it, otherwise activate it
     setActiveMetricButton(activeMetricButton === buttonKey ? '' : buttonKey)
@@ -40,6 +50,12 @@ const SearchScreen = () => {
   const toggleTimeButton = (buttonKey) => {
     // If the clicked button is already active, deactivate it, otherwise activate it
     setActiveTimeButton(activeTimeButton === buttonKey ? '' : buttonKey)
+    //console.log(activeTimeButton)
+  }
+
+  const toggleMapTypeButton = (buttonKey) => {
+    // If the clicked button is already active, deactivate it, otherwise activate it
+    setActiveMapTypeButton(activeMapTypeButton === buttonKey ? '' : buttonKey)
     //console.log(activeTimeButton)
   }
 
@@ -67,10 +83,12 @@ const SearchScreen = () => {
     //console.log('search', searchQuery)
     setActiveMetricButton('')
     setActiveTimeButton('')
+    setActiveMapTypeButton('')
     setQuery({
       query: searchQuery,
       metric: activeMetricButton,
       time: activeTimeButton,
+      type: activeMapTypeButton
     })
     setPageNumber(1)
     //console.log("searched button clicked")
@@ -83,21 +101,84 @@ const SearchScreen = () => {
       query: searchQuery,
       metric: activeMetricButton,
       time: activeTimeButton,
+      type: activeMapTypeButton
     })
     setPageNumber(1)
     //console.log("searched button clicked")
-  }, [activeMetricButton, activeTimeButton])
+  }, [activeMetricButton, activeTimeButton, activeMapTypeButton])
 
   return (
     <div className='max-h-[100%] min-h-screen bg-primary-GeoPurple'>
       <div className='z-10 mx-auto flex flex-wrap items-center justify-between px-28 pt-5 '>
-        <div className='font-PyeongChangPeace-Light text-5xl text-primary-GeoBlue'>
+        <div className='font-PyeongChangPeace-Light text-4xl text-primary-GeoBlue'>
           Search Results for {searchQuery}
         </div>
 
-        {/*Metric DropDown*/}
         <div>
-          <div className='relative z-[80] inline-block'>
+        {/*MapType DropDown*/}
+        <div className='relative z-[80] inline-block'>
+            <button
+              onClick={() => setDropdownMapTypeOpen(!dropdownMapTypeOpen)}
+              className={`w-52  px-4 py-2  font-NanumSquareNeoOTF-Lt ${
+                dropdownMapTypeOpen ? 'rounded-b-none rounded-t-md' : 'rounded-md'
+              } flex items-center justify-between bg-primary-GeoOrange text-left text-white`}
+            >
+              Map Type
+              <span className='ml-2'>
+                {dropdownMapTypeOpen ? (
+                  <svg
+                    className='h-4 w-4'
+                    fill='none'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth='2'
+                    viewBox='0 0 24 24'
+                    stroke='currentColor'
+                  >
+                    <path d='M19 9l-7 7-7-7'></path>
+                  </svg>
+                ) : (
+                  <svg
+                    className='h-4 w-4'
+                    fill='none'
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth='2'
+                    viewBox='0 0 24 24'
+                    stroke='currentColor'
+                  >
+                    <path d='M5 15l7-7 7 7'></path>
+                  </svg>
+                )}
+              </span>
+            </button>
+            {dropdownMapTypeOpen && (
+              <div className='absolute w-52 rounded-md bg-primary-GeoOrange shadow-lg '>
+                {mapTypeKeys.map((key, index) => (
+                  <button
+                    key={key}
+                    className={`block w-52 px-4 py-2 font-NanumSquareNeoOTF-Lt text-white text-left 
+                                                ${
+                                                  activeMapTypeButton === key
+                                                    ? 'bg-primary-GeoBlue'
+                                                    : 'bg-primary-GeoOrange hover:bg-primary-GeoBlue'
+                                                }
+                                                ${
+                                                  index == 0
+                                                    ? 'rounded-b-none'
+                                                    : 'rounded-md'
+                                                }`}
+                    onClick={() => toggleMapTypeButton(key)}
+                  >
+                    {key}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/*Metric DropDown*/}                                        
+          <div className='relative z-[80] ml-5 inline-block'>
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
               className={`w-52  px-4 py-2  font-NanumSquareNeoOTF-Lt ${
