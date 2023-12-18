@@ -102,7 +102,7 @@ const LoginScreen = () => {
 
                 {blankErrors.userEmail ? (
                     <div style={{ color: '#8B0000', textAlign: 'center' }}>
-                        Please input an userEmail!
+                        Please input an email!
                     </div>
                 ) : null}
 
@@ -119,7 +119,7 @@ const LoginScreen = () => {
 
                 {blankErrors.password ? (
                     <div style={{ color: '#8B0000', textAlign: 'center' }}>
-                        Please input an userEmail!
+                        Please input a password!
                     </div>
                 ) : null}
 
