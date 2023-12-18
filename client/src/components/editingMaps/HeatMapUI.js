@@ -94,8 +94,8 @@ export const HeatUi = (props) => {
         }
     }, [])
     useEffect(() => {
-        const curHue = heatColor.h
-        console.log(curHue)
+        const curHue = Math.floor(heatColor.h)
+        console.log("Curr Hue",curHue)
             switch (curHue) {//switch case by hue color 
                 case 0:
                     setSelected('red')
@@ -106,7 +106,7 @@ export const HeatUi = (props) => {
                 case 234:
                     setSelected('blue')
                     break
-                case 180:
+                case 179:
                     setSelected('cyan')
                     break
                 case 276:
@@ -115,13 +115,13 @@ export const HeatUi = (props) => {
                 case 42:
                     setSelected('orange')
                     break
-                case 26:
-                    setSelected('darkorange')
+                case 25:
+                    setSelected('darkOrange')
                     break
-                case 309:
+                case 308:
                     setSelected('pink')
                     break
-                case 60:
+                case 59:
                     setSelected('yellow')
                     break
                 default:
