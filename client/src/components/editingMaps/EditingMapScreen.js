@@ -62,6 +62,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
     const [saveStatus, setSaveStatus] = useState('idle'); // 'idle', 'saving', 'completed' , 'error'
     const [resetExport, setResetExport] = useState('Export')
     const { dispatch } = useContext(MapContext)
+    console.log("BASE COLOR SAVED", baseColor)
     //dropdown for exporting
     const [dropdownOpen, setDropdownOpen] = useState(false)
     const exportButtons = [
@@ -116,6 +117,7 @@ const BottomRow = ({ title, mapType, description, editsList, lowerBound, upperBo
                         else
                             setValidHeatRange(true)
                         const newHeatHeader = new HeatMapHeader(lower, upper, baseColor)
+                        console.log("newHeader",newHeatHeader)
                         mapInfo.edits.header = newHeatHeader
                         mapInfo.edits.editsList = editsList
                         break
@@ -584,6 +586,7 @@ const MapView = () => {
     const [upperBound, setUpper] = useState('1')
     const [validHeatRange, setValidHeatRange] = useState(true)
     const [heatColor, setHlsa] = useState(hexToHlsa('#000000')) //Used for heat map, in hlsa format
+    const heatColorRef = useRef(heatColor)
     const [baseColor, setBaseColor] = useState(hexToHlsa('#ffffff'))
 
     const [keyTable, setKeyTable] = useState([])//holds list of key labels mappings in form {color: hexColor, label:label}
@@ -596,6 +599,7 @@ const MapView = () => {
     const [futureTypeSelected, setFutureTypeSelected] = useState(MAP_TYPES['NONE'])
     const [geoJsonKey, setgeojsonKey] = useState('')
     const [mapContainerRef, setmapContainerRef] = useState(null);
+    console.log("Current Heat color",heatColor)
     // console.log(map)
     // const zoomLevel = 2
     // const center = [46.2276, 2.2137]
@@ -662,6 +666,9 @@ const MapView = () => {
     useEffect(() => {
         typeSelectedRef.current = typeSelected
     }, [typeSelected])
+    useEffect(() => {
+        heatColorRef.current = heatColor
+    }, [heatColor])
     const editsListRef = useRef(editsList)
     useEffect(() => {
         editsListRef.current = editsList
@@ -955,7 +962,7 @@ const MapView = () => {
                             placeholder='Enter Description...' value={description} maxLength={100} onChange={(e) => setDescription(e.target.value)} >
                         </input>
                         <BottomRow title={title} mapType={typeSelected} description={description} editsList={editsList} setValidTitle={setValidTitle}
-                            lowerBound={lowerBound} upperBound={upperBound} setValidHeatRange={setValidHeatRange} baseColor={baseColor}
+                            lowerBound={lowerBound} upperBound={upperBound} setValidHeatRange={setValidHeatRange} baseColor={heatColorRef}
                             keyTable={keyTable} mapContainerRef={mapContainerRef}
                         ></BottomRow>
                     </div>
