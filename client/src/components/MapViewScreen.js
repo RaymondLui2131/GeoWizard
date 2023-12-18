@@ -451,8 +451,11 @@ const Comment = (props) => {
         else
             formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-minutesDiff, 'minute');
     } else {
-        if (secondsDiff === 1)
-            formattedTimeDiff = "1 second ago"
+        if (secondsDiff <= 1)
+        {
+            formattedTimeDiff = "now"
+            console.log("here")
+        }
         else
             formattedTimeDiff = new Intl.RelativeTimeFormat('en', { numeric: 'auto' }).format(-secondsDiff, 'second');
     }
