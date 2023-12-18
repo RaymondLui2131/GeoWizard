@@ -149,7 +149,6 @@ const EditUpload = () => {
                         let geojsonArray = await shp(zipBuffer);
                         if(!Array.isArray(geojsonArray))
                             geojsonArray = [geojsonArray]
-                        console.log(geojsonArray)
                         const compressedArray = geojsonArray.map(geojson => {
                             if (geojson.type === 'FeatureCollection') {
                                 return {
