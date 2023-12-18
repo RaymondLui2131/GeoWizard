@@ -962,7 +962,7 @@ const MapView = () => {
                             placeholder='Enter Description...' value={description} maxLength={100} onChange={(e) => setDescription(e.target.value)} >
                         </input>
                         <BottomRow title={title} mapType={typeSelected} description={description} editsList={editsList} setValidTitle={setValidTitle}
-                            lowerBound={lowerBound} upperBound={upperBound} setValidHeatRange={setValidHeatRange} baseColor={heatColorRef}
+                            lowerBound={lowerBound} upperBound={upperBound} setValidHeatRange={setValidHeatRange} baseColor={heatColorRef.current}
                             keyTable={keyTable} mapContainerRef={mapContainerRef}
                         ></BottomRow>
                     </div>
